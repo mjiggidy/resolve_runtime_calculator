@@ -4,6 +4,7 @@ from . import dispatcher, ui
 import logging
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"
+MAIN_WINDOW_TITLE = "Runtime Calculator"
 
 trt_main_window = wnd_main.TRTMainWindow(ui)
 
@@ -17,7 +18,6 @@ def on_clear(event:dict):
 	trt_main_window.set_busy("Clearing...")
 	trt_main_window.clear_timeline_info()
 	trt_main_window.set_ready("Cleared")
-
 
 def on_add_latest(event:dict):
 	
@@ -51,11 +51,10 @@ def main():
 		import sys
 		sys.exit(0)
 
-
 	win = dispatcher.AddWindow({
 		"ID": MAIN_WINDOW_ID,
-		"WindowTitle": "There Can Be Only Run...time",
-		"FixedSize": [430,450],
+		"WindowTitle": MAIN_WINDOW_TITLE,
+		"FixedSize": [375,450],
 		"Events": {"Close": True},
 	}, [trt_main_window.layout()])
 
@@ -66,6 +65,3 @@ def main():
 
 	win.Show()
 	dispatcher.RunLoop()
-
-
-
