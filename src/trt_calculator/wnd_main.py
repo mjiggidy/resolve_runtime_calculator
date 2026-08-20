@@ -45,6 +45,9 @@ class TRTTreeResults:
 
 		for idx, text in enumerate(text_per_column):
 			item.Text[idx] = text
+
+		item.TextAlignment[1] = 130 # QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter  AHAHAHA I'M SMART
+		item.TextAlignment[2] = 130
 		
 		self._tree.AddTopLevelItem(item)
 
@@ -52,39 +55,15 @@ class TRTTreeResults:
 		
 		self._tree.Clear()
 
-class TRTResultsBox:
-	
-	def __init__(self, ui_manager:object):
-		
-		self._ui = ui_manager
-
-		self._lbl_trt = self._ui.Label({"Text":"TRT:"})
-		self._txt_trt = self._ui.LineEdit({
-			"PlaceholderText":"--:--:--:--",
-			"ReadOnly":True,
-			"Events": [],
-			"Weight":10,
-		})
-
-	def layout(self) -> object:
-		
-		return self._ui.HGroup([
-			self._lbl_trt, self._txt_trt
-		])
-	
-	def set_trt(self, trt:timecode.Timecode|None):
-		
-		self._txt_trt.Text = str(trt).lstrip("0:;") if trt else ""
-
 class TRTAddReelControls:
 	
 	def __init__(self, ui_manager:object):
 		
 		self._ui = ui_manager
 
-		self._btn_add_latest   = self._ui.Button({"Text":"Add Latest Reels", "ID":BTN_ID_ADD_LATEST})
-		self._btn_add_selected = self._ui.Button({"Text":"Add Selected", "ID":BTN_ID_ADD_SELECTED})
-		self._btn_clear        = self._ui.Button({"Text":"Clear", "ID":BTN_ID_CLEAR})
+		self._btn_add_latest   = self._ui.Button({"Weight":0, "Text":"Add Latest Reels", "ID":BTN_ID_ADD_LATEST})
+		self._btn_add_selected = self._ui.Button({"Weight":0, "Text":"Add Selected", "ID":BTN_ID_ADD_SELECTED})
+		self._btn_clear        = self._ui.Button({"Weight":0, "Text":"Clear", "ID":BTN_ID_CLEAR})
 
 	def set_enabled(self, is_enabled:bool):
 
@@ -111,11 +90,22 @@ class TRTMainWindow:
 
 		self._trt_tree = TRTTreeResults(self._ui)
 		self._trt_tree.tree().ColumnWidth[0] = 200
+		self._trt_tree.tree().ColumnWidth[1] = 75
+		self._trt_tree.tree().ColumnWidth[2] = 75
 
-		self._status_label = self._ui.Label({"Text":"No Reels", "Weight":2, "Events":[]})
-		self._trt_results = TRTResultsBox(self._ui)
+		self._status_label = self._ui.Label({"Text":"No Reels", "MinimumSize":[200,20], "Weight":0, "Events":[]})
 
 		self._reel_infos:list[ReelInfo] = []
+
+		self._txt_trt = self._ui.LineEdit({
+			"Weight"   : 0,
+			"MinimumSize": [70,20],
+			"PlaceholderText":"--:--:--:--",
+			"ReadOnly" : True,
+			"Events"   : [],
+		})
+
+		self._lbl_trt = self._ui.Label({"Weight":0, "Text":"TRT:"})
 	
 	def layout(self):
 		
@@ -124,7 +114,9 @@ class TRTMainWindow:
 			self._trt_tree.layout(),
 			self._ui.HGroup([
 				self._status_label,
-				self._trt_results.layout(),
+				self._ui.HGap(),
+				self._lbl_trt,
+				self._txt_trt,
 			]),
 		])
 	
@@ -157,7 +149,7 @@ class TRTMainWindow:
 			
 			self._trt_tree.add_text_row([
 				reel_info.reel_name,
-				str(reel_info.runtime_range.duration),
+				str(reel_info.runtime_range.duration).lstrip("0:;"),
 				reel_info.lfoa,
 		
 			])
@@ -171,7 +163,11 @@ class TRTMainWindow:
 
 		self._update_stats()
 
+	def _set_trt(self, trt:timecode.Timecode|None):
+		
+		self._txt_trt.Text = str(trt).lstrip("0:;") if trt else ""
+
 	def _update_stats(self):
 		
 		self._status_label.Text = f"{len(self._reel_infos)} Reel{'' if len(self._reel_infos) == 1 else 's'}"
-		self._trt_results.set_trt(sum(r.runtime_range.duration for r in self._reel_infos) if self._reel_infos else None)
+		self._set_trt(sum(r.runtime_range.duration for r in self._reel_infos) if self._reel_infos else None)
