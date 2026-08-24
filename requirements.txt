@@ -1,2 +1,2 @@
-resolvecommon @ git+https://github.com/mjiggidy/resolve_common.git
+resolve_common @ git+https://github.com/mjiggidy/resolve_common.git
 timecode @ git+https://github.com/mjiggidy/timecode.git
