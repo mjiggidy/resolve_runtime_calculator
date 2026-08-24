@@ -2,6 +2,9 @@ import typing
 from .reel_info import ReelInfo
 import timecode
 
+URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
+URL_DONATE = "https://ko-fi.com/lilbinboy"
+
 BTN_ID_ADD_LATEST   = "btn_add_latest"
 BTN_ID_ADD_SELECTED = "btn_add_selected"
 BTN_ID_CLEAR        = "btn_clear_list"
@@ -13,7 +16,7 @@ class TRTTreeResults:
 		self._ui = ui_manager
 
 		self._tree = self._ui.Tree({
-			"Weight": 20,
+			"Weight": 200,
 			"AlternatingRowColors":True,
 #			"SortingEnabled":True,
 			"ItemsExpandable": False,
@@ -86,6 +89,8 @@ class TRTMainWindow:
 		
 		self._ui = ui_manager
 
+		self._reel_infos:list[ReelInfo] = []
+
 		self._btn_box = TRTAddReelControls(self._ui)
 
 		self._trt_tree = TRTTreeResults(self._ui)
@@ -93,19 +98,50 @@ class TRTMainWindow:
 		self._trt_tree.tree().ColumnWidth[1] = 75
 		self._trt_tree.tree().ColumnWidth[2] = 75
 
-		self._status_label = self._ui.Label({"Text":"No Reels", "MinimumSize":[200,20], "Weight":0, "Events":[]})
+		print(self._ui.Font().GetPixelSize())
 
-		self._reel_infos:list[ReelInfo] = []
+		font_results = self._ui.Font({"Family":True})
+
+		self._status_label = self._ui.Label({
+			"Weight":0,
+			"Font": font_results,
+			"Text":"No Reels",
+			"MinimumSize":[200,20],
+			"Events":[]
+		})
 
 		self._txt_trt = self._ui.LineEdit({
 			"Weight"   : 0,
 			"MinimumSize": [70,20],
-			"PlaceholderText":"--:--:--:--",
+			"Font": font_results,
+			"PlaceholderText": "--:--:--:--",
 			"ReadOnly" : True,
 			"Events"   : [],
 		})
 
-		self._lbl_trt = self._ui.Label({"Weight":0, "Text":"TRT:"})
+		self._lbl_trt = self._ui.Label({
+			"Weight":0,
+			"Text":"TRT:",
+			"Font": font_results,
+		})
+
+		font_about = self._ui.Font({"PointSize": 10})
+
+		self._lbl_auth_rule = self._ui.Label({"FrameStyle": 4})  # QFrame.HLine int value.  I looked it up.
+
+		self._lbl_about_author = self._ui.Label({
+			"Weight":0,
+			"Font": font_about,
+			"Text": "Written by Michael Jordan"
+		})
+		self._lbl_about_links  = self._ui.Label({
+			"Weight":0,
+			"Font": font_about,
+			"Text": f"<a href=\"{URL_GITHUB}\">Github</a> | <a href=\"{URL_DONATE}\">Donate</a>",
+			"OpenExternalLinks": True,
+		})
+		#self._lbl_about_links.SetOpenExternalLinks(True)
+		
 	
 	def layout(self):
 		
@@ -117,6 +153,12 @@ class TRTMainWindow:
 				self._ui.HGap(),
 				self._lbl_trt,
 				self._txt_trt,
+			]),
+			self._lbl_auth_rule,
+			self._ui.HGroup([
+				self._lbl_about_author,
+				self._ui.HGap(),
+				self._lbl_about_links,
 			]),
 		])
 	
