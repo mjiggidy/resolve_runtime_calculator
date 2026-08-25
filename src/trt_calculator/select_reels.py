@@ -24,7 +24,7 @@ def refresh_project():
 def get_latest_reels_from_project() -> list[ReelInfo]:
 	"""Load latest version of each reel"""
 
-	refresh_project()
+#	refresh_project()
 
 	logging.getLogger(__name__).info("Getting reels folder...")
 	reels_folder = get_folder_from_path(REELS_FOLDER_PATH, mp.GetRootFolder())
@@ -58,15 +58,11 @@ def get_latest_reels_from_project() -> list[ReelInfo]:
 		latest_reel = get_latest_reel_version(timelines_in_folder)
 
 		if latest_reel:
-			latest_reels.append(ReelInfo(latest_reel))
+			latest_reels.append(latest_reel)
 
-	return sorted(latest_reels, key=lambda r: r.reel_number)
+	return latest_reels
 
-def get_selected_reels() -> list[ReelInfo]:
+def get_selected_reels() -> list[object]:
+	"""Return selected media pool clips"""
 	
-	clips = mp.GetSelectedClips()
-
-	if not clips:
-		return []
-	
-	return [ReelInfo(clip) for clip in clips]
+	return mp.GetSelectedClips()

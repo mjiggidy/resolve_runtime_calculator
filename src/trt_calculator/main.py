@@ -1,6 +1,6 @@
 from . import wnd_main, select_reels
 
-from . import dispatcher, ui
+from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 import logging, timecode
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"
@@ -23,19 +23,40 @@ def on_add_latest(event:dict):
 	
 	logging.getLogger(__name__).info("Latest reels requested")
 
+	trim_head = timecode.Timecode(trt_main_window.ffoa_trim_text())
+	trim_tail = timecode.Timecode(trt_main_window.lfoa_trim_text())
+
 	trt_main_window.set_busy("Refreshing project...")
 	select_reels.refresh_project()
 
 	trt_main_window.set_busy("Loading latest...")
-	trt_main_window.add_timeline_info(select_reels.get_latest_reels_from_project())
+
+	trimmed_reels = []
+
+	for clip in select_reels.get_latest_reels_from_project():
+		trimmed_reels.append(select_reels.ReelInfo(
+			clip,
+			trim_head,
+			trim_tail,
+		))
+
+	for trimmed_reel in sorted(trimmed_reels, key=lambda r: r.reel_number):
+		trt_main_window.add_timeline_info(trimmed_reel)
+
 	trt_main_window.set_ready()
 
 def on_add_selected(event:dict):
 	
 	logging.getLogger(__name__).info("Selected reels requested")
 
+	trim_head = timecode.Timecode(trt_main_window.ffoa_trim_text())
+	trim_tail = timecode.Timecode(trt_main_window.lfoa_trim_text())
+
 	trt_main_window.set_busy("Loading selected...")
-	trt_main_window.add_timeline_info(select_reels.get_selected_reels())
+
+	for clip in select_reels.get_selected_reels():
+		trt_main_window.add_timeline_info(select_reels.ReelInfo(clip, trim_head, trim_tail))
+
 	trt_main_window.set_ready()
 
 def on_ffoa_edited(event:dict):
@@ -45,9 +66,9 @@ def on_ffoa_edited(event:dict):
 	try:
 		tc_formatted = str(timecode.Timecode(tc_text.strip().lstrip("-"))).lstrip("0:;")
 	except Exception as e:
-		tc_formatted = ""
+		tc_formatted = "0:00"
 	finally:
-		trt_main_window.set_ffoa_trim_text(tc_formatted)
+		trt_main_window.set_ffoa_trim_text(tc_formatted or "0:00")
 
 def on_lfoa_edited(event:dict):
 
@@ -56,9 +77,9 @@ def on_lfoa_edited(event:dict):
 	try:
 		tc_formatted = str(timecode.Timecode(tc_text.strip().lstrip("-"))).lstrip("0:;")
 	except Exception as e:
-		tc_formatted = ""
+		tc_formatted = "0:00"
 	finally:
-		trt_main_window.set_lfoa_trim_text(tc_formatted)
+		trt_main_window.set_lfoa_trim_text(tc_formatted or "0:00")
 	
 
 def main():
@@ -79,6 +100,9 @@ def main():
 		"FixedSize": [375,450],
 		"Events": {"Close": True},
 	}, [trt_main_window.layout()])
+
+	trt_main_window.set_ffoa_trim_text(str(DEFAULT_HEAD_TRIM).lstrip("0:;"))
+	trt_main_window.set_lfoa_trim_text(str(DEFAULT_TAIL_TRIM).lstrip("0:;"))
 
 	win.On[MAIN_WINDOW_ID].Close = on_close
 	win.On[wnd_main.ID_BTN_ADD_LATEST].Clicked = on_add_latest
