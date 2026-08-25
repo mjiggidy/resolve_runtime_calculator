@@ -65,6 +65,14 @@ class ReelInfo:
 	def runtime_range(self) -> timecode.TimecodeRange:
 		
 		return self._runtime_range
+
+	@property
+	def trimmed_from_head(self) -> timecode.Timecode:
+		return self._trim_head
+
+	@property
+	def trimmed_from_tail(self) -> timecode.Timecode:
+		return self._trim_tail
 	
 	@property
 	def ffoa(self) -> str:

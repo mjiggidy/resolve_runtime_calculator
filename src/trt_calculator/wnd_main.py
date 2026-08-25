@@ -34,6 +34,8 @@ class TRTTreeResults:
 			"Reel",
 			"Runtime",
 			"LFOA",
+			"Head",
+			"Tail",
 		])
 
 	def tree(self) -> object:
@@ -54,6 +56,8 @@ class TRTTreeResults:
 
 		item.TextAlignment[1] = 130 # QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter  AHAHAHA I'M SMART
 		item.TextAlignment[2] = 130
+		item.TextAlignment[3] = 130
+		item.TextAlignment[4] = 130
 		
 		self._tree.AddTopLevelItem(item)
 
@@ -155,9 +159,11 @@ class TRTMainWindow:
 		])
 
 		self._trt_tree = TRTTreeResults(self._ui)
-		self._trt_tree.tree().ColumnWidth[0] = 200
+		self._trt_tree.tree().ColumnWidth[0] = 180
 		self._trt_tree.tree().ColumnWidth[1] = 75
 		self._trt_tree.tree().ColumnWidth[2] = 75
+		self._trt_tree.tree().ColumnWidth[3] = 75
+		self._trt_tree.tree().ColumnWidth[4] = 75
 
 		self._status_label = self._ui.Label({
 			"Weight":0,
@@ -250,7 +256,8 @@ class TRTMainWindow:
 				reel_info.reel_name,
 				str(reel_info.runtime_range.duration).lstrip("0:;"),
 				reel_info.lfoa,
-		
+				str(reel_info.trimmed_from_head).lstrip("0:;"),
+				str(reel_info.trimmed_from_tail).lstrip("0:;"),
 			])
 		
 		self._update_stats()
