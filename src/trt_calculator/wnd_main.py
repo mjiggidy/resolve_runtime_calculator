@@ -5,9 +5,12 @@ import timecode
 URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
 URL_DONATE = "https://ko-fi.com/lilbinboy"
 
-BTN_ID_ADD_LATEST   = "btn_add_latest"
-BTN_ID_ADD_SELECTED = "btn_add_selected"
-BTN_ID_CLEAR        = "btn_clear_list"
+ID_BTN_ADD_LATEST   = "btn_add_latest"
+ID_BTN_ADD_SELECTED = "btn_add_selected"
+ID_BTN_CLEAR        = "btn_clear_list"
+
+ID_TXT_TRIM_FFOA    = "txt_ffoa"
+ID_TXT_TRIM_LFOA    = "txt_lfoa"
 
 class TRTTreeResults:
 	
@@ -64,9 +67,9 @@ class TRTAddReelControls:
 		
 		self._ui = ui_manager
 
-		self._btn_add_latest   = self._ui.Button({"Weight":0, "Text":"Add Latest Reels", "ID":BTN_ID_ADD_LATEST})
-		self._btn_add_selected = self._ui.Button({"Weight":0, "Text":"Add Selected", "ID":BTN_ID_ADD_SELECTED})
-		self._btn_clear        = self._ui.Button({"Weight":0, "Text":"Clear", "ID":BTN_ID_CLEAR})
+		self._btn_add_latest   = self._ui.Button({"Weight":0, "Text":"Add Latest Reels", "ID":ID_BTN_ADD_LATEST})
+		self._btn_add_selected = self._ui.Button({"Weight":0, "Text":"Add Selected", "ID":ID_BTN_ADD_SELECTED})
+		self._btn_clear        = self._ui.Button({"Weight":0, "Text":"Clear", "ID":ID_BTN_CLEAR})
 
 	def set_enabled(self, is_enabled:bool):
 
@@ -93,36 +96,87 @@ class TRTMainWindow:
 
 		self._btn_box = TRTAddReelControls(self._ui)
 
+		self._lbl_trim_head = self._ui.Label({
+			"Weight": 0,
+			"MinimumSize": [130, -1],
+			"Text": "Trim from each head:"
+		})
+
+		self._txt_trim_head = self._ui.LineEdit({
+			"Weight": 0,
+			"ID": ID_TXT_TRIM_FFOA,
+			"MinimumSize": [50, -1],
+			"Text": str(head_trim) if head_trim else "",
+			"PlaceholderText": "0:00",
+			"Events": {"EditingFinished": True},
+		})
+
+		self._chk_use_ffoa_marker = self._ui.CheckBox({
+			"Weight": 0,
+			"Text": "Or use FFOA marker",
+			"Checked": True,
+			"Events": {},
+		})
+
+		self._ctl_trim_head = self._ui.HGroup([
+			self._lbl_trim_head,
+			self._txt_trim_head,
+			self._ui.HGap(),
+			self._chk_use_ffoa_marker,
+		])
+
+		self._lbl_trim_tail = self._ui.Label({
+			"Weight": 0,
+			"MinimumSize": [130, -1],
+			"Text": "Trim from each tail:"
+		})
+
+		self._txt_trim_tail = self._ui.LineEdit({
+			"Weight": 0,
+			"ID": ID_TXT_TRIM_LFOA,
+			"MinimumSize": [50, -1],
+			"Text": str(tail_trim) if tail_trim else "",
+			"PlaceholderText": "0:00",
+			"Events": {"EditingFinished": True},
+		})
+
+		self._chk_use_lfoa_marker = self._ui.CheckBox({
+			"Weight": 0,
+			"Text": "Or use LFOA marker",
+			"Checked": True,
+			"Events": {},
+		})
+
+		self._ctl_trim_tail = self._ui.HGroup([
+			self._lbl_trim_tail,
+			self._txt_trim_tail,
+			self._ui.HGap(),
+			self._chk_use_lfoa_marker,
+		])
+
 		self._trt_tree = TRTTreeResults(self._ui)
 		self._trt_tree.tree().ColumnWidth[0] = 200
 		self._trt_tree.tree().ColumnWidth[1] = 75
 		self._trt_tree.tree().ColumnWidth[2] = 75
 
-		print(self._ui.Font().GetPixelSize())
-
-		font_results = self._ui.Font({"Family":True})
-
 		self._status_label = self._ui.Label({
 			"Weight":0,
-			"Font": font_results,
 			"Text":"No Reels",
 			"MinimumSize":[200,20],
-			"Events":[]
+			"Events":{}
 		})
 
 		self._txt_trt = self._ui.LineEdit({
 			"Weight"   : 0,
 			"MinimumSize": [70,20],
-			"Font": font_results,
 			"PlaceholderText": "--:--:--:--",
 			"ReadOnly" : True,
-			"Events"   : [],
+			"Events"   : {},
 		})
 
 		self._lbl_trt = self._ui.Label({
 			"Weight":0,
 			"Text":"TRT:",
-			"Font": font_results,
 		})
 
 		font_about = self._ui.Font({"PointSize": 10})
@@ -146,6 +200,9 @@ class TRTMainWindow:
 	def layout(self):
 		
 		return self._ui.VGroup([
+			self._ctl_trim_head,
+			self._ctl_trim_tail,
+			self._ui.Label({"FrameStyle": 4}),
 			self._btn_box.layout(),
 			self._trt_tree.layout(),
 			self._ui.HGroup([
@@ -213,3 +270,20 @@ class TRTMainWindow:
 		
 		self._status_label.Text = f"{len(self._reel_infos)} Reel{'' if len(self._reel_infos) == 1 else 's'}"
 		self._set_trt(sum(r.runtime_range.duration for r in self._reel_infos) if self._reel_infos else None)
+
+	def ffoa_trim_text(self) -> str:
+
+		return self._txt_trim_head.Text
+
+	def set_ffoa_trim_text(self, formatted_duration:str):
+
+		self._txt_trim_head.Text = formatted_duration
+
+	def lfoa_trim_text(self) -> str:
+
+		return self._txt_trim_tail.Text
+
+	def set_lfoa_trim_text(self, formatted_duration:str):
+
+		self._txt_trim_tail.Text = formatted_duration
+	
