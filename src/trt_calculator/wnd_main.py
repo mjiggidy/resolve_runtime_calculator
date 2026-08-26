@@ -235,12 +235,24 @@ class TRTMainWindow:
 
 		self._btn_box.set_enabled(False)
 
+		self._chk_use_ffoa_marker.SetEnabled(False)
+		self._chk_use_lfoa_marker.SetEnabled(False)
+
+		self._txt_trim_head.SetEnabled(False)
+		self._txt_trim_tail.SetEnabled(False)
+
 		if status_message is not None:
 			self._status_label.Text = status_message
 
 	def set_ready(self, status_message:str|None=None):
 
 		self._btn_box.set_enabled(True)
+
+		self._chk_use_ffoa_marker.SetEnabled(True)
+		self._chk_use_lfoa_marker.SetEnabled(True)
+
+		self._txt_trim_head.SetEnabled(True)
+		self._txt_trim_tail.SetEnabled(True)
 
 		if status_message is not None:
 			self._status_label.Text = status_message
@@ -292,4 +304,13 @@ class TRTMainWindow:
 		"""Set the LFOA trim amount"""
 
 		self._txt_trim_tail.Text = formatted_duration
-	
+
+	def use_ffoa_marker(self) -> bool:
+		"""Return the user's FFOA preference"""
+
+		return self._chk_use_ffoa_marker.Checked
+
+	def use_lfoa_marker(self) -> bool:
+		"""Return the user's LFOA preference"""
+
+		return self._chk_use_lfoa_marker.Checked
