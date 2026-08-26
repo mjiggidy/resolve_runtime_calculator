@@ -253,9 +253,9 @@ class TRTMainWindow:
 			self._reel_infos.append(reel_info)
 			
 			self._trt_tree.add_text_row([
-				reel_info.reel_name,
+				reel_info.mediapool_name,
 				format_timecode_as_duration(reel_info.runtime_range.duration),
-				reel_info.lfoa,
+				reel_info.lfoa(),
 				format_timecode_as_duration(reel_info.trimmed_from_head),
 				format_timecode_as_duration(reel_info.trimmed_from_tail),
 			])
