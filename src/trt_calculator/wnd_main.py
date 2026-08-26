@@ -98,7 +98,7 @@ class TRTMainWindow:
 		
 		self._ui = ui_manager
 
-		self._reel_infos:list[ReelInfo] = []
+
 
 		self._btn_box = TRTAddReelControls(self._ui)
 
@@ -245,45 +245,33 @@ class TRTMainWindow:
 		if status_message is not None:
 			self._status_label.Text = status_message
 	
-	def add_timeline_info(self, info:ReelInfo|typing.Iterable[ReelInfo]):
+	def add_timeline_info(self, info:ReelInfo):
+		"""Add reel info to the tree"""
 		
-		if isinstance(info, ReelInfo):
-			info = [info]
-
-		for reel_info in info:
-			
-			self._reel_infos.append(reel_info)
-			
-			self._trt_tree.add_text_row([
-				reel_info.mediapool_name,
-				format_timecode_as_duration(reel_info.runtime_range.duration),
-				reel_info.lfoa(),
-				format_timecode_as_duration(reel_info.trimmed_from_head),
-				format_timecode_as_duration(reel_info.trimmed_from_tail),
-			])
+		self._trt_tree.add_text_row([
+			info.mediapool_name,
+			format_timecode_as_duration(info.runtime_range.duration),
+			info.lfoa(),
+			format_timecode_as_duration(info.trimmed_from_head),
+			format_timecode_as_duration(info.trimmed_from_tail),
+		])
 		
-		self._update_stats()
+#		self._update_stats()
 
 	def clear_timeline_info(self):
 		
 		self._trt_tree.clear()
-		self._reel_infos = []
 
-		self._update_stats()
+#		self._update_stats()
 
-	def _set_trt_text(self, trt:str|None):
+	def set_total_runtime(self, trt:str|None=None):
 		"""Set the TRT results, if any"""
 		
 		self._txt_trt.Text = trt if trt else ""
 
-	def _update_stats(self):
+	def set_status(self, status_text:str):
 		
 		self._status_label.Text = f"{len(self._reel_infos)} Reel{'' if len(self._reel_infos) == 1 else 's'}"
-		self._set_trt_text(
-			format_timecode_as_duration(
-				sum(r.runtime_range.duration for r in self._reel_infos)
-			) if self._reel_infos else None
-		)
 
 	def ffoa_trim_text(self) -> str:
 		"""Return the FFOA trim amount"""

@@ -1,13 +1,29 @@
 from . import wnd_main, select_reels, reel_info
 
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
-from .formatting import format_timecode_as_duration
+from .formatting import format_timecode_as_duration, format_string_for_natural_sort
+from .reel_info import ReelInfo
 import logging, timecode
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"
 MAIN_WINDOW_TITLE = "Runtime Calculator"
 
 trt_main_window = wnd_main.TRTMainWindow(ui)
+reel_infos:list[ReelInfo] = []
+
+def add_trimmed_item_info(trimmed_item_info:ReelInfo):
+
+	logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.mediapool_name)
+
+	reel_infos.append(trimmed_item_info)
+	trt_main_window.add_timeline_info(trimmed_item_info)
+
+	trt = format_timecode_as_duration(
+		sum(r.runtime_range.duration for r in reel_infos)
+	) if reel_infos else None
+
+	trt_main_window.set_total_runtime(trt)
+
 
 def on_close(event:dict):
 	
@@ -16,8 +32,15 @@ def on_close(event:dict):
 
 def on_clear(event:dict):
 
+	logging.getLogger(__name__).info("Clearing reel info")
+
 	trt_main_window.set_busy("Clearing...")
+
+	reel_infos.clear()
+
 	trt_main_window.clear_timeline_info()
+	trt_main_window.set_total_runtime()
+
 	trt_main_window.set_ready("Cleared")
 
 def on_add_latest(event:dict):
@@ -41,10 +64,10 @@ def on_add_latest(event:dict):
 			trim_tail,
 		))
 
-	for trimmed_reel in trimmed_reels:
-		trt_main_window.add_timeline_info(trimmed_reel)
+	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
+		add_trimmed_item_info(trimmed_reel_info)
 
-	trt_main_window.set_ready()
+	trt_main_window.set_ready(f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}")
 
 def on_add_selected(event:dict):
 	
@@ -55,10 +78,15 @@ def on_add_selected(event:dict):
 
 	trt_main_window.set_busy("Loading selected...")
 
-	for clip in select_reels.get_selected_reels():
-		trt_main_window.add_timeline_info(reel_info.ReelInfo(clip, trim_head, trim_tail))
 
-	trt_main_window.set_ready()
+	trimmed_reels = []
+	for clip in select_reels.get_selected_reels():
+		trimmed_reels.append(reel_info.ReelInfo(clip, trim_head, trim_tail))
+
+	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
+		add_trimmed_item_info(trimmed_reel_info)
+
+	trt_main_window.set_ready(f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}")
 
 def on_ffoa_edited(event:dict):
 	"""Validate FFOA trim amount"""
