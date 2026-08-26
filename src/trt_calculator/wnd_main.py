@@ -21,7 +21,7 @@ class TRTTreeResults:
 		self._tree = self._ui.Tree({
 			"Weight": 200,
 			"AlternatingRowColors":True,
-			"SortingEnabled":True,
+#			"SortingEnabled":True,
 			"ItemsExpandable": False,
 			"ColumnCount": 5,
 			"RootIsDecorated": False,
