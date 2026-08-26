@@ -21,9 +21,9 @@ class TRTTreeResults:
 		self._tree = self._ui.Tree({
 			"Weight": 200,
 			"AlternatingRowColors":True,
-#			"SortingEnabled":True,
+			"SortingEnabled":True,
 			"ItemsExpandable": False,
-			"ColumnCount": 3,
+			"ColumnCount": 5,
 			"RootIsDecorated": False,
 			"UniformRowHeights": True,
 			"Indentation": False,
@@ -57,9 +57,11 @@ class TRTTreeResults:
 		item.TextAlignment[1] = 130 # QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter  AHAHAHA I'M SMART
 		item.TextAlignment[2] = 130
 		item.TextAlignment[3] = 130
-#		item.TextAlignment[4] = 130
+		item.TextAlignment[4] = 130
 		
 		self._tree.AddTopLevelItem(item)
+
+#		print(dir(item.GetData))
 
 	def clear(self):
 		
@@ -159,11 +161,11 @@ class TRTMainWindow:
 		])
 
 		self._trt_tree = TRTTreeResults(self._ui)
-		self._trt_tree.tree().ColumnWidth[0] = 180
+		self._trt_tree.tree().ColumnWidth[0] = 150
 		self._trt_tree.tree().ColumnWidth[1] = 75
 		self._trt_tree.tree().ColumnWidth[2] = 75
-		self._trt_tree.tree().ColumnWidth[3] = 75
-#		self._trt_tree.tree().ColumnWidth[4] = 75
+		self._trt_tree.tree().ColumnWidth[3] = 50
+		self._trt_tree.tree().ColumnWidth[4] = 50
 
 		self._status_label = self._ui.Label({
 			"Weight":0,
