@@ -41,7 +41,7 @@ def on_add_latest(event:dict):
 			trim_tail,
 		))
 
-	for trimmed_reel in sorted(trimmed_reels, key=lambda r: r.reel_number):
+	for trimmed_reel in trimmed_reels:
 		trt_main_window.add_timeline_info(trimmed_reel)
 
 	trt_main_window.set_ready()
@@ -100,7 +100,7 @@ def main():
 	win = dispatcher.AddWindow({
 		"ID": MAIN_WINDOW_ID,
 		"WindowTitle": MAIN_WINDOW_TITLE,
-		"FixedSize": [375,450],
+		"FixedSize": [360,500],
 		"Events": {"Close": True},
 	}, [trt_main_window.layout()])
 
