@@ -1,4 +1,4 @@
-from . import wnd_main, select_reels
+from . import wnd_main, select_reels, reel_info
 
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 from .formatting import format_timecode_as_duration
@@ -35,7 +35,7 @@ def on_add_latest(event:dict):
 	trimmed_reels = []
 
 	for clip in select_reels.get_latest_reels_from_project():
-		trimmed_reels.append(select_reels.ReelInfo(
+		trimmed_reels.append(reel_info.ReelInfo(
 			clip,
 			trim_head,
 			trim_tail,
@@ -56,7 +56,7 @@ def on_add_selected(event:dict):
 	trt_main_window.set_busy("Loading selected...")
 
 	for clip in select_reels.get_selected_reels():
-		trt_main_window.add_timeline_info(select_reels.ReelInfo(clip, trim_head, trim_tail))
+		trt_main_window.add_timeline_info(reel_info.ReelInfo(clip, trim_head, trim_tail))
 
 	trt_main_window.set_ready()
 
