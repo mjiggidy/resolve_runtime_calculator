@@ -2,32 +2,66 @@ import timecode
 
 from . import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 from .formatting import format_frame_count_as_footage
+from .trim_options import TRTTrimOptions
+from resolvecommon.itemtypes import ItemTypes
+
+FFOA_MARKER_NAME:str = "ffoa"
+LFOA_MARKER_NAME:str = "lfoa"
 
 class ReelInfo:
 	"""Info about a reel timeline"""
 	
-	def __init__(self, mediapool_item:object, trim_from_head:timecode.Timecode|None=None, trim_from_tail:timecode.Timecode|None=None):
+	def __init__(self, mediapool_item:object, trim_options:TRTTrimOptions):
 	
 		self._mediapool_item = mediapool_item
 		
 		self._mediapool_name = self.mediapool_item.GetName()
 
-		self._trim_head = trim_from_head or DEFAULT_HEAD_TRIM
-		self._trim_tail = trim_from_tail or DEFAULT_TAIL_TRIM
+		self._trim_options = trim_options
 
 		self._timecode_range = timecode.TimecodeRange(
 			start = timecode.Timecode(self._mediapool_item.GetClipProperty("Start TC")),
 			duration = timecode.Timecode(self._mediapool_item.GetClipProperty("Duration"))
 		)
 
-		trimmed_start = self._timecode_range.start + self._trim_head
-		trimmed_tail  = self._timecode_range.end   - self._trim_tail
+		ffoa_offset = self._get_ffoa_offset()
+		lfoa_offset = self._get_lfoa_offset()
 
-		# NOTE: Look into zero ranges
 		self._runtime_range = timecode.TimecodeRange(
-			start = trimmed_start,
-			end   = trimmed_tail if trimmed_tail - trimmed_start > 0 else trimmed_start
+			start = self._timecode_range.start + ffoa_offset,
+			duration = max(0, (self._timecode_range.duration - ffoa_offset - lfoa_offset).frame_number)
 		)
+
+	def _get_ffoa_offset(self):
+
+		if not self._trim_options.use_ffoa_marker:
+			return self._trim_options.trim_from_head
+
+		markers = self._mediapool_item.GetTimeline().GetMarkers()
+
+		for frame_offset in markers:
+
+			if FFOA_MARKER_NAME in markers[frame_offset]["name"].lower():
+				return timecode.Timecode(int(frame_offset))
+
+		return self._trim_options.trim_from_head
+
+	def _get_lfoa_offset(self):
+
+		if not self._trim_options.use_lfoa_marker:
+			return self._trim_options.trim_from_tail
+
+		if ItemTypes.from_media_pool_item(self._mediapool_item) is ItemTypes.TIMELINE:
+			markers = self._mediapool_item.GetTimeline().GetMarkers()
+		else:
+			markers = self._mediapool_item.GetMarkers()
+
+		for frame_offset in markers:
+
+			if LFOA_MARKER_NAME in markers[frame_offset]["name"].lower():
+				return self._timecode_range.duration - int(frame_offset) - 1
+
+		return self._trim_options.trim_from_tail
 	
 	@property
 	def mediapool_item(self) -> object:
@@ -52,19 +86,19 @@ class ReelInfo:
 	@property
 	def trimmed_from_head(self) -> timecode.Timecode:
 		
-		return self._trim_head
+		return self._trim_options.trim_from_head
 
 	@property
 	def trimmed_from_tail(self) -> timecode.Timecode:
 		
-		return self._trim_tail
+		return self._trim_options.trim_from_tail
 	
 	def ffoa(self, frames_per_foot:int=16) -> str:
 		
-		ffoa_frames = max(self._trim_head.frame_number, 0)
+		ffoa_frames = max(self._trim_options.trim_from_head.frame_number, 0)
 		return format_frame_count_as_footage(ffoa_frames, frames_per_foot)
 	
 	def lfoa(self, frames_per_foot:int=16) -> str:
 		
-		lfoa_frames = max((self._timecode_range.duration - self._trim_tail).frame_number - 1, 0)
+		lfoa_frames = max((self._timecode_range.duration - self._trim_options.trim_from_tail).frame_number - 1, 0)
 		return format_frame_count_as_footage(lfoa_frames, frames_per_foot)

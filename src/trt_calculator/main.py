@@ -3,6 +3,7 @@ from . import wnd_main, select_reels, reel_info
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 from .formatting import format_timecode_as_duration, format_string_for_natural_sort
 from .reel_info import ReelInfo
+from .trim_options import TRTTrimOptions
 import logging, timecode
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"
@@ -10,6 +11,15 @@ MAIN_WINDOW_TITLE = "Runtime Calculator"
 
 trt_main_window = wnd_main.TRTMainWindow(ui)
 reel_infos:list[ReelInfo] = []
+
+def get_trim_options_from_window():
+
+	return TRTTrimOptions(
+		trim_from_head = timecode.Timecode(trt_main_window.ffoa_trim_text()),
+		trim_from_tail = timecode.Timecode(trt_main_window.lfoa_trim_text()),
+		use_ffoa_marker = trt_main_window.use_ffoa_marker(),
+		use_lfoa_marker = trt_main_window.use_lfoa_marker(),
+	)
 
 def add_trimmed_item_info(trimmed_item_info:ReelInfo):
 
@@ -47,21 +57,20 @@ def on_add_latest(event:dict):
 	
 	logging.getLogger(__name__).info("Latest reels requested")
 
-	trim_head = timecode.Timecode(trt_main_window.ffoa_trim_text())
-	trim_tail = timecode.Timecode(trt_main_window.lfoa_trim_text())
 
 	trt_main_window.set_busy("Refreshing project...")
 	select_reels.refresh_project()
 
 	trt_main_window.set_busy("Loading latest...")
 
+	trim_options = get_trim_options_from_window()
+
 	trimmed_reels = []
 
 	for clip in select_reels.get_latest_reels_from_project():
 		trimmed_reels.append(reel_info.ReelInfo(
 			clip,
-			trim_head,
-			trim_tail,
+			trim_options
 		))
 
 	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
@@ -73,15 +82,14 @@ def on_add_selected(event:dict):
 	
 	logging.getLogger(__name__).info("Selected reels requested")
 
-	trim_head = timecode.Timecode(trt_main_window.ffoa_trim_text())
-	trim_tail = timecode.Timecode(trt_main_window.lfoa_trim_text())
 
 	trt_main_window.set_busy("Loading selected...")
 
+	trim_options = get_trim_options_from_window()
 
 	trimmed_reels = []
 	for clip in select_reels.get_selected_reels():
-		trimmed_reels.append(reel_info.ReelInfo(clip, trim_head, trim_tail))
+		trimmed_reels.append(reel_info.ReelInfo(clip, trim_options))
 
 	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
 		add_trimmed_item_info(trimmed_reel_info)
