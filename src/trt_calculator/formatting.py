@@ -16,3 +16,11 @@ def format_timecode_as_duration(timecode:timecode.Timecode, pad_to_seconds:bool=
 		stripped_tc = "-" + stripped_tc
 
 	return stripped_tc
+
+def format_frame_count_as_footage(frame_count:int, frames_per_foot:int=16) -> str:
+	""""Given a frame count, format it as a F+F footage counter"""
+
+	if frames_per_foot < 1:
+		raise ValueError(f"Frames per foot must be a positive integer (got {frames_per_foot})")
+
+	return ("-" if frame_count < 0 else "") + str(frame_count // frames_per_foot) + "+" + str(frame_count % frames_per_foot).zfill(len(str(frames_per_foot)))
