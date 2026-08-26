@@ -1,6 +1,6 @@
 import typing
+from .formatting import format_timecode_as_duration
 from .reel_info import ReelInfo
-import timecode
 
 URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
 URL_DONATE = "https://ko-fi.com/lilbinboy"
@@ -57,7 +57,7 @@ class TRTTreeResults:
 		item.TextAlignment[1] = 130 # QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter  AHAHAHA I'M SMART
 		item.TextAlignment[2] = 130
 		item.TextAlignment[3] = 130
-		item.TextAlignment[4] = 130
+#		item.TextAlignment[4] = 130
 		
 		self._tree.AddTopLevelItem(item)
 
@@ -92,7 +92,7 @@ class TRTAddReelControls:
 
 class TRTMainWindow:
 	
-	def __init__(self, ui_manager:object, head_trim:timecode.Timecode|None=None, tail_trim:timecode.Timecode|None=None):
+	def __init__(self, ui_manager:object, head_trim:str|None=None, tail_trim:str|None=None):
 		
 		self._ui = ui_manager
 
@@ -110,7 +110,7 @@ class TRTMainWindow:
 			"Weight": 0,
 			"ID": ID_TXT_TRIM_FFOA,
 			"MinimumSize": [50, -1],
-			"Text": str(head_trim) if head_trim else "",
+			"Text": head_trim if head_trim else "",
 			"PlaceholderText": "0:00",
 			"Events": {"EditingFinished": True},
 		})
@@ -139,7 +139,7 @@ class TRTMainWindow:
 			"Weight": 0,
 			"ID": ID_TXT_TRIM_LFOA,
 			"MinimumSize": [50, -1],
-			"Text": str(tail_trim) if tail_trim else "",
+			"Text": tail_trim if tail_trim else "",
 			"PlaceholderText": "0:00",
 			"Events": {"EditingFinished": True},
 		})
@@ -163,7 +163,7 @@ class TRTMainWindow:
 		self._trt_tree.tree().ColumnWidth[1] = 75
 		self._trt_tree.tree().ColumnWidth[2] = 75
 		self._trt_tree.tree().ColumnWidth[3] = 75
-		self._trt_tree.tree().ColumnWidth[4] = 75
+#		self._trt_tree.tree().ColumnWidth[4] = 75
 
 		self._status_label = self._ui.Label({
 			"Weight":0,
@@ -254,10 +254,10 @@ class TRTMainWindow:
 			
 			self._trt_tree.add_text_row([
 				reel_info.reel_name,
-				str(reel_info.runtime_range.duration).lstrip("0:;"),
+				format_timecode_as_duration(reel_info.runtime_range.duration),
 				reel_info.lfoa,
-				str(reel_info.trimmed_from_head).lstrip("0:;"),
-				str(reel_info.trimmed_from_tail).lstrip("0:;"),
+				format_timecode_as_duration(reel_info.trimmed_from_head),
+				format_timecode_as_duration(reel_info.trimmed_from_tail),
 			])
 		
 		self._update_stats()
@@ -269,28 +269,37 @@ class TRTMainWindow:
 
 		self._update_stats()
 
-	def _set_trt(self, trt:timecode.Timecode|None):
+	def _set_trt_text(self, trt:str|None):
+		"""Set the TRT results, if any"""
 		
-		self._txt_trt.Text = str(trt).lstrip("0:;") if trt else ""
+		self._txt_trt.Text = trt if trt else ""
 
 	def _update_stats(self):
 		
 		self._status_label.Text = f"{len(self._reel_infos)} Reel{'' if len(self._reel_infos) == 1 else 's'}"
-		self._set_trt(sum(r.runtime_range.duration for r in self._reel_infos) if self._reel_infos else None)
+		self._set_trt_text(
+			format_timecode_as_duration(
+				sum(r.runtime_range.duration for r in self._reel_infos)
+			) if self._reel_infos else None
+		)
 
 	def ffoa_trim_text(self) -> str:
+		"""Return the FFOA trim amount"""
 
 		return self._txt_trim_head.Text
 
 	def set_ffoa_trim_text(self, formatted_duration:str):
+		"""Set the FFOA trim amount"""
 
 		self._txt_trim_head.Text = formatted_duration
 
 	def lfoa_trim_text(self) -> str:
+		"""Return the LFOA trim amount"""
 
 		return self._txt_trim_tail.Text
 
 	def set_lfoa_trim_text(self, formatted_duration:str):
+		"""Set the LFOA trim amount"""
 
 		self._txt_trim_tail.Text = formatted_duration
 	

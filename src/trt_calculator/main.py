@@ -1,6 +1,7 @@
 from . import wnd_main, select_reels
 
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
+from .formatting import format_timecode_as_duration
 import logging, timecode
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"
@@ -60,26 +61,28 @@ def on_add_selected(event:dict):
 	trt_main_window.set_ready()
 
 def on_ffoa_edited(event:dict):
+	"""Validate FFOA trim amount"""
 
-	tc_text = trt_main_window.ffoa_trim_text()
+	tc_text = trt_main_window.ffoa_trim_text().strip().lstrip("-")
 
 	try:
-		tc_formatted = str(timecode.Timecode(tc_text.strip().lstrip("-"))).lstrip("0:;")
+		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text))
 	except Exception as e:
-		tc_formatted = "0:00"
+		tc_formatted = format_timecode_as_duration(timecode.Timecode("0"))
 	finally:
-		trt_main_window.set_ffoa_trim_text(tc_formatted or "0:00")
+		trt_main_window.set_ffoa_trim_text(tc_formatted)
 
 def on_lfoa_edited(event:dict):
+	"""Validate LFOA trim amount"""
 
-	tc_text = trt_main_window.lfoa_trim_text()
+	tc_text = trt_main_window.lfoa_trim_text().strip().lstrip("-")
 
 	try:
-		tc_formatted = str(timecode.Timecode(tc_text.strip().lstrip("-"))).lstrip("0:;")
+		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text))
 	except Exception as e:
-		tc_formatted = "0:00"
+		tc_formatted = format_timecode_as_duration(timecode.Timecode("0"))
 	finally:
-		trt_main_window.set_lfoa_trim_text(tc_formatted or "0:00")
+		trt_main_window.set_lfoa_trim_text(tc_formatted)
 	
 
 def main():
@@ -101,8 +104,8 @@ def main():
 		"Events": {"Close": True},
 	}, [trt_main_window.layout()])
 
-	trt_main_window.set_ffoa_trim_text(str(DEFAULT_HEAD_TRIM).lstrip("0:;"))
-	trt_main_window.set_lfoa_trim_text(str(DEFAULT_TAIL_TRIM).lstrip("0:;"))
+	trt_main_window.set_ffoa_trim_text(format_timecode_as_duration(DEFAULT_HEAD_TRIM))
+	trt_main_window.set_lfoa_trim_text(format_timecode_as_duration(DEFAULT_TAIL_TRIM))
 
 	win.On[MAIN_WINDOW_ID].Close = on_close
 	win.On[wnd_main.ID_BTN_ADD_LATEST].Clicked = on_add_latest
