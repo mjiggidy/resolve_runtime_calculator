@@ -1,6 +1,5 @@
 import re, logging
 
-import timecode
 from resolvecommon.session import resolve
 from resolvecommon.folders import get_folder_from_path, get_clips_from_folder_by_type
 from resolvecommon.versioning import PAT_REEL_NAME, get_latest_reel_version
