@@ -35,7 +35,7 @@ class ReelInfo:
 		return self._mediapool_item
 	
 	@property
-	def mediapool_name(self) -> int:
+	def mediapool_name(self) -> str:
 		
 		return self._mediapool_name
 	
