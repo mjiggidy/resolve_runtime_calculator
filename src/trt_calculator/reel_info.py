@@ -37,7 +37,10 @@ class ReelInfo:
 		if not self._trim_options.use_ffoa_marker:
 			return self._trim_options.trim_from_head
 
-		markers = self._mediapool_item.GetTimeline().GetMarkers()
+		if ItemTypes.from_media_pool_item(self._mediapool_item) is ItemTypes.TIMELINE:
+			markers = self._mediapool_item.GetTimeline().GetMarkers()
+		else:
+			markers = self._mediapool_item.GetMarkers()
 
 		for frame_offset in markers:
 
