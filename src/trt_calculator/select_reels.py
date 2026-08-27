@@ -1,3 +1,7 @@
+"""
+Deals with selecting reels.  Only gonna work for meeeee for now!
+"""
+
 import re, logging
 
 from resolvecommon.session import resolve

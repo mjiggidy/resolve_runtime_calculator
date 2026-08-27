@@ -1,6 +1,6 @@
+"""Bootstrap for Resolve"""
+
 import sys, logging
-
-
 
 try:
 	from resolvecommon.session import bmd, resolve, fusion

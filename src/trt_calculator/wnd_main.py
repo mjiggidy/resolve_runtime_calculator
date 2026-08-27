@@ -1,6 +1,10 @@
-import typing
+"""
+Main window GUI
+"""
+
 from .formatting import format_timecode_as_duration
 from .trim_info import TRTTrimInfo
+from . import __version__
 
 URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
 URL_DONATE = "https://ko-fi.com/lilbinboy"
@@ -199,7 +203,7 @@ class TRTMainWindow:
 		self._lbl_about_links  = self._ui.Label({
 			"Weight":0,
 			"Font": font_about,
-			"Text": f"<a href=\"{URL_GITHUB}\">Github</a> | <a href=\"{URL_DONATE}\">Donate</a>",
+			"Text": f"v{__version__} | <a href=\"{URL_GITHUB}\">Github</a> | <a href=\"{URL_DONATE}\">Donate</a>",
 			"OpenExternalLinks": True,
 		})
 		#self._lbl_about_links.SetOpenExternalLinks(True)
