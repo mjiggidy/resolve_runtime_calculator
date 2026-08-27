@@ -5,8 +5,6 @@ from resolvecommon.folders import get_folder_from_path, get_clips_from_folder_by
 from resolvecommon.versioning import PAT_REEL_NAME, get_latest_reel_version
 from resolvecommon.itemtypes import ItemTypes
 
-from .reel_info import ReelInfo
-
 
 REELS_FOLDER_PATH = "00 REELS"
 PAT_REEL_FOLDER  = re.compile(r"^\s*REEL (?P<reel_number>\d+)\s*(?P<reel_description>.+)?", re.I)
@@ -20,8 +18,8 @@ def refresh_project():
 	logging.getLogger(__name__).info("Refreshing folders...")
 	mp.RefreshFolders()
 
-def get_latest_reels_from_project() -> list[ReelInfo]:
-	"""Load latest version of each reel"""
+def get_latest_reels_from_project() -> list[object]:
+	"""Find the media pool items of the latest version of each reel"""
 
 #	refresh_project()
 
