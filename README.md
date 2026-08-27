@@ -16,11 +16,15 @@ Define a predetermined duration to remove from the head and/or tail of each clip
 
 ### Use FFOA/LFOA Markers
 
-Markers named "FFOA" (First Frame Of Action) and/or "LFOA" (Last Frame Of Action) may be placed in each timeline or clip to define the first and last frame to consider in the runtime calculation.  When enabled, FFOA/LFOA markers take precedence over "Trim From Each" settings.  If these options are enabled but no markers are found, the normal "From From Head/Tail" amounts will be applied.
+Markers named "FFOA" (First Frame Of Action) and/or "LFOA" (Last Frame Of Action) may be placed in each timeline or clip to define the first and last frame to consider in the runtime calculation.  When enabled, FFOA/LFOA markers take precedence over "Trim From Each" settings.  If these options are enabled but no markers are found, the normal "Trim From Head/Tail" amounts will be applied.
 
 ## Installation
 
-I plan to hammer this down for distribution, but for now: good luck!  Heehee.  It's possible to get this working via the Workflow Integrations menu, but it's pretty tricky.  As an alternative for the moment, I recommend cloning the repo, installing its dependencies into a virtual environment, and running `Runtime Calculator.py` externally via the command line.  Not so glamorous, I know.  Give me a moment with this!
+I plan to hammer this down for distribution, but for now: good luck!  Heehee!  Bye!  No I'm kiddin'.  But it's not so straightforward at the moment.
+
+It's possible to get this working via the Workflow Integrations menu, but it's pretty tricky.  If you're game, the idea is to "vendor" this package into a subdirectory of your Workflow Integrations location, then write a little bootstrap script in the Worflow Integrations root.  *Obviously.  Puh.*
+
+As an alternative for the moment, I recommend cloning the repo into some other location, installing its `requirements.txt` dependencies into a virtual environment, and running `Runtime Calculator.py` externally via the command line.  Not so glamorous, I know.  Give me a moment with this!
 
 ## Development Stuff
 
