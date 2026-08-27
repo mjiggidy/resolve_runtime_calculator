@@ -1,9 +1,12 @@
+"""
+Main app controller for the thing
+"""
+
 from . import trim_info, wnd_main, select_reels
 
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 from .formatting import format_timecode_as_duration, format_string_for_natural_sort
-from .trim_info import TRTTrimInfo
-from .trim_options import TRTTrimOptions
+from .trim_info import TRTTrimOptions, TRTTrimInfo
 import logging, timecode
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"

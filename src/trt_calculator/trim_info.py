@@ -1,11 +1,25 @@
+"""
+Trim info for a given clip.  Data model element.
+"""
+
+import dataclasses
 import timecode
 
 from .formatting import format_frame_count_as_footage
-from .trim_options import TRTTrimOptions
 from resolvecommon.itemtypes import ItemTypes
 
 FFOA_MARKER_NAME:str = "ffoa"
 LFOA_MARKER_NAME:str = "lfoa"
+
+@dataclasses.dataclass(frozen=True)
+class TRTTrimOptions:
+	"""Options for trim settings"""
+
+	trim_from_head:timecode.Timecode
+	trim_from_tail:timecode.Timecode
+
+	use_ffoa_marker:bool
+	use_lfoa_marker:bool
 
 class TRTTrimInfo:
 	"""Trim info (trimfo?) about a clip"""
