@@ -1,8 +1,8 @@
-from . import wnd_main, select_reels, reel_info
+from . import trim_info, wnd_main, select_reels
 
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 from .formatting import format_timecode_as_duration, format_string_for_natural_sort
-from .reel_info import ReelInfo
+from .trim_info import TRTTrimInfo
 from .trim_options import TRTTrimOptions
 import logging, timecode
 
@@ -10,7 +10,7 @@ MAIN_WINDOW_ID = "com.glowingpixel.trt"
 MAIN_WINDOW_TITLE = "Runtime Calculator"
 
 trt_main_window = wnd_main.TRTMainWindow(ui)
-reel_infos:list[ReelInfo] = []
+reel_infos:list[TRTTrimInfo] = []
 
 def get_trim_options_from_window():
 
@@ -21,9 +21,9 @@ def get_trim_options_from_window():
 		use_lfoa_marker = trt_main_window.use_lfoa_marker(),
 	)
 
-def add_trimmed_item_info(trimmed_item_info:ReelInfo):
+def add_trimmed_item_info(trimmed_item_info:TRTTrimInfo):
 
-	logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.mediapool_name)
+	logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.media_pool_name)
 
 	reel_infos.append(trimmed_item_info)
 	trt_main_window.add_timeline_info(trimmed_item_info)
@@ -66,17 +66,27 @@ def on_add_latest(event:dict):
 	trim_options = get_trim_options_from_window()
 
 	trimmed_reels = []
+	skipped_reels = []
 
 	for clip in select_reels.get_latest_reels_from_project():
-		trimmed_reels.append(reel_info.ReelInfo(
-			clip,
-			trim_options
-		))
+
+		try:
+			trimmed_reels.append(trim_info.TRTTrimInfo(clip, trim_options))
+
+		except Exception as e:
+			
+			logging.getLogger(__name__).error("Error adding %s: %s", clip.GetName(), e, exc_info=True)
+			skipped_reels.append((clip, str(e)))
 
 	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
 		add_trimmed_item_info(trimmed_reel_info)
 
-	trt_main_window.set_ready(f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}")
+	status_messages = [f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}"]
+
+	if skipped_reels:
+		status_messages.append(f"Skipped {len(skipped_reels)}")
+
+	trt_main_window.set_ready(", ".join(status_messages))
 
 def on_add_selected(event:dict):
 	
@@ -88,13 +98,27 @@ def on_add_selected(event:dict):
 	trim_options = get_trim_options_from_window()
 
 	trimmed_reels = []
+	skipped_reels = []
+
 	for clip in select_reels.get_selected_reels():
-		trimmed_reels.append(reel_info.ReelInfo(clip, trim_options))
+
+		try:
+			trimmed_reels.append(trim_info.TRTTrimInfo(clip, trim_options))
+
+		except Exception as e:
+			
+			logging.getLogger(__name__).error("Error adding %s: %s", clip.GetName(), e, exc_info=True)
+			skipped_reels.append((clip, str(e)))
 
 	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
 		add_trimmed_item_info(trimmed_reel_info)
 
-	trt_main_window.set_ready(f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}")
+	status_messages = [f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}"]
+
+	if skipped_reels:
+		status_messages.append(f"Skipped {len(skipped_reels)}")
+
+	trt_main_window.set_ready(", ".join(status_messages))
 
 def on_ffoa_edited(event:dict):
 	"""Validate FFOA trim amount"""
