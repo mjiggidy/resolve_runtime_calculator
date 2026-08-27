@@ -78,7 +78,7 @@ def on_add_latest(event:dict):
 			logging.getLogger(__name__).error("Error adding %s: %s", clip.GetName(), e, exc_info=True)
 			skipped_reels.append((clip, str(e)))
 
-	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
+	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.media_pool_name)):
 		add_trimmed_item_info(trimmed_reel_info)
 
 	status_messages = [f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}"]
@@ -97,7 +97,7 @@ def on_add_selected(event:dict):
 
 	trim_options = get_trim_options_from_window()
 
-	trimmed_reels = []
+	trimmed_reels:list[trim_info.TRTTrimInfo] = []
 	skipped_reels = []
 
 	for clip in select_reels.get_selected_reels():
@@ -110,7 +110,7 @@ def on_add_selected(event:dict):
 			logging.getLogger(__name__).error("Error adding %s: %s", clip.GetName(), e, exc_info=True)
 			skipped_reels.append((clip, str(e)))
 
-	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.mediapool_name)):
+	for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: format_string_for_natural_sort(r.media_pool_name)):
 		add_trimmed_item_info(trimmed_reel_info)
 
 	status_messages = [f"{len(reel_infos)} Reel{'' if len(reel_infos) == 1 else 's'}"]
