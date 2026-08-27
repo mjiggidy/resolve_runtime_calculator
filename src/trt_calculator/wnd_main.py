@@ -1,6 +1,6 @@
 import typing
 from .formatting import format_timecode_as_duration
-from .reel_info import ReelInfo
+from .trim_info import TRTTrimInfo
 
 URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
 URL_DONATE = "https://ko-fi.com/lilbinboy"
@@ -257,13 +257,13 @@ class TRTMainWindow:
 		if status_message is not None:
 			self._status_label.Text = status_message
 	
-	def add_timeline_info(self, info:ReelInfo):
+	def add_timeline_info(self, info:TRTTrimInfo):
 		"""Add reel info to the tree"""
 		
 		self._trt_tree.add_text_row([
-			info.mediapool_name,
+			info.media_pool_name,
 			format_timecode_as_duration(info.runtime_range.duration),
-			info.lfoa(),
+			info.formatted_lfoa(),
 			format_timecode_as_duration(info.trimmed_from_head),
 			format_timecode_as_duration(info.trimmed_from_tail),
 		])
