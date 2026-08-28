@@ -30,6 +30,12 @@ As an alternative for the moment, I recommend cloning the repo into some other l
 
 This is developed in python as a Workflow Integration plugin, using Resolve/Fusion's `UIDispatch` and `UIManager` for native widgets.
 
+## Donations
+
+If you're pickin' up what I'm throwin' down around here, and you think you might like me as a person, donations are greatly appreciated!
+
+https://ko-fi.com/lilbinboy
+
 ---
 
 *\* Extreme-ness not guaranteed*
