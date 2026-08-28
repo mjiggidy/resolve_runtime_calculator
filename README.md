@@ -34,7 +34,7 @@ This is developed in python as a Workflow Integration plugin, using Resolve/Fusi
 
 If you're pickin' up what I'm throwin' down around here, and you think you might like me as a person, donations are greatly appreciated!
 
-https://ko-fi.com/lilbinboy
+- https://ko-fi.com/lilbinboy
 
 ---
 
