@@ -2,12 +2,13 @@
 Main app controller for the thing
 """
 
-from . import trim_info, wnd_main, select_reels
+import logging, timecode
 
-from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM
 from .formatting import format_timecode_as_duration, format_string_for_natural_sort
 from .trim_info import TRTTrimOptions, TRTTrimInfo
-import logging, timecode
+
+from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE
+from . import trim_info, wnd_main, select_reels
 
 MAIN_WINDOW_ID = "com.glowingpixel.trt"
 MAIN_WINDOW_TITLE = "Runtime Calculator"
@@ -18,8 +19,8 @@ reel_infos:list[TRTTrimInfo] = []
 def get_trim_options_from_window():
 
 	return TRTTrimOptions(
-		trim_from_head = timecode.Timecode(trt_main_window.ffoa_trim_text()),
-		trim_from_tail = timecode.Timecode(trt_main_window.lfoa_trim_text()),
+		trim_from_head = timecode.Timecode(trt_main_window.ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
+		trim_from_tail = timecode.Timecode(trt_main_window.lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
 		use_ffoa_marker = trt_main_window.use_ffoa_marker(),
 		use_lfoa_marker = trt_main_window.use_lfoa_marker(),
 	)
@@ -129,9 +130,9 @@ def on_ffoa_edited(event:dict):
 	tc_text = trt_main_window.ffoa_trim_text().strip().lstrip("-")
 
 	try:
-		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text))
+		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text, rate=PROJECT_FRAME_RATE))
 	except Exception as e:
-		tc_formatted = format_timecode_as_duration(timecode.Timecode("0"))
+		tc_formatted = format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 	finally:
 		trt_main_window.set_ffoa_trim_text(tc_formatted)
 
@@ -141,9 +142,9 @@ def on_lfoa_edited(event:dict):
 	tc_text = trt_main_window.lfoa_trim_text().strip().lstrip("-")
 
 	try:
-		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text))
+		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text, rate=PROJECT_FRAME_RATE))
 	except Exception as e:
-		tc_formatted = format_timecode_as_duration(timecode.Timecode("0"))
+		tc_formatted = format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 	finally:
 		trt_main_window.set_lfoa_trim_text(tc_formatted)
 	
@@ -167,8 +168,8 @@ def main():
 		"Events": {"Close": True},
 	}, [trt_main_window.layout()])
 
-	trt_main_window.set_ffoa_trim_text(format_timecode_as_duration(DEFAULT_HEAD_TRIM))
-	trt_main_window.set_lfoa_trim_text(format_timecode_as_duration(DEFAULT_TAIL_TRIM))
+	trt_main_window.set_ffoa_trim_text(DEFAULT_HEAD_TRIM)
+	trt_main_window.set_lfoa_trim_text(DEFAULT_TAIL_TRIM)
 
 	win.On[MAIN_WINDOW_ID].Close = on_close
 	win.On[wnd_main.ID_BTN_ADD_LATEST].Clicked = on_add_latest

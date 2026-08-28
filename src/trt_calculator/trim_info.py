@@ -8,6 +8,8 @@ import timecode
 from .formatting import format_frame_count_as_footage
 from resolvecommon.itemtypes import ItemTypes
 
+from . import PROJECT_FRAME_RATE
+
 FFOA_MARKER_NAME:str = "ffoa"
 LFOA_MARKER_NAME:str = "lfoa"
 
@@ -33,8 +35,8 @@ class TRTTrimInfo:
 		self._trim_options = trim_options
 
 		self._timecode_range = timecode.TimecodeRange(
-			start = timecode.Timecode(self._media_pool_item.GetClipProperty("Start TC")),
-			duration = timecode.Timecode(self._media_pool_item.GetClipProperty("Duration"))
+			start = timecode.Timecode(self._media_pool_item.GetClipProperty("Start TC"), rate=PROJECT_FRAME_RATE),
+			duration = timecode.Timecode(self._media_pool_item.GetClipProperty("Duration"), rate=PROJECT_FRAME_RATE)
 		)
 
 		self._active_ffoa_offset = self._get_ffoa_offset()
@@ -70,7 +72,7 @@ class TRTTrimInfo:
 		for frame_offset in markers:
 
 			if marker_name_text in markers[frame_offset]["name"].casefold():
-				return timecode.Timecode(int(frame_offset))
+				return timecode.Timecode(int(frame_offset), rate=PROJECT_FRAME_RATE)
 
 		return None
 	
