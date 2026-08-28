@@ -3,7 +3,7 @@
 A simple runtime calculator for Davinci Resolve.  Selected media pool items can be added to a list to calculate their total collective runtime.
 
 >[!WARNING]
->This is still under heavy development.  Still very experimental.  Some things are still very alpha-y.  For example, it assumes 24 FPS at the moment.  I'll eventually fix this stuff.  In the meantime, use this at your own risk.  I assume no responsibility for anything, ever, in the world.
+>This is under heavy development.  Still very experimental.  In the meantime, use this at your own risk.  I assume no responsibility for anything, ever, in the world.
 
 ![Embarrassing Screenshot](screenshot.png)
 
