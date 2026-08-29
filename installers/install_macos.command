@@ -9,7 +9,7 @@ WORKFLOW_INTEGRATIONS_PATH="/Library/Application Support/Blackmagic Design/DaVin
 
 REPO_BASE="https://github.com/mjiggidy/resolve_runtime_calculator"
 REPO_PACKAGE="git+$REPO_BASE.git@$PACKAGE_VERSION"
-REPO_PACKAGE_BOOTSTRAP="$REPO_BASE/blob/$PACKAGE_VERSION/workflow_integration/Runtime Calculator.py"
+REPO_PACKAGE_BOOTSTRAP="$REPO_BASE/raw/refs/tags/$PACKAGE_VERSION/workflow_integration/Runtime%20Calculator.py"
 
 REVERSE_DOMAIN="com.glowingpixel.runtimecalculator"
 
