@@ -22,7 +22,7 @@ else:
 	file_handler.setFormatter(logging.Formatter("[%(asctime)s]\t%(levelname)s\t%(name)s\t%(message)s"))
 	logging.getLogger().addHandler(file_handler)
 
-logging.getLogger(__name__).info("Hello from %s", __file__)
+logging.getLogger(__name__).info("Hello from %s", __name__)
 
 if not pathlib.Path(PATH_LIB).is_dir():
 
