@@ -151,8 +151,6 @@ def on_lfoa_edited(event:dict):
 
 def main():
 
-	logging.basicConfig(level=logging.INFO)
-
 	if win:= ui.FindWindow(MAIN_WINDOW_ID):
 		
 		win.Show()

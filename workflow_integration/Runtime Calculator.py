@@ -12,10 +12,15 @@ logging.basicConfig(level=logging.DEBUG)
 
 try:
 	PATH_LOG.parent.mkdir(parents=True, exist_ok=True)
+
 except Exception as e:
 	logging.getLogger(__name__).error("Could not create log path: %s", e, exc_info=True)
+
 else:
-	logging.getLogger(__name__).addHandler(RotatingFileHandler(str(PATH_LOG), maxBytes=128 * 1024, backupCount=5))
+	file_handler = RotatingFileHandler(str(PATH_LOG), maxBytes=128 * 1024, backupCount=5)
+	file_handler.setLevel(logging.DEBUG)
+	file_handler.setFormatter(logging.Formatter("[%(asctime)s]\t%(levelname)s\t%(name)s\t%(message)s"))
+	logging.getLogger().addHandler(file_handler)
 
 logging.getLogger(__name__).info("Hello from %s", __file__)
 
