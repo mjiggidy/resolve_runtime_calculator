@@ -30,6 +30,7 @@ echo "[1/2] Downloading required packages..."
 pip3 install -qq --upgrade "$REPO_PACKAGE" --target "$lib_path"
 
 echo "[2/2] Downloading Workflow Integration..."
-curl -s "$REPO_PACKAGE_BOOTSTRAP" -o "$WORKFLOW_INTEGRATIONS_PATH/Runtime Calculator.py"
+echo "$REPO_PACKAGE_BOOTSTRAP"
+curl "$REPO_PACKAGE_BOOTSTRAP" -L -o "$WORKFLOW_INTEGRATIONS_PATH/Runtime Calculator.py"
 
 echo "Installation is complete.  Runtime Calculator will be available the next time you restart Davinci Resolve."
