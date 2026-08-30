@@ -4,7 +4,7 @@ __version__ = "0.2"
 
 from resolvecommon.session import resolve, fusion, bmd
 
-PROJECT_FRAME_RATE:int = round(resolve.GetCurrentProject().GetSetting("timelineFrameRate"))
+PROJECT_FRAME_RATE:int = round(resolve.GetProjectManager().GetCurrentProject().GetSetting("timelineFrameRate"))
 
 ui         = fusion.UIManager
 dispatcher = bmd.UIDispatcher(ui)
