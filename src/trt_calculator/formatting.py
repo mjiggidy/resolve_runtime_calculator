@@ -25,8 +25,7 @@ def format_string_as_timecode(timecode_string:str, timecode_rate:int=24) -> time
 
 	fps_len = len(str(timecode_rate))
 
-	reversed_input = stripped_input[::-1]
-
+	reversed_input  = stripped_input[::-1]
 	reversed_parsed = []
 
 	# Chunk the reversed string by fps length, then 2 for seconds, minutes
