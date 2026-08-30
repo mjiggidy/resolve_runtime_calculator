@@ -112,10 +112,14 @@ class TRTMainWindow:
 			"Text": "Trim from each head:"
 		})
 
+		# NOTE: Max/Min sizes in the LineEdits make the clickable area weird...
+		# I don't like NOT setting a maximum but here we are.
+
 		self._txt_trim_head = self._ui.LineEdit({
-			"Weight": 0,
+#			"Weight": 0,
 			"ID": ID_TXT_TRIM_FFOA,
-			"MinimumSize": [50, -1],
+#			"MaximumSize": [100, 30],
+#			"MinimumSize": [50, -1],
 			"Text": head_trim if head_trim else "",
 			"PlaceholderText": "0:00",
 			"Events": {"EditingFinished": True},
@@ -131,7 +135,7 @@ class TRTMainWindow:
 		self._ctl_trim_head = self._ui.HGroup([
 			self._lbl_trim_head,
 			self._txt_trim_head,
-			self._ui.HGap(),
+#			self._ui.HGap(),
 			self._chk_use_ffoa_marker,
 		])
 
@@ -142,9 +146,9 @@ class TRTMainWindow:
 		})
 
 		self._txt_trim_tail = self._ui.LineEdit({
-			"Weight": 0,
+#			"Weight": 0,
 			"ID": ID_TXT_TRIM_LFOA,
-			"MinimumSize": [50, -1],
+#			"MinimumSize": [50, -1],
 			"Text": tail_trim if tail_trim else "",
 			"PlaceholderText": "0:00",
 			"Events": {"EditingFinished": True},
@@ -160,7 +164,7 @@ class TRTMainWindow:
 		self._ctl_trim_tail = self._ui.HGroup([
 			self._lbl_trim_tail,
 			self._txt_trim_tail,
-			self._ui.HGap(),
+#			self._ui.HGap({"Weight":0}),
 			self._chk_use_lfoa_marker,
 		])
 
