@@ -191,7 +191,7 @@ class TRTMainWindow:
 
 		self._txt_trt = self._ui.LineEdit({
 			"Weight"   : 0,
-			"MinimumSize": [70,20],
+			"MinimumSize": [80,20],
 			"PlaceholderText": "--:--:--:--",
 			"ReadOnly" : True,
 			"Events"   : {},
