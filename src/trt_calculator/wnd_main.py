@@ -318,7 +318,15 @@ class TRTMainWindow:
 
 		return self._chk_use_ffoa_marker.Checked
 
+	def set_use_ffoa_marker(self, use_marker:bool):
+
+		self._chk_use_ffoa_marker.Checked = use_marker
+
 	def use_lfoa_marker(self) -> bool:
 		"""Return the user's LFOA preference"""
 
 		return self._chk_use_lfoa_marker.Checked
+
+	def set_use_lfoa_marker(self, use_marker:bool):
+
+		self._chk_use_lfoa_marker.Checked = use_marker

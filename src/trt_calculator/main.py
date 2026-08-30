@@ -16,14 +16,25 @@ MAIN_WINDOW_TITLE = "Runtime Calculator"
 trt_main_window = wnd_main.TRTMainWindow(ui)
 reel_infos:list[TRTTrimInfo] = []
 
-def get_trim_options_from_window():
+current_trim_options = TRTTrimOptions(
+	trim_from_head  = timecode.Timecode(DEFAULT_HEAD_TRIM, rate=PROJECT_FRAME_RATE),
+	trim_from_tail  = timecode.Timecode(DEFAULT_TAIL_TRIM, rate=PROJECT_FRAME_RATE),
+	use_ffoa_marker = True,
+	use_lfoa_marker = False,
+)
 
-	return TRTTrimOptions(
+def update_trim_options_from_window() -> TRTTrimOptions:
+
+	global current_trim_options
+
+	current_trim_options = TRTTrimOptions(
 		trim_from_head = timecode.Timecode(trt_main_window.ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
 		trim_from_tail = timecode.Timecode(trt_main_window.lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
 		use_ffoa_marker = trt_main_window.use_ffoa_marker(),
 		use_lfoa_marker = trt_main_window.use_lfoa_marker(),
 	)
+
+	return current_trim_options
 
 def add_trimmed_item_info(trimmed_item_info:TRTTrimInfo):
 
@@ -67,7 +78,7 @@ def on_add_latest(event:dict):
 
 	trt_main_window.set_busy("Loading latest...")
 
-	trim_options = get_trim_options_from_window()
+	trim_options = update_trim_options_from_window()
 
 	trimmed_reels = []
 	skipped_reels = []
@@ -99,7 +110,7 @@ def on_add_selected(event:dict):
 
 	trt_main_window.set_busy("Loading selected...")
 
-	trim_options = get_trim_options_from_window()
+	trim_options = update_trim_options_from_window()
 
 	trimmed_reels:list[trim_info.TRTTrimInfo] = []
 	skipped_reels = []
@@ -152,7 +163,13 @@ def on_lfoa_edited(event:dict):
 	finally:
 		trt_main_window.set_lfoa_trim_text(tc_formatted)
 
-def main():
+def main(
+	trim_from_head:str=DEFAULT_HEAD_TRIM,
+	trim_from_tail:str=DEFAULT_TAIL_TRIM,
+	use_ffoa_marker:bool=True,
+	use_lfoa_marker:bool=True,
+	project_rate:int=24
+) -> TRTTrimOptions:
 
 	if win:= ui.FindWindow(MAIN_WINDOW_ID):
 		
@@ -162,6 +179,15 @@ def main():
 		import sys
 		sys.exit(0)
 
+	# Use trim options if passsed, otherwise use the defaults
+	global current_trim_options
+	current_trim_options = TRTTrimOptions(
+		trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
+		trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
+		use_ffoa_marker = use_ffoa_marker,
+		use_lfoa_marker = use_lfoa_marker,
+	)
+
 	win = dispatcher.AddWindow({
 		"ID": MAIN_WINDOW_ID,
 		"WindowTitle": MAIN_WINDOW_TITLE,
@@ -169,8 +195,10 @@ def main():
 		"Events": {"Close": True},
 	}, [trt_main_window.layout()])
 
-	trt_main_window.set_ffoa_trim_text(DEFAULT_HEAD_TRIM)
-	trt_main_window.set_lfoa_trim_text(DEFAULT_TAIL_TRIM)
+	trt_main_window.set_ffoa_trim_text(formatting.format_timecode_as_duration(current_trim_options.trim_from_head))
+	trt_main_window.set_lfoa_trim_text(formatting.format_timecode_as_duration(current_trim_options.trim_from_tail))
+	trt_main_window.set_use_ffoa_marker(current_trim_options.use_ffoa_marker)
+	trt_main_window.set_use_lfoa_marker(current_trim_options.use_lfoa_marker)
 
 	win.On[MAIN_WINDOW_ID].Close = on_close
 	win.On[wnd_main.ID_BTN_ADD_LATEST].Clicked = on_add_latest
@@ -183,3 +211,5 @@ def main():
 
 	win.Show()
 	dispatcher.RunLoop()
+
+	return current_trim_options
