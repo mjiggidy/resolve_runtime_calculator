@@ -4,9 +4,50 @@ Lil' formattin' funcs
 
 import re
 import timecode
+from timecode import modes
 
 PAT_NATURAL_SORT_SPLIT = re.compile(r"([0-9]+)")
 """Pattern for splitting up natural sorting groups"""
+
+PAT_PREP_TIMECODE_STRING = re.compile(r"[^0-9]+")
+"""Pattern for removing non-timecode characters from a string"""
+
+def format_string_as_timecode(timecode_string:str, timecode_rate:int=24, timecode_mode:modes.CountingMode|None=None) -> timecode.Timecode:
+	"""From a given string, do our best to make it a timecode ("800" -> 8:00)"""
+
+	# Let it be known I wrote this in one pass and it worked
+	# I am a fancy timecode man
+
+	is_negative = timecode_string.strip().startswith("-")
+	stripped_input = PAT_PREP_TIMECODE_STRING.sub("", timecode_string)
+
+	if not stripped_input:
+		return timecode.Timecode("0", rate=timecode_rate)
+
+	fps_len = len(str(timecode_rate))
+
+	reversed_input = stripped_input[::-1]
+
+	reversed_parsed = []
+
+	# Chunk the reversed string by fps length, then 2 for seconds, minutes
+	for chunk_len in [fps_len, 2, 2]:
+
+		reversed_parsed.append(reversed_input[:chunk_len])
+		reversed_input = reversed_input[chunk_len:]
+		if not reversed_input:
+			break
+
+	# Append remaining as hours
+	if reversed_input:
+		reversed_parsed.append(reversed_input)
+
+	reversed_formatted = ":".join(reversed_parsed)
+
+	formatted = ("-" if is_negative else "") + reversed_formatted[::-1]
+
+	return timecode.Timecode(formatted, rate=timecode_rate, mode=timecode_mode)
+
 
 def format_timecode_as_duration(timecode:timecode.Timecode, pad_to_seconds:bool=True) -> str:
 	"""From a given timecode, return a string formatted for duration (trimming extraneous zeroes)"""
