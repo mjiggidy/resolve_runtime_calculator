@@ -140,7 +140,7 @@ class TRTMainWindow:
 		self._ctl_trim_head = self._ui.HGroup([
 			self._lbl_trim_head,
 			self._txt_trim_head,
-			self._ui.HGap(),
+#			self._ui.HGap(),
 			self._chk_use_ffoa_marker,
 		])
 
@@ -196,6 +196,11 @@ class TRTMainWindow:
 			"ReadOnly" : True,
 			"Events"   : {},
 		})
+
+		trt_alignment = self._txt_trt.GetAlignment()
+		trt_alignment["AlignLeft"] = False
+		trt_alignment["AlignCenter"] = True
+		self._txt_trt.SetAlignment(trt_alignment)
 
 		self._lbl_trt = self._ui.Label({
 			"Weight":0,
