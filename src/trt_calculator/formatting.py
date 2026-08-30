@@ -4,7 +4,6 @@ Lil' formattin' funcs
 
 import re
 import timecode
-from timecode import modes
 
 PAT_NATURAL_SORT_SPLIT = re.compile(r"([0-9]+)")
 """Pattern for splitting up natural sorting groups"""
@@ -12,7 +11,7 @@ PAT_NATURAL_SORT_SPLIT = re.compile(r"([0-9]+)")
 PAT_PREP_TIMECODE_STRING = re.compile(r"[^0-9]+")
 """Pattern for removing non-timecode characters from a string"""
 
-def format_string_as_timecode(timecode_string:str, timecode_rate:int=24, timecode_mode:modes.CountingMode|None=None) -> timecode.Timecode:
+def format_string_as_timecode(timecode_string:str, timecode_rate:int=24) -> timecode.Timecode:
 	"""From a given string, do our best to make it a timecode ("800" -> 8:00)"""
 
 	# Let it be known I wrote this in one pass and it worked
@@ -46,7 +45,7 @@ def format_string_as_timecode(timecode_string:str, timecode_rate:int=24, timecod
 
 	formatted = ("-" if is_negative else "") + reversed_formatted[::-1]
 
-	return timecode.Timecode(formatted, rate=timecode_rate, mode=timecode_mode)
+	return timecode.Timecode(formatted, rate=timecode_rate)
 
 
 def format_timecode_as_duration(timecode:timecode.Timecode, pad_to_seconds:bool=True) -> str:
