@@ -1,9 +1,9 @@
-# Resolve Runtime Calculator EXTREME!*
+# Resolve Runtime Calculator EXTREME!!*
 
 A simple runtime calculator for Davinci Resolve.  Selected media pool items can be added to a list to calculate their total collective runtime.
 
 >[!WARNING]
->This is under heavy development.  Still very experimental.  In the meantime, use this at your own risk.  I assume no responsibility for anything, ever, in the world.
+>This is under heavy development.  Use at your own risk.  I assume no responsibility for anything, ever, in the world.
 
 ![Embarrassing Screenshot](screenshot.png)
 
@@ -20,11 +20,9 @@ Markers named "FFOA" (First Frame Of Action) and/or "LFOA" (Last Frame Of Action
 
 ## Installation
 
-I plan to hammer this down for distribution, but for now: good luck!  Heehee!  Bye!  No I'm kiddin'.  But it's not so straightforward at the moment.
+An installation script is available for macOS.  Download `install_macos.command` from the release page and follow the instructions to run.  This is a very simple installer that I plan to improve over time.  Windows and Linux installers to follow.
 
-It's possible to get this working via the Workflow Integrations menu, but it's pretty tricky.  If you're game, the idea is to "vendor" this package into a subdirectory of your Workflow Integrations location, then write a little bootstrap script in the Worflow Integrations root.  *Obviously.  Puh.*
-
-As an alternative for the moment, I recommend cloning the repo into some other location, installing its `requirements.txt` dependencies into a virtual environment, and running `Runtime Calculator.py` externally via the command line.  Not so glamorous, I know.  Give me a moment with this!
+As an alternative for the moment, I recommend cloning the repo into some other location, installing its `requirements.txt` dependencies into a virtual environment, and running `Runtime Calculator.py` externally via the command line.  Not so glamorous, I know.  Workin' on it.
 
 ## Development Stuff
 
