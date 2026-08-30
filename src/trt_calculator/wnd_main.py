@@ -125,6 +125,11 @@ class TRTMainWindow:
 			"Events": {"EditingFinished": True},
 		})
 
+		timecode_alignment = self._txt_trim_head.GetAlignment()
+		timecode_alignment["AlignLeft"] = False
+		timecode_alignment["AlignRight"] = True
+		self._txt_trim_head.SetAlignment(timecode_alignment)
+
 		self._chk_use_ffoa_marker = self._ui.CheckBox({
 			"Weight": 0,
 			"Text": "Or use FFOA marker",
@@ -135,7 +140,7 @@ class TRTMainWindow:
 		self._ctl_trim_head = self._ui.HGroup([
 			self._lbl_trim_head,
 			self._txt_trim_head,
-#			self._ui.HGap(),
+			self._ui.HGap(),
 			self._chk_use_ffoa_marker,
 		])
 
@@ -153,6 +158,8 @@ class TRTMainWindow:
 			"PlaceholderText": "0:00",
 			"Events": {"EditingFinished": True},
 		})
+
+		self._txt_trim_tail.SetAlignment(timecode_alignment)
 
 		self._chk_use_lfoa_marker = self._ui.CheckBox({
 			"Weight": 0,
