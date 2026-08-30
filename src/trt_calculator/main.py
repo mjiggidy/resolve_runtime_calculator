@@ -4,7 +4,7 @@ Main app controller for the thing
 
 import logging, timecode
 
-from .formatting import format_timecode_as_duration, format_string_for_natural_sort
+from .formatting import format_timecode_as_duration, format_string_for_natural_sort, format_string_as_timecode
 from .trim_info import TRTTrimOptions, TRTTrimInfo
 
 from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE
@@ -130,7 +130,9 @@ def on_ffoa_edited(event:dict):
 	tc_text = trt_main_window.ffoa_trim_text().strip().lstrip("-")
 
 	try:
-		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text, rate=PROJECT_FRAME_RATE))
+		tc_formatted = format_timecode_as_duration(
+			format_string_as_timecode(tc_text, timecode_rate=PROJECT_FRAME_RATE)
+		)
 	except Exception as e:
 		tc_formatted = format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 	finally:
@@ -142,12 +144,13 @@ def on_lfoa_edited(event:dict):
 	tc_text = trt_main_window.lfoa_trim_text().strip().lstrip("-")
 
 	try:
-		tc_formatted = format_timecode_as_duration(timecode.Timecode(tc_text, rate=PROJECT_FRAME_RATE))
+		tc_formatted = format_timecode_as_duration(
+			format_string_as_timecode(tc_text, timecode_rate=PROJECT_FRAME_RATE)
+		)
 	except Exception as e:
 		tc_formatted = format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 	finally:
 		trt_main_window.set_lfoa_trim_text(tc_formatted)
-	
 
 def main():
 
