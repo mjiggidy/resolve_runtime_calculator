@@ -18,6 +18,7 @@ DEFAULT_TRIM_OPTIONS = trim_info.TRTTrimOptions(
 )
 
 class TRTMainApplication:
+	"""Main application controller"""
 
 	def __init__(
 		self,
