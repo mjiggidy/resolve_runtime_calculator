@@ -17,7 +17,7 @@ if not fusion:
 
 if __name__ == "__main__":
 
-	from trt_calculator.main import main
+	from trt_calculator.main import TRTMainApplication
 	import json
 
 	PATH_CONFIG = "config.json"
@@ -39,10 +39,10 @@ if __name__ == "__main__":
 		logging.getLogger(__name__).error("Strange error accessing %s: %s", PATH_CONFIG, e, exc_info=True)
 		pass
 
-	session_options = main(**user_config)
+	app = TRTMainApplication(**user_config)
 
 	try:
-
+		session_options = app.current_trim_options()
 		with open(PATH_CONFIG, "w") as json_file:
 			json.dump({
 				"use_ffoa_marker": session_options.use_ffoa_marker,
