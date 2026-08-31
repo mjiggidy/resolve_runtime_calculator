@@ -70,7 +70,7 @@ class TRTMainApplication:
 			"ID": MAIN_WINDOW_ID,
 			"WindowTitle": MAIN_WINDOW_TITLE,
 			"FixedSize": [360,500],
-			"Events": {"Close": True},
+			"Events": {"Close": True, "KeyRelease": True},
 		}, [self._trt_main_window.layout()])
 
 		win.On[MAIN_WINDOW_ID].Close                       = self.on_close
@@ -81,6 +81,8 @@ class TRTMainApplication:
 
 		win.On[wnd_main.ID_TXT_TRIM_FFOA].EditingFinished  = self.on_ffoa_edited
 		win.On[wnd_main.ID_TXT_TRIM_LFOA].EditingFinished  = self.on_lfoa_edited
+
+		win.On[MAIN_WINDOW_ID].KeyRelease                  = self.on_key_released
 
 		return win
 
@@ -105,6 +107,26 @@ class TRTMainApplication:
 
 		self._reel_info_list.append(trimmed_item_info)
 		self._trt_main_window.add_timeline_info(trimmed_item_info)
+
+		self.refresh_total_runtime()
+
+	def remove_trimmed_item_index(self, index:int):
+		"""Remove trimfo from list and tree"""
+
+		self._trt_main_window.set_busy("Removing...")
+
+		try:
+			self._trt_main_window.tree_results().tree().TakeTopLevelItem(index)
+			del self._reel_info_list[index]
+		except Exception as e:
+			logging.getLogger(__name__).error("Strange error removing reel: %s", e, exc_info=True)
+
+		self.refresh_total_runtime()
+
+		self._trt_main_window.set_ready(f"{len(self._reel_info_list)} Reel{'' if len(self._reel_info_list) == 1 else 's'}")
+
+	def refresh_total_runtime(self):
+		"""Refresh TRT calculation"""
 
 		trt = formatting.format_timecode_as_duration(
 			sum(r.runtime_range.duration for r in self._reel_info_list)
@@ -232,3 +254,28 @@ class TRTMainApplication:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
 			self._trt_main_window.set_lfoa_trim_text(tc_formatted)
+
+	def on_key_released(self, event:dict):
+		"""Handle key release events"""
+
+		KEY_DELETE = 16777223
+		"""`Delete` key ID"""
+
+		# Currently only for "Delete" key in Tree widget
+		if event.get("IsAutoRepeat",False) or  not event.get("Key") == KEY_DELETE:
+			return
+
+		if not event.get("sender").FocusWidget().ID == wnd_main.ID_TREE_VIEW:
+			return
+
+		selected_rows = self._trt_main_window.tree_results().selected_rows()
+
+		if not selected_rows:
+			
+			logging.getLogger(__name__).debug("Nothing selected to remove")
+			return
+
+		logging.getLogger(__name__).debug("Requesting to remove: %s", selected_rows)
+
+		for idx in sorted([idx for idx,_ in selected_rows], reverse=True):
+			self.remove_trimmed_item_index(idx)
