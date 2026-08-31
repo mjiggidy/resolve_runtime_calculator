@@ -28,6 +28,7 @@ class TRTTreeResults:
 			"Weight": 200,
 			"AlternatingRowColors":True,
 #			"SortingEnabled":True,
+			"SelectionMode": "ExtendedSelection",
 			"ItemsExpandable": False,
 			"ColumnCount": 5,
 			"RootIsDecorated": False,
