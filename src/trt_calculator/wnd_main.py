@@ -12,6 +12,7 @@ URL_DONATE = "https://ko-fi.com/lilbinboy"
 ID_BTN_ADD_LATEST   = "btn_add_latest"
 ID_BTN_ADD_SELECTED = "btn_add_selected"
 ID_BTN_CLEAR        = "btn_clear_list"
+ID_TREE_VIEW        = "tree_trims"
 
 ID_TXT_TRIM_FFOA    = "txt_ffoa"
 ID_TXT_TRIM_LFOA    = "txt_lfoa"
@@ -23,6 +24,7 @@ class TRTTreeResults:
 		self._ui = ui_manager
 
 		self._tree = self._ui.Tree({
+			"ID": ID_TREE_VIEW,
 			"Weight": 200,
 			"AlternatingRowColors":True,
 #			"SortingEnabled":True,
@@ -45,6 +47,11 @@ class TRTTreeResults:
 	def tree(self) -> object:
 		
 		return self._tree
+
+	def selected_rows(self) -> list[tuple[int, object]]:
+		"""Return a tuple of selected (index, TreeItem)s"""
+
+		return [(self._tree.IndexOfTopLevelItem(itm), itm) for itm in self._tree.SelectedItems().values()]
 
 	
 	def layout(self):
@@ -247,7 +254,7 @@ class TRTMainWindow:
 			]),
 		])
 	
-	def tree_results(self) -> object:
+	def tree_results(self) -> TRTTreeResults:
 		
 		return self._trt_tree
 
