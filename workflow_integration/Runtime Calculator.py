@@ -6,8 +6,8 @@ PACKAGE_ID="com.glowingpixel.runtimecalculator"
 
 PATH_RES = pathlib.Path(PATH_WORKFLOW_INTEGRATION_PLUGINS, PACKAGE_ID)
 PATH_LIB = PATH_RES / "lib"
-PATH_CFG = PATH_RES / "config" / "rtc_config.json"
-PATH_LOG = PATH_RES / "logs" / "rtc_log.log"
+PATH_CFG = PATH_RES / "config" / "global_config.json"
+PATH_LOG = PATH_RES / "logs" / "global_log.log"
 
 # Set up logging
 
