@@ -42,10 +42,16 @@ if str(PATH_LIB) not in sys.path:
 user_config = {}
 
 try:
+
+	PATH_CFG.parent.mkdir(parents=True, exist_ok=True)
+
 	with open(PATH_CFG) as json_config:
 		user_config = json.load(json_config)
 		logging.getLogger(__name__).debug("Loaded saved config from %s: %s", PATH_CFG, user_config)
 
+except PermissionError as e:
+	logging.getLogger(__name__).error("Error writing config file to path %s: %s", PATH_CFG, e, exc_info=True)
+	pass
 except json.JSONDecodeError as e:
 	logging.getLogger(__name__).error("Error decoding %s: %s", PATH_CFG, e, exc_info=True)
 	pass
