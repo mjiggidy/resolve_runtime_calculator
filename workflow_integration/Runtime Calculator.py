@@ -6,21 +6,29 @@ PACKAGE_ID="com.glowingpixel.runtimecalculator"
 
 PATH_RES = pathlib.Path(PATH_WORKFLOW_INTEGRATION_PLUGINS, PACKAGE_ID)
 PATH_LIB = PATH_RES / "lib"
-PATH_CFG = PATH_RES / "config" / "global_config.json"
-PATH_LOG = PATH_RES / "logs" / "global_log.log"
+
+# Global locations, not yet used
+PATH_CFG_GLOBAL = PATH_RES / "config" / "global_config.json"
+PATH_LOG_GLOBAL = PATH_RES / "logs" / "global_log.log"
+
+# User locations, macOS only
+PATH_USER_BASE = pathlib.Path.home() / "Library" / "Application Support" / "GlowingPixel" / "Resolve Runtime Calculator"
+PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
+PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.json"
+
 
 # Set up logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 try:
-	PATH_LOG.parent.mkdir(parents=True, exist_ok=True)
+	PATH_LOG_USER.parent.mkdir(parents=True, exist_ok=True)
 
 except Exception as e:
 	logging.getLogger(__name__).error("Could not create log path: %s", e, exc_info=True)
 
 else:
-	file_handler = RotatingFileHandler(str(PATH_LOG), maxBytes=128 * 1024, backupCount=5)
+	file_handler = RotatingFileHandler(str(PATH_LOG_USER), maxBytes=128 * 1024, backupCount=5)
 	file_handler.setLevel(logging.DEBUG)
 	file_handler.setFormatter(logging.Formatter("[%(asctime)s]\t%(levelname)s\t%(name)s\t%(message)s"))
 	logging.getLogger().addHandler(file_handler)
@@ -43,35 +51,35 @@ user_config = {}
 
 try:
 
-	PATH_CFG.parent.mkdir(parents=True, exist_ok=True)
+	PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
 
-	with open(PATH_CFG) as json_config:
+	with open(PATH_CFG_USER) as json_config:
 		user_config = json.load(json_config)
-		logging.getLogger(__name__).debug("Loaded saved config from %s: %s", PATH_CFG, user_config)
+		logging.getLogger(__name__).debug("Loaded saved config from %s: %s", PATH_CFG_USER, user_config)
 
 except PermissionError as e:
-	logging.getLogger(__name__).error("Error writing config file to path %s: %s", PATH_CFG, e, exc_info=True)
+	logging.getLogger(__name__).error("Error writing config file to path %s: %s", PATH_CFG_USER, e, exc_info=True)
 	pass
 except json.JSONDecodeError as e:
-	logging.getLogger(__name__).error("Error decoding %s: %s", PATH_CFG, e, exc_info=True)
+	logging.getLogger(__name__).error("Error decoding %s: %s", PATH_CFG_USER, e, exc_info=True)
 	pass
 except FileNotFoundError:
-	logging.getLogger(__name__).debug("No config file found at %s. To The Defaults!", PATH_CFG)
+	logging.getLogger(__name__).debug("No config file found at %s. To The Defaults!", PATH_CFG_USER)
 	pass
 except Exception as e:
-	logging.getLogger(__name__).error("Strange error accessing %s: %s", PATH_CFG, e, exc_info=True)
+	logging.getLogger(__name__).error("Strange error accessing %s: %s", PATH_CFG_USER, e, exc_info=True)
 	pass
 
-from trt_calculator.main import main
+from trt_calculator.main import TRTMainApplication
 
 # Call main!
-session_config = main(**user_config)
+session_config = TRTMainApplication(**user_config)
 
 # Save config to disk
 
 try:
 
-	with open(PATH_CFG, "w") as json_file:
+	with open(PATH_CFG_USER, "w") as json_file:
 		json.dump({
 			"use_ffoa_marker": session_config.use_ffoa_marker,
 			"use_lfoa_marker": session_config.use_lfoa_marker,
@@ -80,8 +88,8 @@ try:
 
 		}, json_file)
 
-		logging.getLogger(__name__).debug("Wrote config to %s: %s", PATH_CFG, session_config)
+		logging.getLogger(__name__).debug("Wrote config to %s: %s", PATH_CFG_USER, session_config)
 
 except Exception as e:
-	logging.getLogger(__name__).error("Strange error writing %s: %s", PATH_CFG, e, exc_info=True)
+	logging.getLogger(__name__).error("Strange error writing %s: %s", PATH_CFG_USER, e, exc_info=True)
 	pass
