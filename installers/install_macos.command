@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-clear
-
 # Configurable for you hackers out there
-
-PACKAGE_VERSION="v0.3"
+# ---
+PACKAGE_VERSION="v0.4"
 WORKFLOW_INTEGRATION_PATH="${1:-/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins}"
-
+# ---
 # END OF CONFIGURABLES.  LOOK NO FURTHER.
 
 REPO_BASE="https://github.com/mjiggidy/resolve_runtime_calculator"
@@ -14,6 +12,10 @@ REPO_PACKAGE="git+$REPO_BASE.git@$PACKAGE_VERSION"
 REPO_PACKAGE_BOOTSTRAP="$REPO_BASE/raw/refs/tags/$PACKAGE_VERSION/workflow_integration/Runtime%20Calculator.py"
 
 REVERSE_DOMAIN="com.glowingpixel.runtimecalculator"
+
+# Here we go
+
+clear
 
 echo "________              __________                                     "
 echo "___  __ \___  __________  /___(_)______ ________                     "
