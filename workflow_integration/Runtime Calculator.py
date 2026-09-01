@@ -73,11 +73,15 @@ except Exception as e:
 from trt_calculator.main import TRTMainApplication
 
 # Call main!
-session_config = TRTMainApplication(**user_config)
+app = TRTMainApplication(**user_config)
 
 # Save config to disk
 
 try:
+
+	session_config = app.update_trim_options_from_window()
+
+	PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
 
 	with open(PATH_CFG_USER, "w") as json_file:
 		json.dump({
