@@ -282,11 +282,15 @@ class TRTMainApplication:
 			self.remove_trimmed_item_index(idx)
 
 	def on_tree_item_activated(self, event:dict):
+		"""Trim item was "activated," find it in MediaPool"""
 
-		from resolvecommon.session import resolve
+		try:
+			item_index = self._trt_main_window.tree_results().item_index(event["item"])
+			trim_info = self._reel_info_list[item_index]
 
-		item_index = self._trt_main_window.tree_results().item_index(event["item"])
-		trim_info = self._reel_info_list[item_index]
+			select_reels.focus_reel(trim_info.media_pool_item)
 
-		mp = resolve.GetProjectManager().GetCurrentProject().GetMediaPool()
-		mp.SetSelectedClip(trim_info.media_pool_item)
+		except Exception as e:
+			logging.getLogger(__name__).error("Error focusing media pool item: %s", e, exc_info=True)
+		else:
+			logging.getLogger(__name__).debug("Focused to %s in media pool", trim_info.media_pool_name)

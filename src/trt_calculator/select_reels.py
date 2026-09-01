@@ -68,3 +68,9 @@ def get_selected_reels() -> list[object]:
 	"""Return selected media pool clips"""
 	
 	return mp.GetSelectedClips() or []
+
+def focus_reel(media_pool_item:object):
+	"""Select a given media pool item"""
+
+	if not mp.SetSelectedClip(media_pool_item):
+		raise RuntimeError(f"Could not focus {media_pool_item.GetName()}")
