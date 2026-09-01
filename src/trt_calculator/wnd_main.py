@@ -34,7 +34,7 @@ class TRTTreeResults:
 			"RootIsDecorated": False,
 			"UniformRowHeights": True,
 			"Indentation": False,
-			"Events": {},
+			"Events": {"ItemActivated":True, "ItemDoubleClicked":True},
 		})
 
 		self._tree.SetHeaderLabels([
@@ -54,6 +54,15 @@ class TRTTreeResults:
 
 		return [(self._tree.IndexOfTopLevelItem(itm), itm) for itm in self._tree.SelectedItems().values()]
 
+	def item_index(self, tree_item:object) -> int:
+		"""Return the index of a tree item"""
+
+		idx = self._tree.IndexOfTopLevelItem(tree_item)
+
+		if idx is not None:
+			return idx
+
+		raise IndexError(f"Item {idx} not found in tree view")
 	
 	def layout(self):
 		
