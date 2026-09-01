@@ -173,10 +173,18 @@ class TRTMainApplication:
 
 		trim_options = self.update_trim_options_from_window()
 
+		latest_reels  = []
 		trimmed_reels = []
 		skipped_reels = []
 
-		for clip in select_reels.get_latest_reels_from_project():
+
+		try:
+			latest_reels = select_reels.get_latest_reels_from_project()
+
+		except Exception as e:
+			logging.getLogger(__name__).error("Unable to find latest reels: %s", e, exc_info=True)
+
+		for clip in latest_reels:
 
 			try:
 				trimmed_reels.append(trim_info.TRTTrimInfo(clip, trim_options))
