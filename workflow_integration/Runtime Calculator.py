@@ -14,7 +14,7 @@ PATH_LOG_GLOBAL = PATH_RES / "logs" / "global_log.log"
 # User locations, macOS only
 PATH_USER_BASE = pathlib.Path.home() / "Library" / "Application Support" / "GlowingPixel" / "Resolve Runtime Calculator"
 PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
-PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.json"
+PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
 
 
 # Set up logging
