@@ -83,6 +83,7 @@ class TRTMainApplication:
 		win.On[wnd_main.ID_TXT_TRIM_LFOA].EditingFinished  = self.on_lfoa_edited
 
 		win.On[MAIN_WINDOW_ID].KeyRelease                  = self.on_key_released
+		win.On[wnd_main.ID_TREE_VIEW].ItemActivated        = self.on_tree_item_activated
 
 		return win
 
@@ -279,3 +280,13 @@ class TRTMainApplication:
 
 		for idx in sorted([idx for idx,_ in selected_rows], reverse=True):
 			self.remove_trimmed_item_index(idx)
+
+	def on_tree_item_activated(self, event:dict):
+
+		from resolvecommon.session import resolve
+
+		item_index = self._trt_main_window.tree_results().item_index(event["item"])
+		trim_info = self._reel_info_list[item_index]
+
+		mp = resolve.GetProjectManager().GetCurrentProject().GetMediaPool()
+		mp.SetSelectedClip(trim_info.media_pool_item)
