@@ -296,9 +296,10 @@ class TRTMainApplication:
 		
 		logging.getLogger(__name__).debug("Writing results to path: %s", result)
 
-		trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
+		self._trt_main_window.set_busy()
 
 		try:
+			trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
 			with open(result, "w") as handle_export:
 
 				print(formatting.format_trim_list_to_csv(self._reel_info_list), file=handle_export)
@@ -306,5 +307,8 @@ class TRTMainApplication:
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Error writing results: %s", e, exc_info=True)
+			self._trt_main_window.set_ready("Error exporting!  See logs.")
+
 		else:
 			logging.getLogger(__name__).info("Succesfully wrote results to: %s", result)
+			self._trt_main_window.set_ready()

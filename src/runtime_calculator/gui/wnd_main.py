@@ -87,6 +87,8 @@ class TRTMainWindow:
 
 		self._trim_controls.set_enabled(False)
 
+		self._btn_save.Enabled = False
+
 		if status_message is not None:
 			self._summary_display.set_status_message(status_message)
 
@@ -96,6 +98,8 @@ class TRTMainWindow:
 		self._btn_box.set_enabled(True)
 
 		self._trim_controls.set_enabled(True)
+
+		self._btn_save.Enabled = True
 
 		if status_message is not None:
 			self._summary_display.set_status_message(status_message)
