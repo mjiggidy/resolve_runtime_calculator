@@ -22,14 +22,15 @@ class TRTEventDispatcher:
 
 		win_handle.On[wnd_main.ID_WINDOW_MAIN].Close                   = self.on_close
 
-		win_handle.On[btns_treecontrols.ID_BTN_ADD_LATEST].Clicked         = self.on_add_latest
-		win_handle.On[btns_treecontrols.ID_BTN_ADD_SELECTED].Clicked       = self.on_add_selected
-		win_handle.On[btns_treecontrols.ID_BTN_CLEAR].Clicked              = self.on_clear
+		win_handle.On[btns_treecontrols.ID_BTN_ADD_LATEST].Clicked     = self.on_add_latest
+		win_handle.On[btns_treecontrols.ID_BTN_ADD_SELECTED].Clicked   = self.on_add_selected
+		win_handle.On[btns_treecontrols.ID_BTN_CLEAR].Clicked          = self.on_clear
 
 		win_handle.On[trim_controls.ID_TXT_TRIM_FFOA].EditingFinished  = self.on_ffoa_edited
 		win_handle.On[trim_controls.ID_TXT_TRIM_LFOA].EditingFinished  = self.on_lfoa_edited
 
 		win_handle.On[wnd_main.ID_WINDOW_MAIN].KeyRelease              = self.on_key_released
+
 		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated         = self.on_tree_item_activated
 
 	def on_close(self, event:dict):
@@ -77,15 +78,13 @@ class TRTEventDispatcher:
 	def on_key_released(self, event:dict):
 		"""Handle key release events"""
 
-		logging.getLogger(__name__).debug("Got key-up event: %s", event)
+		logging.getLogger(__name__).debug("Got key-up event.")
 
 		KEY_DELETE = 16777223
 		"""`Delete` key ID"""
 
-		print("Focus widget", event.get("sender").FocusWidget().ID)
-
 		# Currently only for "Delete" key in Tree widget
-		if event.get("Key") == KEY_DELETE and event.get("IsAutoRepeat",False) == False and event.get("sender").FocusWidget().ID == tree_results.ID_TREE_VIEW:
+		if event.get("Key") == KEY_DELETE and not event.get("IsAutoRepeat",False) and event.get("sender").FocusWidget().ID == tree_results.ID_TREE_VIEW:
 
 			logging.getLogger(__name__).debug("Key up indicates remove tree item")
 			self._controller.remove_selected_trim_items()
