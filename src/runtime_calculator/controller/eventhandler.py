@@ -31,6 +31,8 @@ class TRTEventDispatcher:
 
 		win_handle.On[wnd_main.ID_WINDOW_MAIN].KeyRelease              = self.on_key_released
 
+		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                  = self.on_export_clicked
+
 		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated         = self.on_tree_item_activated
 
 	def on_close(self, event:dict):
@@ -95,3 +97,10 @@ class TRTEventDispatcher:
 		logging.getLogger(__name__).debug("Got tree item activated event.")
 
 		self._controller.focus_trim_item_in_media_pool(event["item"])
+
+	def on_export_clicked(self, event:dict):
+		"""User requested export"""
+
+		logging.getLogger(__name__).debug("Got export button click event.")
+
+		self._controller.export_results()

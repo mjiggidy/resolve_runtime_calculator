@@ -274,3 +274,37 @@ class TRTMainApplication:
 			logging.getLogger(__name__).error("Error focusing media pool item: %s", e, exc_info=True)
 		else:
 			logging.getLogger(__name__).debug("Focused to %s in media pool", trim_info.media_pool_name)
+
+	def export_results(self):
+		"""Export results to a file or somethin'"""
+
+		from resolvecommon.session import resolve, fusion
+
+		result = fusion.RequestFile(
+			"/Users/editor/Desktop/",
+			resolve.GetCurrentProject().GetName() + "_Runtime.csv",
+			{
+				"FReqB_Saving": True,
+				"FReqS_Filter": "CSV Files|*.csv"
+			}
+		)
+
+		if not result:
+
+			logging.getLogger(__name__).debug("User cancelled file selection")
+			return
+		
+		logging.getLogger(__name__).debug("Writing results to path: %s", result)
+
+		trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
+
+		try:
+			with open(result, "w") as handle_export:
+
+				print(formatting.format_trim_list_to_csv(self._reel_info_list), file=handle_export)
+				print("Total Runtime: " + trt, file=handle_export)
+
+		except Exception as e:
+			logging.getLogger(__name__).error("Error writing results: %s", e, exc_info=True)
+		else:
+			logging.getLogger(__name__).info("Succesfully wrote results to: %s", result)
