@@ -4,7 +4,7 @@ import logging, typing
 from ..gui import wnd_main, tree_results, tree_controls, trim_controls
 
 if typing.TYPE_CHECKING:
-	from .controller import TRTMainApplication
+	from .appcontroller import TRTMainApplication
 
 class TRTEventDispatcher:
 	"""Dispatch events to the controller"""
