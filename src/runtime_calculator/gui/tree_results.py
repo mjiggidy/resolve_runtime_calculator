@@ -23,7 +23,7 @@ class TRTTreeResults(TRTAbstractWidget):
 		})
 
 		self._tree.SetHeaderLabels([
-			"Reel",
+			"Item",
 			"Runtime",
 			"LFOA",
 			"Head",

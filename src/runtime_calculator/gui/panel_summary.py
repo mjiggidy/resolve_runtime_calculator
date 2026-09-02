@@ -8,7 +8,7 @@ class TRTSummaryPanel(TRTAbstractWidget):
 
 		self._lbl_status = self._ui.Label({
 			"Weight":0,
-			"Text":"No Reels",
+			"Text":"No Items",
 			"MinimumSize":[200,20],
 			"Events":{}
 		})

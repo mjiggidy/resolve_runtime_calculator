@@ -110,7 +110,7 @@ class TRTMainApplication:
 
 		self.refresh_total_runtime()
 
-		self._trt_main_window.set_ready(f"{len(self._reel_info_list)} Reel{'' if len(self._reel_info_list) == 1 else 's'}")
+		self._trt_main_window.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
 
 	def refresh_total_runtime(self):
 		"""Refresh TRT calculation"""
@@ -179,7 +179,7 @@ class TRTMainApplication:
 		for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: formatting.format_string_for_natural_sort(r.media_pool_name)):
 			self.add_trimmed_item_info(trimmed_reel_info)
 
-		status_messages = [f"{len(self._reel_info_list)} Reel{'' if len(self._reel_info_list) == 1 else 's'}"]
+		status_messages = [f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}"]
 
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
@@ -211,7 +211,7 @@ class TRTMainApplication:
 		for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: formatting.format_string_for_natural_sort(r.media_pool_name)):
 			self.add_trimmed_item_info(trimmed_reel_info)
 
-		status_messages = [f"{len(self._reel_info_list)} Reel{'' if len(self._reel_info_list) == 1 else 's'}"]
+		status_messages = [f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}"]
 
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
