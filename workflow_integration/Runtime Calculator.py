@@ -70,7 +70,7 @@ except Exception as e:
 	logging.getLogger(__name__).error("Strange error accessing %s: %s", PATH_CFG_USER, e, exc_info=True)
 	pass
 
-from trt_calculator.main import TRTMainApplication
+from runtime_calculator.controller.appcontroller import TRTMainApplication
 
 # Call main!
 app = TRTMainApplication(**user_config)

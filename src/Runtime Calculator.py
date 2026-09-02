@@ -17,8 +17,10 @@ if not fusion:
 
 if __name__ == "__main__":
 
-	from trt_calculator.main import TRTMainApplication
+	from runtime_calculator.controller.appcontroller import TRTMainApplication
 	import json
+
+	logging.basicConfig(level=logging.DEBUG)
 
 	PATH_CONFIG = "config.json"
 
