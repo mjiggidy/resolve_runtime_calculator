@@ -2,7 +2,7 @@
 Main window GUI
 """
 
-from runtime_calculator.gui.tree_controls import TRTTreeControls
+from runtime_calculator.gui.btns_treecontrols import TRTTreeControls
 
 from .tree_results import TRTTreeResults
 from .trim_controls import TRTTrimControls

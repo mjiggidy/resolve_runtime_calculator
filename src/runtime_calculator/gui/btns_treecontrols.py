@@ -11,7 +11,7 @@ class TRTTreeControls(TRTAbstractWidget):
 
 		super().__init__(ui_manager)
 
-		self._btn_add_latest   = self._ui.Button({"Weight": 0, "Text": "Add Latest Reels", "ID": ID_BTN_ADD_LATEST})
+		self._btn_add_latest   = self._ui.Button({"Weight": 0, "Text": "Add Latest",       "ID": ID_BTN_ADD_LATEST})
 		self._btn_add_selected = self._ui.Button({"Weight": 0, "Text": "Add Selected",     "ID": ID_BTN_ADD_SELECTED})
 		self._btn_clear        = self._ui.Button({"Weight": 0, "Text": "Clear",            "ID": ID_BTN_CLEAR})
 
