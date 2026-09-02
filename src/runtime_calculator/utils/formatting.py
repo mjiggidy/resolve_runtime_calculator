@@ -2,8 +2,12 @@
 Lil' formattin' funcs
 """
 
-import re
+from __future__ import annotations
+import re, typing
 import timecode
+
+if typing.TYPE_CHECKING:
+	from .trim_info import TRTTrimInfo
 
 PAT_NATURAL_SORT_SPLIT = re.compile(r"([0-9]+)")
 """Pattern for splitting up natural sorting groups"""
@@ -72,3 +76,27 @@ def format_string_for_natural_sort(input_string:str) -> list[str,int]:
 	"""Convert a string into chunked strings 'n' ints for natural sorting"""
 
 	return [int(t) if t.isdecimal() else t.lower() for t in PAT_NATURAL_SORT_SPLIT.split(input_string)]
+
+def format_trim_list_to_csv(trim_list:list[TRTTrimInfo]) -> str:
+
+	from io import StringIO
+	import csv
+
+	headers = ["Name", "Runtime", "LFOA", "Trimmed From Head", "Trimmed From Tail"]
+
+	str_buffer = StringIO()
+
+	csv_writer = csv.DictWriter(str_buffer, headers)
+	csv_writer.writeheader()
+
+	for trim_info in trim_list:
+
+		csv_writer.writerow({
+			"Name":    trim_info.media_pool_name,
+			"Runtime": format_timecode_as_duration(trim_info.runtime_range.duration),
+			"LFOA":    trim_info.formatted_lfoa(),
+			"Trimmed From Head": format_timecode_as_duration(trim_info.trimmed_from_head),
+			"Trimmed From Tail": format_timecode_as_duration(trim_info.trimmed_from_tail),
+		})
+
+	return str_buffer.getvalue()
