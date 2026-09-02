@@ -1,6 +1,6 @@
 from .abstract_widget import TRTAbstractWidget
 
-class TRTSummaryDisplay(TRTAbstractWidget):
+class TRTSummaryPanel(TRTAbstractWidget):
 
 	def __init__(self, ui_manager:object):
 

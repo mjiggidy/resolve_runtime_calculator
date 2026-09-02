@@ -6,8 +6,8 @@ from runtime_calculator.gui.btns_treecontrols import TRTTreeControls
 
 from .tree_results import TRTTreeResults
 from .trim_controls import TRTTrimControls
-from .summary_display import TRTSummaryDisplay
-from .about_display import TRTAboutDisplay
+from .panel_summary import TRTSummaryPanel
+from .panel_about import TRTAboutPane
 
 from ..utils.formatting import format_timecode_as_duration
 from ..utils.trim_info import TRTTrimInfo
@@ -39,9 +39,9 @@ class TRTMainWindow:
 		self._trt_tree.tree().ColumnWidth[3] = 50
 		self._trt_tree.tree().ColumnWidth[4] = 50
 
-		self._summary_display = TRTSummaryDisplay(self._ui)
+		self._summary_display = TRTSummaryPanel(self._ui)
 
-		self._about_display = TRTAboutDisplay(self._ui, __version__, URL_GITHUB, URL_DONATE)
+		self._about_display = TRTAboutPane(self._ui, __version__, URL_GITHUB, URL_DONATE)
 	
 	def layout(self):
 		
@@ -68,7 +68,7 @@ class TRTMainWindow:
 
 		return self._trim_controls
 
-	def summary_display(self) -> TRTSummaryDisplay:
+	def summary_display(self) -> TRTSummaryPanel:
 
 		return self._summary_display
 
