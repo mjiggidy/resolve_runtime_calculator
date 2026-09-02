@@ -119,7 +119,7 @@ class TRTMainApplication:
 			sum(r.runtime_range.duration for r in self._reel_info_list)
 		) if self._reel_info_list else None
 
-		self._trt_main_window.set_total_runtime(trt)
+		self._trt_main_window.summary_display().set_total_runtime(trt)
 
 	def close_window(self):
 		"""Window is closing"""
@@ -139,7 +139,7 @@ class TRTMainApplication:
 		self._reel_info_list.clear()
 
 		self._trt_main_window.clear_trim_info()
-		self._trt_main_window.set_total_runtime()
+		self._trt_main_window.summary_display().set_total_runtime()
 
 		self._trt_main_window.set_ready("Cleared")
 

@@ -6,6 +6,8 @@ from runtime_calculator.gui.btns_treecontrols import TRTTreeControls
 
 from .tree_results import TRTTreeResults
 from .trim_controls import TRTTrimControls
+from .summary_display import TRTSummaryDisplay
+from .about_display import TRTAboutDisplay
 
 from ..utils.formatting import format_timecode_as_duration
 from ..utils.trim_info import TRTTrimInfo
@@ -30,8 +32,6 @@ class TRTMainWindow:
 
 		self._btn_box = TRTTreeControls(self._ui)
 
-
-
 		self._trt_tree = TRTTreeResults(self._ui)
 		self._trt_tree.tree().ColumnWidth[0] = 150
 		self._trt_tree.tree().ColumnWidth[1] = 75
@@ -39,68 +39,24 @@ class TRTMainWindow:
 		self._trt_tree.tree().ColumnWidth[3] = 50
 		self._trt_tree.tree().ColumnWidth[4] = 50
 
-		self._status_label = self._ui.Label({
-			"Weight":0,
-			"Text":"No Reels",
-			"MinimumSize":[200,20],
-			"Events":{}
-		})
+		self._summary_display = TRTSummaryDisplay(self._ui)
 
-		self._txt_trt = self._ui.LineEdit({
-			"Weight"   : 0,
-			"MinimumSize": [80,20],
-			"PlaceholderText": "--:--:--:--",
-			"ReadOnly" : True,
-			"Events"   : {},
-		})
-
-		trt_alignment = self._txt_trt.GetAlignment()
-		trt_alignment["AlignLeft"] = False
-		trt_alignment["AlignCenter"] = True
-		self._txt_trt.SetAlignment(trt_alignment)
-
-		self._lbl_trt = self._ui.Label({
-			"Weight":0,
-			"Text":"TRT:",
-		})
-
-		font_about = self._ui.Font({"PointSize": 10})
-
-		self._lbl_auth_rule = self._ui.Label({"FrameStyle": 4})  # QFrame.HLine int value.  I looked it up.
-
-		self._lbl_about_author = self._ui.Label({
-			"Weight":0,
-			"Font": font_about,
-			"Text": "Written by Michael Jordan"
-		})
-		self._lbl_about_links  = self._ui.Label({
-			"Weight":0,
-			"Font": font_about,
-			"Text": f"v{__version__} | <a href=\"{URL_GITHUB}\">Github</a> | <a href=\"{URL_DONATE}\">Donate</a>",
-			"OpenExternalLinks": True,
-		})
-		#self._lbl_about_links.SetOpenExternalLinks(True)
-		
+		self._about_display = TRTAboutDisplay(self._ui, __version__, URL_GITHUB, URL_DONATE)
 	
 	def layout(self):
 		
 		return self._ui.VGroup([
 			self._trim_controls.layout(),
+
 			self._ui.Label({"FrameStyle": 4}),
+
 			self._btn_box.layout(),
 			self._trt_tree.layout(),
-			self._ui.HGroup([
-				self._status_label,
-				self._ui.HGap(),
-				self._lbl_trt,
-				self._txt_trt,
-			]),
-			self._lbl_auth_rule,
-			self._ui.HGroup([
-				self._lbl_about_author,
-				self._ui.HGap(),
-				self._lbl_about_links,
-			]),
+			self._summary_display.layout(),
+
+			self._ui.Label({"FrameStyle": 4}),
+
+			self._about_display.layout(),
 		])
 	
 	def tree_results(self) -> TRTTreeResults:
@@ -112,6 +68,10 @@ class TRTMainWindow:
 
 		return self._trim_controls
 
+	def summary_display(self) -> TRTSummaryDisplay:
+
+		return self._summary_display
+
 	def set_busy(self, status_message:str|None=None):
 		"""Set window state to busy"""
 
@@ -120,7 +80,7 @@ class TRTMainWindow:
 		self._trim_controls.set_enabled(False)
 
 		if status_message is not None:
-			self._status_label.Text = status_message
+			self._summary_display.set_status_message(status_message)
 
 	def set_ready(self, status_message:str|None=None):
 		"""Set window state to ready"""
@@ -130,7 +90,7 @@ class TRTMainWindow:
 		self._trim_controls.set_enabled(True)
 
 		if status_message is not None:
-			self._status_label.Text = status_message
+			self._summary_display.set_status_message(status_message)
 	
 	def add_timeline_info(self, info:TRTTrimInfo):
 		"""Add reel info to the tree"""
@@ -147,9 +107,4 @@ class TRTMainWindow:
 		"""Clear all trim info"""
 		
 		self._trt_tree.clear()
-
-	def set_total_runtime(self, trt:str|None=None):
-		"""Set the TRT results, if any"""
-		
-		self._txt_trt.Text = trt if trt else ""
 
