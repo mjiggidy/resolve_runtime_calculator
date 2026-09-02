@@ -18,6 +18,7 @@ URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
 URL_DONATE = "https://ko-fi.com/lilbinboy"
 
 ID_WINDOW_MAIN      = "com.glowingpixel.runtimecalculator.mainwindow"
+ID_BTN_EXPORT       = "export_trt"
 
 
 
@@ -41,6 +42,12 @@ class TRTMainWindow:
 
 		self._summary_display = TRTSummaryPanel(self._ui)
 
+		self._btn_save = self._ui.Button({
+			"ID": ID_BTN_EXPORT,
+			"Text": "Export Results...",
+			"Events": {"Clicked",True}
+		})
+
 		self._about_display = TRTAboutPane(self._ui, __version__, URL_GITHUB, URL_DONATE)
 	
 	def layout(self):
@@ -53,6 +60,7 @@ class TRTMainWindow:
 			self._btn_box.layout(),
 			self._trt_tree.layout(),
 			self._summary_display.layout(),
+			self._btn_save,
 
 			self._ui.Label({"FrameStyle": 4}),
 
