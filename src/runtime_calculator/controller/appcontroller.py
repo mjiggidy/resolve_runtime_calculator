@@ -4,18 +4,13 @@ Main app controller for the thing
 
 import logging, timecode
 
-from . import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE
-from . import trim_info, wnd_main, select_reels, formatting
+from .eventhandler import TRTEventDispatcher
 
-MAIN_WINDOW_ID    = "com.glowingpixel.runtimecalculator"
+from .. import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE
+from ..utils import trim_info, select_reels, formatting
+from ..gui import wnd_main
+
 MAIN_WINDOW_TITLE = "Runtime Calculator"
-
-DEFAULT_TRIM_OPTIONS = trim_info.TRTTrimOptions(
-	trim_from_head  = timecode.Timecode(DEFAULT_HEAD_TRIM, rate=PROJECT_FRAME_RATE),
-	trim_from_tail  = timecode.Timecode(DEFAULT_TAIL_TRIM, rate=PROJECT_FRAME_RATE),
-	use_ffoa_marker = True,
-	use_lfoa_marker = False,
-)
 
 class TRTMainApplication:
 	"""Main application controller"""
@@ -29,11 +24,15 @@ class TRTMainApplication:
 		project_rate:int     = 24
 	):
 
-		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
-		"""Data model list of individual clip trim info"""
-
 		self._trt_main_window = wnd_main.TRTMainWindow(ui)
 		"""Main window controller"""
+
+		win = self._setup_window()
+
+		self._event_dispatcher = TRTEventDispatcher(controller=self, window_handle=win)
+
+		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
+		"""Data model list of individual clip trim info"""
 
 		self._current_trim_options = trim_info.TRTTrimOptions(
 			trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
@@ -44,19 +43,18 @@ class TRTMainApplication:
 		"""Currently-active trim options"""
 
 		# Setup main window controller
-		self._trt_main_window.set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
-		self._trt_main_window.set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
-		self._trt_main_window.set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
-		self._trt_main_window.set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
+		self._trt_main_window.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
+		self._trt_main_window.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
+		self._trt_main_window.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
+		self._trt_main_window.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
 
 		# Add mainwindow to  UIDispatcher
-		win = self._setup_window()
 		win.Show()
 		dispatcher.RunLoop()
 
 	def _setup_window(self) -> object:
 
-		if win:= ui.FindWindow(MAIN_WINDOW_ID):
+		if win:= ui.FindWindow(wnd_main.ID_WINDOW_MAIN):
 
 			win.Show()
 			win.Raise()
@@ -67,23 +65,11 @@ class TRTMainApplication:
 		# Use trim options if passsed, otherwise use the defaults
 		
 		win = dispatcher.AddWindow({
-			"ID": MAIN_WINDOW_ID,
+			"ID": wnd_main.ID_WINDOW_MAIN,
 			"WindowTitle": MAIN_WINDOW_TITLE,
 			"FixedSize": [360,500],
 			"Events": {"Close": True, "KeyRelease": True},
 		}, [self._trt_main_window.layout()])
-
-		win.On[MAIN_WINDOW_ID].Close                       = self.on_close
-
-		win.On[wnd_main.ID_BTN_ADD_LATEST].Clicked         = self.on_add_latest
-		win.On[wnd_main.ID_BTN_ADD_SELECTED].Clicked       = self.on_add_selected
-		win.On[wnd_main.ID_BTN_CLEAR].Clicked              = self.on_clear
-
-		win.On[wnd_main.ID_TXT_TRIM_FFOA].EditingFinished  = self.on_ffoa_edited
-		win.On[wnd_main.ID_TXT_TRIM_LFOA].EditingFinished  = self.on_lfoa_edited
-
-		win.On[MAIN_WINDOW_ID].KeyRelease                  = self.on_key_released
-		win.On[wnd_main.ID_TREE_VIEW].ItemActivated        = self.on_tree_item_activated
 
 		return win
 
@@ -94,10 +80,10 @@ class TRTMainApplication:
 	def update_trim_options_from_window(self) -> trim_info.TRTTrimOptions:
 
 		self._current_trim_options = trim_info.TRTTrimOptions(
-			trim_from_head = timecode.Timecode(self._trt_main_window.ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			trim_from_tail = timecode.Timecode(self._trt_main_window.lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			use_ffoa_marker = self._trt_main_window.use_ffoa_marker(),
-			use_lfoa_marker = self._trt_main_window.use_lfoa_marker(),
+			trim_from_head = timecode.Timecode(self._trt_main_window.trim_controls().ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
+			trim_from_tail = timecode.Timecode(self._trt_main_window.trim_controls().lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
+			use_ffoa_marker = self._trt_main_window.trim_controls().use_ffoa_marker(),
+			use_lfoa_marker = self._trt_main_window.trim_controls().use_lfoa_marker(),
 		)
 
 		return self._current_trim_options
@@ -135,20 +121,16 @@ class TRTMainApplication:
 
 		self._trt_main_window.set_total_runtime(trt)
 
-	###
-	# Event handlers
-	###
-
-	def on_close(self, event:dict):
+	def close_window(self):
 		"""Window is closing"""
 
 		# Update options for later writing to disk
 		self.update_trim_options_from_window()
 
-		logging.getLogger(__name__).info("Window is closing.  And hey -- thanks.")
+		logging.getLogger(__name__).debug("Window is closing.  And hey -- thanks.")
 		dispatcher.ExitLoop(0)
 
-	def on_clear(self, event:dict):
+	def clear_all(self):
 
 		logging.getLogger(__name__).info("Clearing reel info")
 
@@ -156,12 +138,12 @@ class TRTMainApplication:
 
 		self._reel_info_list.clear()
 
-		self._trt_main_window.clear_timeline_info()
+		self._trt_main_window.clear_trim_info()
 		self._trt_main_window.set_total_runtime()
 
 		self._trt_main_window.set_ready("Cleared")
 
-	def on_add_latest(self, event:dict):
+	def add_latest_reels(self):
 		
 		logging.getLogger(__name__).info("Latest reels requested")
 
@@ -204,7 +186,7 @@ class TRTMainApplication:
 
 		self._trt_main_window.set_ready(", ".join(status_messages))
 
-	def on_add_selected(self, event:dict):
+	def add_selected_reels(self):
 		
 		logging.getLogger(__name__).info("Selected reels requested")
 
@@ -236,10 +218,10 @@ class TRTMainApplication:
 
 		self._trt_main_window.set_ready(", ".join(status_messages))
 
-	def on_ffoa_edited(self, event:dict):
+	def validate_ffoa_trim_amount(self):
 		"""Validate FFOA trim amount"""
 
-		tc_text = self._trt_main_window.ffoa_trim_text().strip().lstrip("-")
+		tc_text = self._trt_main_window.trim_controls().ffoa_trim_text().strip().lstrip("-")
 
 		try:
 			tc_formatted = formatting.format_timecode_as_duration(
@@ -248,12 +230,12 @@ class TRTMainApplication:
 		except Exception as e:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
-			self._trt_main_window.set_ffoa_trim_text(tc_formatted)
+			self._trt_main_window.trim_controls().set_ffoa_trim_text(tc_formatted)
 
-	def on_lfoa_edited(self, event:dict):
+	def validate_lfoa_trim_amount(self):
 		"""Validate LFOA trim amount"""
 
-		tc_text = self._trt_main_window.lfoa_trim_text().strip().lstrip("-")
+		tc_text = self._trt_main_window.trim_controls().lfoa_trim_text().strip().lstrip("-")
 
 		try:
 			tc_formatted = formatting.format_timecode_as_duration(
@@ -262,20 +244,10 @@ class TRTMainApplication:
 		except Exception as e:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
-			self._trt_main_window.set_lfoa_trim_text(tc_formatted)
+			self._trt_main_window.trim_controls().set_lfoa_trim_text(tc_formatted)
 
-	def on_key_released(self, event:dict):
+	def remove_selected_trim_items(self):
 		"""Handle key release events"""
-
-		KEY_DELETE = 16777223
-		"""`Delete` key ID"""
-
-		# Currently only for "Delete" key in Tree widget
-		if event.get("IsAutoRepeat",False) or  not event.get("Key") == KEY_DELETE:
-			return
-
-		if not event.get("sender").FocusWidget().ID == wnd_main.ID_TREE_VIEW:
-			return
 
 		selected_rows = self._trt_main_window.tree_results().selected_rows()
 
@@ -289,11 +261,11 @@ class TRTMainApplication:
 		for idx in sorted([idx for idx,_ in selected_rows], reverse=True):
 			self.remove_trimmed_item_index(idx)
 
-	def on_tree_item_activated(self, event:dict):
+	def focus_trim_item_in_media_pool(self, tree_item:object):
 		"""Trim item was "activated," find it in MediaPool"""
 
 		try:
-			item_index = self._trt_main_window.tree_results().item_index(event["item"])
+			item_index = self._trt_main_window.tree_results().item_index(tree_item)
 			trim_info = self._reel_info_list[item_index]
 
 			select_reels.focus_reel(trim_info.media_pool_item)

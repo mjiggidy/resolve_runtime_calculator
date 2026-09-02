@@ -8,7 +8,7 @@ import timecode
 from .formatting import format_frame_count_as_footage
 from resolvecommon.itemtypes import ItemTypes
 
-from . import PROJECT_FRAME_RATE
+from .. import PROJECT_FRAME_RATE
 
 FFOA_MARKER_NAME:str = "ffoa"
 LFOA_MARKER_NAME:str = "lfoa"
