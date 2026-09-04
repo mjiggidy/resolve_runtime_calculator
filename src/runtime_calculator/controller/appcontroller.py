@@ -279,28 +279,42 @@ class TRTMainApplication:
 		"""Export results to a file or somethin'"""
 
 		from resolvecommon.session import resolve, fusion
+		import pathlib, re
 
-		result = fusion.RequestFile(
-			"/Users/editor/Desktop/",
-			resolve.GetCurrentProject().GetName() + "_Runtime.csv",
+		logging.getLogger(__name__).debug("Requesting file output location")
+
+		save_project_path = str(pathlib.Path().home() / "Desktop")
+		save_project_name = " Runtime List"
+
+		try:
+			save_project_name = re.sub(r"[^a-z0-9\-_ ]+", "_", resolve.GetProjectManager().GetCurrentProject().GetName(), flags=re.I).strip() + save_project_name
+
+		except Exception as e:
+			logging.getLogger(__name__).debug("Error sanitizing project name: %s", e, exc_info=True)
+			save_project_name = "My Cool" + save_project_name
+
+
+		chosen_path = fusion.RequestFile(
+			save_project_path,
+			save_project_name,
 			{
-				"FReqB_Saving": True,
-				"FReqS_Filter": "CSV Files|*.csv"
+				"FReqB_Saving": True,				# Saving, not opening
+				"FReqS_Filter": "CSV Files|*.csv"	# File type filter
 			}
 		)
 
-		if not result:
+		if not chosen_path:
 
 			logging.getLogger(__name__).debug("User cancelled file selection")
 			return
 		
-		logging.getLogger(__name__).debug("Writing results to path: %s", result)
+		logging.getLogger(__name__).debug("Writing results to path: %s", chosen_path)
 
 		self._trt_main_window.set_busy()
 
 		try:
 			trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
-			with open(result, "w") as handle_export:
+			with open(chosen_path, "w") as handle_export:
 
 				print(formatting.format_trim_list_to_csv(self._reel_info_list), file=handle_export)
 				print("Total Runtime: " + trt, file=handle_export)
@@ -310,5 +324,5 @@ class TRTMainApplication:
 			self._trt_main_window.set_ready("Error exporting!  See logs.")
 
 		else:
-			logging.getLogger(__name__).info("Succesfully wrote results to: %s", result)
-			self._trt_main_window.set_ready()
+			logging.getLogger(__name__).info("Succesfully wrote results to: %s", chosen_path)
+			self._trt_main_window.set_ready("CSV exported successfully")
