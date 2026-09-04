@@ -4,11 +4,13 @@ Main app controller for the thing
 
 import logging, timecode
 
+from . import settingscontroller
+
 from .eventhandler import TRTEventDispatcher
 
 from .. import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE
 from ..utils import trim_info, select_reels, formatting
-from ..gui import wnd_main
+from ..gui import wnd_main, wnd_settings
 
 MAIN_WINDOW_TITLE = "Runtime Calculator"
 
@@ -26,6 +28,8 @@ class TRTMainApplication:
 
 		self._trt_main_window = wnd_main.TRTMainWindow(ui)
 		"""Main window controller"""
+
+		self._trt_match_settings_controller = settingscontroller.TRTSettingsController()
 
 		win = self._setup_window()
 
