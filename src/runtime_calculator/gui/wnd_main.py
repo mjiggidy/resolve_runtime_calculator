@@ -45,7 +45,8 @@ class TRTMainWindow:
 		self._btn_save = self._ui.Button({
 			"ID": ID_BTN_EXPORT,
 			"Text": "Export Results...",
-			"Events": {"Clicked",True}
+			"Enabled": False,
+			"Events": {"Clicked",True},
 		})
 
 		self._about_display = TRTAboutPane(self._ui, __version__, URL_GITHUB, URL_DONATE)
@@ -84,9 +85,7 @@ class TRTMainWindow:
 		"""Set window state to busy"""
 
 		self._btn_box.set_enabled(False)
-
 		self._trim_controls.set_enabled(False)
-
 		self._btn_save.Enabled = False
 
 		if status_message is not None:
@@ -95,11 +94,12 @@ class TRTMainWindow:
 	def set_ready(self, status_message:str|None=None):
 		"""Set window state to ready"""
 
-		self._btn_box.set_enabled(True)
-
 		self._trim_controls.set_enabled(True)
 
-		self._btn_save.Enabled = True
+		# Enable export/clear buttons if the tree is populated
+		tree_is_populated = bool(self._trt_tree.tree().TopLevelItemCount())
+		self._btn_box.set_enabled(True, tree_is_populated)
+		self._btn_save.Enabled = tree_is_populated
 
 		if status_message is not None:
 			self._summary_display.set_status_message(status_message)

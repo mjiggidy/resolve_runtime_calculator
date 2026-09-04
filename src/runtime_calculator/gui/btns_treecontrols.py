@@ -13,13 +13,13 @@ class TRTTreeControls(TRTAbstractWidget):
 
 		self._btn_add_latest   = self._ui.Button({"Weight": 0, "Text": "Add Latest",       "ID": ID_BTN_ADD_LATEST})
 		self._btn_add_selected = self._ui.Button({"Weight": 0, "Text": "Add Selected",     "ID": ID_BTN_ADD_SELECTED})
-		self._btn_clear        = self._ui.Button({"Weight": 0, "Text": "Clear",            "ID": ID_BTN_CLEAR})
+		self._btn_clear        = self._ui.Button({"Weight": 0, "Text": "Clear",            "ID": ID_BTN_CLEAR, "Enabled": False})
 
-	def set_enabled(self, is_enabled:bool):
+	def set_enabled(self, is_enabled:bool, tree_is_populated:bool=True):
 
-		self._btn_add_latest.Enabled = is_enabled
+		self._btn_add_latest.Enabled   = is_enabled
 		self._btn_add_selected.Enabled = is_enabled
-		self._btn_clear.Enabled = is_enabled
+		self._btn_clear.Enabled        = is_enabled and tree_is_populated
 
 	def layout(self) -> object:
 
