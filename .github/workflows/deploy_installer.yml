@@ -16,6 +16,7 @@ on:
 jobs:
   build_mac_os_notarized:
     runs-on: macos-latest
+    environment: Deploy
 
     steps:
       - name: Checkout repository
