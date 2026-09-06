@@ -4,12 +4,12 @@ import logging, typing
 from ..gui import btns_treecontrols, wnd_main, tree_results, trim_controls
 
 if typing.TYPE_CHECKING:
-	from .appcontroller import TRTMainApplication
+	from .appcontroller import TRTMainWindowController
 
 class TRTEventDispatcher:
 	"""Dispatch events to the controller"""
 
-	def __init__(self, controller:TRTMainApplication, window_handle:object|None=None):
+	def __init__(self, controller:TRTMainWindowController, window_handle:object|None=None):
 
 		self._controller = controller
 

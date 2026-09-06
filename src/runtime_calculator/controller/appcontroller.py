@@ -12,7 +12,7 @@ from ..gui import wnd_main
 
 DEFAULT_WINDOW_TITLE = "Runtime Calculator"
 
-class TRTMainApplication:
+class TRTMainWindowController:
 	"""Main application controller"""
 
 	def __init__(
@@ -23,15 +23,16 @@ class TRTMainApplication:
 		use_lfoa_marker:bool = True,
 		project_rate:int     = 24,
 		window_title:str     = DEFAULT_WINDOW_TITLE,
-		show_nag_link:bool   = False,
+		show_nag_link:bool   = True,
 	):
 
-		self._trt_main_window = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
+		self.main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
 		"""Main window controller"""
 
-		win = self._setup_window(window_title=window_title)
+		self.main_window_handle = self._setup_window(window_title=window_title)
+		"""Handle to the UIDispatcher window"""
 
-		self._event_dispatcher = TRTEventDispatcher(controller=self, window_handle=win)
+		self._event_dispatcher = TRTEventDispatcher(controller=self, window_handle=self.main_window_handle)
 
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
@@ -45,35 +46,25 @@ class TRTMainApplication:
 		"""Currently-active trim options"""
 
 		# Setup main window controller
-		self._trt_main_window.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
-		self._trt_main_window.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
-		self._trt_main_window.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
-		self._trt_main_window.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
+		self.main_window_widget.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
+		self.main_window_widget.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
+		self.main_window_widget.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
+		self.main_window_widget.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
 
 		# Add mainwindow to  UIDispatcher
-		win.Show()
+		self.main_window_handle.Show()
 		dispatcher.RunLoop()
 
 	def _setup_window(self, window_title:str) -> object:
 
-		if win:= ui.FindWindow(wnd_main.ID_WINDOW_MAIN):
-
-			win.Show()
-			win.Raise()
-			
-			import sys
-			sys.exit(0)
-
 		# Use trim options if passsed, otherwise use the defaults
 		
-		win = dispatcher.AddWindow({
+		return dispatcher.AddWindow({
 			"ID": wnd_main.ID_WINDOW_MAIN,
 			"WindowTitle": window_title,
 			"FixedSize": [360,500],
 			"Events": {"Close": True, "KeyRelease": True},
-		}, [self._trt_main_window.layout()])
-
-		return win
+		}, [self.main_window_widget.layout()])
 
 	def current_trim_options(self) -> trim_info.TRTTrimOptions:
 
@@ -82,10 +73,10 @@ class TRTMainApplication:
 	def update_trim_options_from_window(self) -> trim_info.TRTTrimOptions:
 
 		self._current_trim_options = trim_info.TRTTrimOptions(
-			trim_from_head = timecode.Timecode(self._trt_main_window.trim_controls().ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			trim_from_tail = timecode.Timecode(self._trt_main_window.trim_controls().lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			use_ffoa_marker = self._trt_main_window.trim_controls().use_ffoa_marker(),
-			use_lfoa_marker = self._trt_main_window.trim_controls().use_lfoa_marker(),
+			trim_from_head = timecode.Timecode(self.main_window_widget.trim_controls().ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
+			trim_from_tail = timecode.Timecode(self.main_window_widget.trim_controls().lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
+			use_ffoa_marker = self.main_window_widget.trim_controls().use_ffoa_marker(),
+			use_lfoa_marker = self.main_window_widget.trim_controls().use_lfoa_marker(),
 		)
 
 		return self._current_trim_options
@@ -95,24 +86,24 @@ class TRTMainApplication:
 		logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.media_pool_name)
 
 		self._reel_info_list.append(trimmed_item_info)
-		self._trt_main_window.add_timeline_info(trimmed_item_info)
+		self.main_window_widget.add_timeline_info(trimmed_item_info)
 
 		self.refresh_total_runtime()
 
 	def remove_trimmed_item_index(self, index:int):
 		"""Remove trimfo from list and tree"""
 
-		self._trt_main_window.set_busy("Removing...")
+		self.main_window_widget.set_busy("Removing...")
 
 		try:
-			self._trt_main_window.tree_results().tree().TakeTopLevelItem(index)
+			self.main_window_widget.tree_results().tree().TakeTopLevelItem(index)
 			del self._reel_info_list[index]
 		except Exception as e:
 			logging.getLogger(__name__).error("Strange error removing reel: %s", e, exc_info=True)
 
 		self.refresh_total_runtime()
 
-		self._trt_main_window.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
+		self.main_window_widget.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
 
 	def refresh_total_runtime(self):
 		"""Refresh TRT calculation"""
@@ -121,7 +112,7 @@ class TRTMainApplication:
 			sum(r.runtime_range.duration for r in self._reel_info_list)
 		) if self._reel_info_list else None
 
-		self._trt_main_window.summary_display().set_total_runtime(trt)
+		self.main_window_widget.summary_display().set_total_runtime(trt)
 
 	def close_window(self):
 		"""Window is closing"""
@@ -136,24 +127,24 @@ class TRTMainApplication:
 
 		logging.getLogger(__name__).info("Clearing reel info")
 
-		self._trt_main_window.set_busy("Clearing...")
+		self.main_window_widget.set_busy("Clearing...")
 
 		self._reel_info_list.clear()
 
-		self._trt_main_window.clear_trim_info()
-		self._trt_main_window.summary_display().set_total_runtime()
+		self.main_window_widget.clear_trim_info()
+		self.main_window_widget.summary_display().set_total_runtime()
 
-		self._trt_main_window.set_ready("Cleared")
+		self.main_window_widget.set_ready("Cleared")
 
 	def add_latest_reels(self):
 		
 		logging.getLogger(__name__).info("Latest reels requested")
 
 
-		self._trt_main_window.set_busy("Refreshing project...")
+		self.main_window_widget.set_busy("Refreshing project...")
 		select_reels.refresh_project()
 
-		self._trt_main_window.set_busy("Loading latest...")
+		self.main_window_widget.set_busy("Loading latest...")
 
 		trim_options = self.update_trim_options_from_window()
 
@@ -186,14 +177,14 @@ class TRTMainApplication:
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
-		self._trt_main_window.set_ready(", ".join(status_messages))
+		self.main_window_widget.set_ready(", ".join(status_messages))
 
 	def add_selected_reels(self):
 		
 		logging.getLogger(__name__).info("Selected reels requested")
 
 
-		self._trt_main_window.set_busy("Loading selected...")
+		self.main_window_widget.set_busy("Loading selected...")
 
 		trim_options = self.update_trim_options_from_window()
 
@@ -218,12 +209,12 @@ class TRTMainApplication:
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
-		self._trt_main_window.set_ready(", ".join(status_messages))
+		self.main_window_widget.set_ready(", ".join(status_messages))
 
 	def validate_ffoa_trim_amount(self):
 		"""Validate FFOA trim amount"""
 
-		tc_text = self._trt_main_window.trim_controls().ffoa_trim_text().strip().lstrip("-")
+		tc_text = self.main_window_widget.trim_controls().ffoa_trim_text().strip().lstrip("-")
 
 		try:
 			tc_formatted = formatting.format_timecode_as_duration(
@@ -232,12 +223,12 @@ class TRTMainApplication:
 		except Exception as e:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
-			self._trt_main_window.trim_controls().set_ffoa_trim_text(tc_formatted)
+			self.main_window_widget.trim_controls().set_ffoa_trim_text(tc_formatted)
 
 	def validate_lfoa_trim_amount(self):
 		"""Validate LFOA trim amount"""
 
-		tc_text = self._trt_main_window.trim_controls().lfoa_trim_text().strip().lstrip("-")
+		tc_text = self.main_window_widget.trim_controls().lfoa_trim_text().strip().lstrip("-")
 
 		try:
 			tc_formatted = formatting.format_timecode_as_duration(
@@ -246,12 +237,12 @@ class TRTMainApplication:
 		except Exception as e:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
-			self._trt_main_window.trim_controls().set_lfoa_trim_text(tc_formatted)
+			self.main_window_widget.trim_controls().set_lfoa_trim_text(tc_formatted)
 
 	def remove_selected_trim_items(self):
 		"""Handle key release events"""
 
-		selected_rows = self._trt_main_window.tree_results().selected_rows()
+		selected_rows = self.main_window_widget.tree_results().selected_rows()
 
 		if not selected_rows:
 			
@@ -267,7 +258,7 @@ class TRTMainApplication:
 		"""Trim item was "activated," find it in MediaPool"""
 
 		try:
-			item_index = self._trt_main_window.tree_results().item_index(tree_item)
+			item_index = self.main_window_widget.tree_results().item_index(tree_item)
 			trim_info = self._reel_info_list[item_index]
 
 			select_reels.focus_reel(trim_info.media_pool_item)
@@ -312,7 +303,7 @@ class TRTMainApplication:
 		
 		logging.getLogger(__name__).debug("Writing results to path: %s", chosen_path)
 
-		self._trt_main_window.set_busy()
+		self.main_window_widget.set_busy()
 
 		try:
 			trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
@@ -323,8 +314,8 @@ class TRTMainApplication:
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Error writing results: %s", e, exc_info=True)
-			self._trt_main_window.set_ready("Error exporting!  See logs.")
+			self.main_window_widget.set_ready("Error exporting!  See logs.")
 
 		else:
 			logging.getLogger(__name__).info("Succesfully wrote results to: %s", chosen_path)
-			self._trt_main_window.set_ready("CSV exported successfully")
+			self.main_window_widget.set_ready("CSV exported successfully")

@@ -1,8 +1,8 @@
 import pathlib, logging, json
-from logging.handlers import RotatingFileHandler
 
-from runtime_calculator.controller.appcontroller import TRTMainApplication
-from runtime_calculator.utils.trim_info import TRTTrimOptions
+from runtime_calculator.controller.appcontroller import TRTMainWindowController
+
+from . import ui
 
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 #PACKAGE_ID="com.glowingpixel.runtimecalculator"
@@ -19,6 +19,9 @@ PATH_USER_BASE = pathlib.Path.home() / "Library" / "Application Support" / "Glow
 PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
 
 def setup_logging():
+	"""Establish logging handlers"""
+
+	from logging.handlers import RotatingFileHandler
 	
 	PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
 
@@ -39,6 +42,7 @@ def setup_logging():
 	logging.getLogger(__name__).info("Hello from %s", __name__)
 
 def get_user_config() -> dict:
+	"""Read user config from `.json` on disk"""
 
 	user_config = {}
 
@@ -73,7 +77,10 @@ def get_user_config() -> dict:
 
 	return user_config
 
-def write_user_config(trim_options:TRTTrimOptions):
+def write_user_config(app:TRTMainWindowController):
+	"""Write user config to disk"""
+
+	trim_options = app.update_trim_options_from_window()
 
 	try:
 
@@ -95,15 +102,28 @@ def write_user_config(trim_options:TRTTrimOptions):
 
 def main():
 
+	# If an instance is already running (window is registered with UIDispatcher), 
+	# just raise the existing window and get the heck outta there buddy.
+	
+	from runtime_calculator.gui.wnd_main import ID_WINDOW_MAIN
+	if win:= ui.FindWindow(ID_WINDOW_MAIN):
+		print("Yep")
+		win.Show()
+		win.Raise()
+		
+		import sys
+		print("Window instance already running.  There can only be one.", file=sys.stderr)
+		sys.exit(0)
+
+	print("Nope")
+
 	setup_logging()
 
-	user_config = get_user_config()
-
 	# Actually do the thing
-	app = TRTMainApplication(**user_config)
+	app = TRTMainWindowController(**get_user_config())
 
 	# Save config to disk
-	write_user_config(app.update_trim_options_from_window())
+	write_user_config(app)
 
 
 if __name__ == "__main__":
