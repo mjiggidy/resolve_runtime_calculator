@@ -36,5 +36,6 @@ jobs:
           MACOS_APPLE_ID: ${{ secrets.MACOS_APPLE_ID }}
           MACOS_TEAM_ID: ${{ secrets.MACOS_TEAM_ID }}
           MACOS_APPLE_ID_PASSWORD: ${{ secrets.MACOS_APPLE_ID_PASSWORD }}
+          VERSION_TAG: ${{ github.event.release.tag_name }}
         run: |
-          . resolve_runtime_calculator/installers/macos/action_build_pkg.sh
+          . resolve_runtime_calculator/installers/macos/action_build_pkg.sh "$VERSION_TAG"
