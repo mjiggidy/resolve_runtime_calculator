@@ -1,6 +1,9 @@
 import pathlib, logging, json
 from logging.handlers import RotatingFileHandler
 
+from runtime_calculator.controller.appcontroller import TRTMainApplication
+from runtime_calculator.utils.trim_info import TRTTrimOptions
+
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 #PACKAGE_ID="com.glowingpixel.runtimecalculator"
 
@@ -14,11 +17,10 @@ from logging.handlers import RotatingFileHandler
 # User locations, macOS only
 PATH_USER_BASE = pathlib.Path.home() / "Library" / "Application Support" / "GlowingPixel" / "Resolve Runtime Calculator"
 PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
-PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
 
-
-def main():
-	# Set up logging
+def setup_logging():
+	
+	PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
 
 	logging.basicConfig(level=logging.DEBUG)
 
@@ -36,6 +38,8 @@ def main():
 
 	logging.getLogger(__name__).info("Hello from %s", __name__)
 
+def get_user_config() -> dict:
+
 	user_config = {}
 
 	try:
@@ -43,49 +47,64 @@ def main():
 		PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
 
 		with open(PATH_CFG_USER) as json_config:
+
 			user_config = json.load(json_config)
 			logging.getLogger(__name__).debug("Loaded saved config from %s: %s", PATH_CFG_USER, user_config)
 
 	except PermissionError as e:
-		logging.getLogger(__name__).error("Error writing config file to path %s: %s", PATH_CFG_USER, e, exc_info=True)
+
+		logging.getLogger(__name__).error("Error accessing config file path %s: %s", PATH_CFG_USER, e, exc_info=True)
 		pass
+
 	except json.JSONDecodeError as e:
+
 		logging.getLogger(__name__).error("Error decoding %s: %s", PATH_CFG_USER, e, exc_info=True)
 		pass
+
 	except FileNotFoundError:
+
 		logging.getLogger(__name__).debug("No config file found at %s. To The Defaults!", PATH_CFG_USER)
 		pass
+
 	except Exception as e:
+
 		logging.getLogger(__name__).error("Strange error accessing %s: %s", PATH_CFG_USER, e, exc_info=True)
 		pass
 
-	from runtime_calculator.controller.appcontroller import TRTMainApplication
+	return user_config
 
-	# Call main!
-	app = TRTMainApplication(**user_config)
-
-	# Save config to disk
+def write_user_config(trim_options:TRTTrimOptions):
 
 	try:
-
-		session_config = app.update_trim_options_from_window()
 
 		PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
 
 		with open(PATH_CFG_USER, "w") as json_file:
 			json.dump({
-				"use_ffoa_marker": session_config.use_ffoa_marker,
-				"use_lfoa_marker": session_config.use_lfoa_marker,
-				"trim_from_head" : str(session_config.trim_from_head),
-				"trim_from_tail" : str(session_config.trim_from_tail),
-
+				"use_ffoa_marker": trim_options.use_ffoa_marker,
+				"use_lfoa_marker": trim_options.use_lfoa_marker,
+				"trim_from_head" : str(trim_options.trim_from_head),
+				"trim_from_tail" : str(trim_options.trim_from_tail),
 			}, json_file)
 
-			logging.getLogger(__name__).debug("Wrote config to %s: %s", PATH_CFG_USER, session_config)
+			logging.getLogger(__name__).debug("Wrote config to %s: %s", PATH_CFG_USER, trim_options)
 
 	except Exception as e:
 		logging.getLogger(__name__).error("Strange error writing %s: %s", PATH_CFG_USER, e, exc_info=True)
 		pass
+
+def main():
+
+	setup_logging()
+
+	user_config = get_user_config()
+
+	# Actually do the thing
+	app = TRTMainApplication(**user_config)
+
+	# Save config to disk
+	write_user_config(app.update_trim_options_from_window())
+
 
 if __name__ == "__main__":
 	main()

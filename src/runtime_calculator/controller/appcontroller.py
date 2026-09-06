@@ -10,7 +10,7 @@ from .. import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRA
 from ..utils import trim_info, select_reels, formatting
 from ..gui import wnd_main
 
-MAIN_WINDOW_TITLE = "Runtime Calculator"
+DEFAULT_WINDOW_TITLE = "Runtime Calculator"
 
 class TRTMainApplication:
 	"""Main application controller"""
@@ -21,13 +21,15 @@ class TRTMainApplication:
 		trim_from_tail:str   = DEFAULT_TAIL_TRIM,
 		use_ffoa_marker:bool = True,
 		use_lfoa_marker:bool = True,
-		project_rate:int     = 24
+		project_rate:int     = 24,
+		window_title:str     = DEFAULT_WINDOW_TITLE,
+		show_nag_link:bool   = False,
 	):
 
-		self._trt_main_window = wnd_main.TRTMainWindow(ui)
+		self._trt_main_window = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
 		"""Main window controller"""
 
-		win = self._setup_window()
+		win = self._setup_window(window_title=window_title)
 
 		self._event_dispatcher = TRTEventDispatcher(controller=self, window_handle=win)
 
@@ -52,7 +54,7 @@ class TRTMainApplication:
 		win.Show()
 		dispatcher.RunLoop()
 
-	def _setup_window(self) -> object:
+	def _setup_window(self, window_title:str) -> object:
 
 		if win:= ui.FindWindow(wnd_main.ID_WINDOW_MAIN):
 
@@ -66,7 +68,7 @@ class TRTMainApplication:
 		
 		win = dispatcher.AddWindow({
 			"ID": wnd_main.ID_WINDOW_MAIN,
-			"WindowTitle": MAIN_WINDOW_TITLE,
+			"WindowTitle": window_title,
 			"FixedSize": [360,500],
 			"Events": {"Close": True, "KeyRelease": True},
 		}, [self._trt_main_window.layout()])

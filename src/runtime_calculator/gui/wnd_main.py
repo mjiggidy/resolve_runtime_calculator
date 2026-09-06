@@ -2,30 +2,35 @@
 Main window GUI
 """
 
-from runtime_calculator.gui.btns_treecontrols import TRTTreeControls
 
+from .btns_treecontrols import TRTTreeControls
 from .tree_results import TRTTreeResults
 from .trim_controls import TRTTrimControls
 from .panel_summary import TRTSummaryPanel
 from .panel_about import TRTAboutPane
+
+from .abstract_widget import TRTAbstractWidget
 
 from ..utils.formatting import format_timecode_as_duration
 from ..utils.trim_info import TRTTrimInfo
 
 from .. import __version__
 
-URL_GITHUB = "https://github.com/mjiggidy/resolve_runtime_calculator"
-URL_DONATE = "https://ko-fi.com/lilbinboy"
+URL_GITHUB     = "https://github.com/mjiggidy/resolve_runtime_calculator"
+URL_DONATE     = "https://ko-fi.com/lilbinboy"
 
-ID_WINDOW_MAIN      = "com.glowingpixel.runtimecalculator.mainwindow"
-ID_BTN_EXPORT       = "export_trt"
+ID_WINDOW_MAIN = "com.glowingpixel.runtimecalculator.mainwindow"
+ID_BTN_EXPORT  = "export_trt"
 
-
-
-class TRTMainWindow:
+class TRTMainWindow(TRTAbstractWidget):
 	"""Main window widget"""
 	
-	def __init__(self, ui_manager:object, head_trim:str|None=None, tail_trim:str|None=None):
+	def __init__(self,
+		ui_manager:object,
+		head_trim:str|None = None,
+		tail_trim:str|None = None,
+		show_nag_link:bool = True
+	):
 		
 		self._ui = ui_manager
 
@@ -49,7 +54,7 @@ class TRTMainWindow:
 			"Events": {"Clicked",True},
 		})
 
-		self._about_display = TRTAboutPane(self._ui, __version__, URL_GITHUB, URL_DONATE)
+		self._about_display = TRTAboutPane(self._ui, __version__, URL_GITHUB, URL_DONATE if show_nag_link else None)
 	
 	def layout(self):
 		

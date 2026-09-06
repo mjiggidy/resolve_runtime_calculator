@@ -3,9 +3,20 @@ from .abstract_widget import TRTAbstractWidget
 class TRTAboutPane(TRTAbstractWidget):
 	"""About!"""
 
-	def __init__(self, ui_manager:object, app_version:str, url_github:str, url_donate:str):
+	def __init__(self, ui_manager:object, app_version:str, url_github:str, url_donate:str|None):
 
 		super().__init__(ui_manager)
+
+		# Set up all the little things
+		# Probably want to add individual setters leter
+		# BUT NOT NEEDED SO I DUNNO I MEAN THIS WORKS FINE FOR ME
+
+		elements = [
+			f"v{app_version}",
+			f"<a href=\"{url_github}\">Github</a>",
+		 ]
+		if url_donate is not None:
+			elements.append(f"<a href=\"{url_donate}\">Donate</a>")
 
 		font_about = self._ui.Font({"PointSize": 10})
 
@@ -18,7 +29,7 @@ class TRTAboutPane(TRTAbstractWidget):
 		self._lbl_about_links  = self._ui.Label({
 			"Weight":0,
 			"Font": font_about,
-			"Text": f"v{app_version} | <a href=\"{url_github}\">Github</a> | <a href=\"{url_donate}\">Donate</a>",
+			"Text": str(" | ").join(elements),
 			"OpenExternalLinks": True,
 		})
 
