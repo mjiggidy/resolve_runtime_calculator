@@ -1,9 +1,12 @@
-dist/
-*.pkg
 .venv
 .vscode
 .DS_Store
 __pycache__
 *.egg-info
-build
 config.json
+
+# Build artifacts
+dist
+pkg_stagings
+build
+*.pkg
