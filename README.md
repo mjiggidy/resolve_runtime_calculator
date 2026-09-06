@@ -10,6 +10,11 @@ A simple runtime calculator for Davinci Resolve.  Selected media pool items can 
 >[!NOTE]
 >Davinci Resolve currently requires a studio license to run Workflow Integration plugins such as this.
 
+## Requirements
+
+- Davinci Resolve Studio v21.0.4 or newer
+- Python 3.11 or newer
+
 ## Installation
 
 An installation package is available for macOS.  Download the `.pkg` from the release page and follow the instructions to run.
