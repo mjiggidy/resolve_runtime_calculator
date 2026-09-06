@@ -13,7 +13,8 @@ PACKAGE_NAME="runtimecalculator_v${VERSION}_macos.pkg"
 
 #security find-identity -v
 
-cd resolve_runtime_calculator/installers/macos/
+# NOTE: Must be run from 
+#cd resolve_runtime_calculator/installers/macos/
 
 mkdir -p "$DIST_PKG"
 mkdir -p "$DIST_LIB"
@@ -33,5 +34,5 @@ echo "Notarizing package..."
 xcrun notarytool submit "$DIST_PKG/$PACKAGE_NAME" --apple-id "$MACOS_APPLE_ID" --password "$MACOS_APPLE_ID_PASSWORD" --team-id "$MACOS_TEAM_ID" --wait
 xcrun stapler staple "$DIST_PKG/$PACKAGE_NAME"
 
-echo "Done!"
-open "$DIST_PKG/"
+echo "Done!  Written to $DIST_PKG/$PACKAGE_NAME"
+#open "$DIST_PKG/"
