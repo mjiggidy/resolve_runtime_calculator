@@ -14,7 +14,7 @@ A simple runtime calculator for Davinci Resolve.  Selected media pool items can 
 
 An installation package is available for macOS.  Download the `.pkg` from the release page and follow the instructions to run.
 
-Installers for Windows and Linux are planned, but not yet available, I recommend cloning the repo into some other location, installing its `requirements.txt` dependencies into a virtual environment, and running `Runtime Calculator.py` externally via the command line.  Not so glamorous, I know.  Workin' on it.
+Installers for Windows and Linux are planned, but not yet available.  I recommend cloning the repo into some other location, installing its `requirements.txt` dependencies into a virtual environment, and running `Runtime Calculator.py` externally via the command line.  Not so glamorous, I know.  Workin' on it.
 
 ## Usage
 
