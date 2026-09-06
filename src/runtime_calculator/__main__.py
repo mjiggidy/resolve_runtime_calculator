@@ -1,4 +1,4 @@
-import pathlib, logging, json
+import pathlib, logging, json, sys
 
 from runtime_calculator.controller.appcontroller import TRTMainWindowController
 
@@ -14,17 +14,34 @@ from . import ui
 #PATH_CFG_GLOBAL = PATH_RES / "config" / "global_config.json"
 #PATH_LOG_GLOBAL = PATH_RES / "logs" / "global_log.log"
 
+def get_user_base_path() -> pathlib.Path:
+	"""Get the proper user location depending on OS and such"""
+
+	import os
+
+	platform_name = sys.platform.lower()
+
+	if platform_name == "darwin":
+		app_data = pathlib.Path.home() / "Library" / "Application Support"
+
+	elif platform_name == "windows":
+		app_data = os.environ.get("APPDATA") or pathlib.Path.home() / "AppData" / "Roaming"
+
+	else:
+		app_data = os.environ.get("XDG_CONFIG_HOME") or pathlib.Path.home() / ".config"
+	
+	return app_data / "GlowingPixel" / "Resolve Runtime Calculator"
+
 # User locations, macOS only
-PATH_USER_BASE = pathlib.Path.home() / "Library" / "Application Support" / "GlowingPixel" / "Resolve Runtime Calculator"
+PATH_USER_BASE = get_user_base_path()
 PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
+PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
 
 def setup_logging():
 	"""Establish logging handlers"""
 
 	from logging.handlers import RotatingFileHandler
 	
-	PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
-
 	logging.basicConfig(level=logging.DEBUG)
 
 	try:
@@ -106,16 +123,14 @@ def main():
 	# just raise the existing window and get the heck outta there buddy.
 	
 	from runtime_calculator.gui.wnd_main import ID_WINDOW_MAIN
+
 	if win:= ui.FindWindow(ID_WINDOW_MAIN):
-		print("Yep")
+
 		win.Show()
 		win.Raise()
-		
-		import sys
+
 		print("Window instance already running.  There can only be one.", file=sys.stderr)
 		sys.exit(0)
-
-	print("Nope")
 
 	setup_logging()
 
