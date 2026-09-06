@@ -2,6 +2,7 @@ import pathlib, logging, json, sys
 
 from runtime_calculator.controller.appcontroller import TRTMainWindowController
 
+from resolvecommon.session import resolve
 from . import ui
 
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
@@ -36,6 +37,8 @@ def get_user_base_path() -> pathlib.Path:
 PATH_USER_BASE = get_user_base_path()
 PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
 PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
+
+RESOLVE_MINIMUM_VERSION = [21,0,4]
 
 def setup_logging():
 	"""Establish logging handlers"""
@@ -138,6 +141,16 @@ def main():
 		sys.exit(0)
 
 	setup_logging()
+
+	try:
+		resolve_version = resolve.GetVersion()
+		logging.getLogger(__name__).debug("Resolve reports version=%s", resolve_version)
+		if RESOLVE_MINIMUM_VERSION > resolve_version:
+			raise RuntimeError(f"This plugin requires Resolve version {'.'.join(str(v) for v in RESOLVE_MINIMUM_VERSION)} or newer (got: {'.'.join(str(v) for v in resolve_version)})")
+	except Exception as e:
+		print("Cannot run: ", str(e), file=sys.stderr)
+		sys.exit(1)
+
 	user_config = read_user_config()
 
 	# Actually do the thing
