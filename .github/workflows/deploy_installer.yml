@@ -47,5 +47,6 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_TAG: ${{ github.event.release.tag_name || inputs.version_number }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "${{ env.PKG_PATH }}" --clobber
+          gh release upload "$VERSION_TAG" "${{ env.PKG_PATH }}" --clobber
