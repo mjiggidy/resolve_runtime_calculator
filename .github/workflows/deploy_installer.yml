@@ -21,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - name: Install the Apple certificate
@@ -30,7 +30,8 @@ jobs:
           P12_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
         run: |
-          . resolve_runtime_calculator/installers/macos/action_install_cert.sh
+          ls
+          . ./installers/macos/action_install_cert.sh
       - name: Build the pkg
         env:
           MACOS_APPLE_ID: ${{ secrets.MACOS_APPLE_ID }}
@@ -38,4 +39,4 @@ jobs:
           MACOS_APPLE_ID_PASSWORD: ${{ secrets.MACOS_APPLE_ID_PASSWORD }}
           VERSION_TAG: ${{ github.event.release.tag_name }}
         run: |
-          . resolve_runtime_calculator/installers/macos/action_build_pkg.sh "$VERSION_TAG"
+          . ./installers/macos/action_build_pkg.sh "$VERSION_TAG"
