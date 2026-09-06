@@ -34,5 +34,9 @@ echo "Notarizing package..."
 xcrun notarytool submit "$DIST_PKG/$PACKAGE_NAME" --apple-id "$MACOS_APPLE_ID" --password "$MACOS_APPLE_ID_PASSWORD" --team-id "$MACOS_TEAM_ID" --wait
 xcrun stapler staple "$DIST_PKG/$PACKAGE_NAME"
 
-echo "Done!  Written to $DIST_PKG/$PACKAGE_NAME"
-#open "$DIST_PKG/"
+DIST_PKG_FULL="$(realpath "$DIST_PKG/$PACKAGE_NAME")"
+
+echo "Done!  Written to $DIST_PKG_FULL"
+
+# Write it to the env
+echo "PKG_PATH=$DIST_PKG_FULL" >> "$GITHUB_ENV"
