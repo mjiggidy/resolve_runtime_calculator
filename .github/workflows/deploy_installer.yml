@@ -40,4 +40,5 @@ jobs:
           MACOS_APPLE_ID_PASSWORD: ${{ secrets.MACOS_APPLE_ID_PASSWORD }}
           VERSION_TAG: ${{ github.event.release.tag_name }}
         run: |
-          . ./installers/macos/action_build_pkg.sh "$VERSION_TAG"
+          cd ./installers/macos/
+          . action_build_pkg.sh "$VERSION_TAG"
