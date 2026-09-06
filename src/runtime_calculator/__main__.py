@@ -58,7 +58,7 @@ def setup_logging():
 
 	logging.getLogger(__name__).info("Hello from %s", __name__)
 
-def get_user_config() -> dict:
+def read_user_config() -> dict:
 	"""Read user config from `.json` on disk"""
 
 	user_config = {}
@@ -94,23 +94,28 @@ def get_user_config() -> dict:
 
 	return user_config
 
-def write_user_config(app:TRTMainWindowController):
+def write_user_config(app:TRTMainWindowController, base_config:dict|None=None):
 	"""Write user config to disk"""
 
+	user_config = base_config or {}
+
+	# Update trim info
 	trim_options = app.update_trim_options_from_window()
+
+	user_config.update({
+		"use_ffoa_marker": trim_options.use_ffoa_marker,
+		"use_lfoa_marker": trim_options.use_lfoa_marker,
+		"trim_from_head" : str(trim_options.trim_from_head),
+		"trim_from_tail" : str(trim_options.trim_from_tail),
+	})
 
 	try:
 
 		PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
 
 		with open(PATH_CFG_USER, "w") as json_file:
-			json.dump({
-				"use_ffoa_marker": trim_options.use_ffoa_marker,
-				"use_lfoa_marker": trim_options.use_lfoa_marker,
-				"trim_from_head" : str(trim_options.trim_from_head),
-				"trim_from_tail" : str(trim_options.trim_from_tail),
-			}, json_file)
 
+			json.dump(user_config, json_file, indent="\t")
 			logging.getLogger(__name__).debug("Wrote config to %s: %s", PATH_CFG_USER, trim_options)
 
 	except Exception as e:
@@ -133,12 +138,13 @@ def main():
 		sys.exit(0)
 
 	setup_logging()
+	user_config = read_user_config()
 
 	# Actually do the thing
-	app = TRTMainWindowController(**get_user_config())
+	app = TRTMainWindowController(**user_config)
 
 	# Save config to disk
-	write_user_config(app)
+	write_user_config(app, user_config)
 
 
 if __name__ == "__main__":
