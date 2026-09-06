@@ -2,13 +2,13 @@
 
 A simple runtime calculator for Davinci Resolve.  Selected media pool items can be added to a list to calculate their total collective runtime.
 
+![Embarrassing Screenshot](screenshot.png)
+
 >[!WARNING]
 >This is under heavy development.  Use at your own risk.  I assume no responsibility for anything, ever, in the world.
 
 >[!NOTE]
 >Davinci Resolve currently requires a studio license to run Workflow Integration plugins such as this.
-
-![Embarrassing Screenshot](screenshot.png)
 
 ## Installation
 
