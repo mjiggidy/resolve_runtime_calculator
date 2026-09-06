@@ -28,7 +28,7 @@ pkgbuild --root "$DIST_STAGING" --install-location "$INSTALLATION_DEST" --identi
 echo "Buidling product .pkg"
 productbuild --distribution Distribution.xml --resources ./resources --package-path . --sign "Developer ID Installer: Michael Jordan ($MACOS_TEAM_ID)" "$DIST_PKG/$PACKAGE_NAME"
 
-pkgutil --check-signature ../RuntimeCalculator_signed.pkg  
+pkgutil --check-signature "$DIST_PKG/$PACKAGE_NAME"
 
 echo "Notarizing package..."
 xcrun notarytool submit "$DIST_PKG/$PACKAGE_NAME" --apple-id "$MACOS_APPLE_ID" --password "$MACOS_APPLE_ID_PASSWORD" --team-id "$MACOS_TEAM_ID" --wait
