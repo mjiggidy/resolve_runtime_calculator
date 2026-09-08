@@ -2,13 +2,16 @@
 Deals with selecting reels.  Only gonna work for meeeee for now!
 """
 
-import re, logging
+from __future__ import annotations
+import re, logging, typing
 
 from resolvecommon.session import resolve
 from resolvecommon.folders import get_folder_from_path, get_clips_from_folder_by_type
 from resolvecommon.versioning import PAT_REEL_NAME, get_latest_reel_version
 from resolvecommon.itemtypes import ItemTypes
 
+if typing.TYPE_CHECKING:
+	import DaVinciResolveScript
 
 REELS_FOLDER_PATH = "00 REELS"
 PAT_REEL_FOLDER  = re.compile(r"^\s*REEL (?P<reel_number>\d+)\s*(?P<reel_description>.+)?", re.I)
@@ -21,6 +24,19 @@ def refresh_project():
 
 	logging.getLogger(__name__).info("Refreshing folders...")
 	mp.RefreshFolders()
+
+def get_latest_from_project(from_folder_path:str) -> list[DaVinciResolveScript.MediaPoolItem]:
+	"""Determine the latest things"""
+
+	if from_folder_path:
+		logging.getLogger(__name__).debug("Search for user-specified folder %s", from_folder_path)
+	else:
+		logging.getLogger(__name__).debug("Using root folder by default")
+	base_folder:DaVinciResolveScript.Folder = get_folder_from_path(from_folder_path, mp.GetRootFolder()) if from_folder_path else mp.GetRootFolder()
+
+	
+
+
 
 def get_latest_reels_from_project() -> list[object]:
 	"""Find the media pool items of the latest version of each reel"""
