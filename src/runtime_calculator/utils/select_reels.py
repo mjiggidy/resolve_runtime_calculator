@@ -37,9 +37,13 @@ def get_latest_from_project(from_folder_path:str, match_pattern:re.Pattern, igno
 		logging.getLogger(__name__).debug("Using root folder by default")
 
 	base_folder:bmd.Folder = get_folder_from_path(from_folder_path, mp.GetRootFolder()) if from_folder_path else mp.GetRootFolder()
-	ignore_folder = get_folder_from_path(ignore_path, mp.GetRootFolder()) if ignore_path else None
-
-	logging.getLogger(__name__).debug("Ignored folder is %s", ignore_folder.GetName())
+	ignore_folder = None
+	try:
+		ignore_folder = get_folder_from_path(ignore_path, mp.GetRootFolder()) if ignore_path else None
+	except Exception as e:
+		logging.getLogger(__name__).error("Not ignoring folder at path %s: %s", ignore_path, e, exc_info=True)
+	else:
+		logging.getLogger(__name__).debug("Using ignored folder %s", ignore_folder.GetName())
 
 	for item in get_clips_from_folder_by_type(base_folder, recursive=True, ignore_folder=ignore_folder):
 

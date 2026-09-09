@@ -158,16 +158,18 @@ class TRTMainWindowController:
 
 		trim_options = self.update_trim_options_from_window()
 
+		status_messages = []
+
 		latest_reels  = []
 		trimmed_reels = []
 		skipped_reels = []
-
 
 		try:
 			latest_reels = select_reels.get_latest_from_project(self._match_path, self._match_pattern, ignore_path=self._ignore_path)
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Unable to find latest reels: %s", e, exc_info=True)
+			status_messages.append(str(e))
 
 		for clip in latest_reels:
 
@@ -182,7 +184,7 @@ class TRTMainWindowController:
 		for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: formatting.format_string_for_natural_sort(r.media_pool_name)):
 			self.add_trimmed_item_info(trimmed_reel_info)
 
-		status_messages = [f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}"]
+		status_messages.append(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
 
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
