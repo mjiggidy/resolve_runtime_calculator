@@ -25,16 +25,35 @@ def refresh_project():
 	logging.getLogger(__name__).info("Refreshing folders...")
 	mp.RefreshFolders()
 
-def get_latest_from_project(from_folder_path:str) -> list[DaVinciResolveScript.MediaPoolItem]:
+def get_latest_from_project(from_folder_path:str, match_pattern:re.Pattern) -> list[DaVinciResolveScript.MediaPoolItem]:
 	"""Determine the latest things"""
+
+	latest_per_ep:dict[str, tuple[str, DaVinciResolveScript.MediaPoolItem]] = dict()
 
 	if from_folder_path:
 		logging.getLogger(__name__).debug("Search for user-specified folder %s", from_folder_path)
 	else:
 		logging.getLogger(__name__).debug("Using root folder by default")
+
 	base_folder:DaVinciResolveScript.Folder = get_folder_from_path(from_folder_path, mp.GetRootFolder()) if from_folder_path else mp.GetRootFolder()
 
-	
+	for item in get_clips_from_folder_by_type(base_folder, recursive=True):
+
+		match = match_pattern.search(item.GetName())
+
+		if not match:
+			print("Not matched: ", item.GetName())
+			continue
+
+		version_parsed = [int(v) for v in re.split(r"[^0-9]+", match.group("version"))]
+		print(version_parsed)
+
+		if match.group("ep") not in latest_per_ep or latest_per_ep[match.group("ep")][0] < version_parsed:
+			latest_per_ep[match.group("ep")] = (version_parsed, item)
+
+	print("Returning ", [item[1] for item in latest_per_ep.values()])
+
+	return [item[1] for item in latest_per_ep.values()]
 
 
 

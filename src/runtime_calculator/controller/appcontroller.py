@@ -2,7 +2,10 @@
 Main app controller for the thing
 """
 
-import logging, timecode
+
+
+import logging, re
+import timecode
 
 from .eventhandler import TRTEventDispatcher
 
@@ -17,13 +20,15 @@ class TRTMainWindowController:
 
 	def __init__(
 		self,
-		trim_from_head:str   = DEFAULT_HEAD_TRIM,
-		trim_from_tail:str   = DEFAULT_TAIL_TRIM,
-		use_ffoa_marker:bool = True,
-		use_lfoa_marker:bool = True,
-		project_rate:int     = 24,
-		window_title:str     = DEFAULT_WINDOW_TITLE,
-		show_nag_link:bool   = True,
+		trim_from_head:str    = DEFAULT_HEAD_TRIM,
+		trim_from_tail:str    = DEFAULT_TAIL_TRIM,
+		use_ffoa_marker:bool  = True,
+		use_lfoa_marker:bool  = True,
+		project_rate:int      = 24,
+		window_title:str      = DEFAULT_WINDOW_TITLE,
+		show_nag_link:bool    = True,
+		match_pattern:str     = r"REEL (?P<ep>[0-9]+) v(?P<version>[0-9\.]+)",
+		match_path:str        = "00 REELS"
 	):
 
 		self.main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
@@ -44,6 +49,9 @@ class TRTMainWindowController:
 			use_lfoa_marker = use_lfoa_marker,
 		)
 		"""Currently-active trim options"""
+
+		self._match_pattern = re.compile(match_pattern, re.I)
+		self._match_path    = match_path
 
 		# Setup main window controller
 		self.main_window_widget.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
@@ -154,7 +162,7 @@ class TRTMainWindowController:
 
 
 		try:
-			latest_reels = select_reels.get_latest_reels_from_project()
+			latest_reels = select_reels.get_latest_from_project(self._match_path, self._match_pattern)
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Unable to find latest reels: %s", e, exc_info=True)
