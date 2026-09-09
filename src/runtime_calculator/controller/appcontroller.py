@@ -28,7 +28,8 @@ class TRTMainWindowController:
 		window_title:str      = DEFAULT_WINDOW_TITLE,
 		show_nag_link:bool    = True,
 		match_pattern:str     = r"REEL (?P<ep>[0-9]+) v(?P<version>[0-9\.]+)",
-		match_path:str        = "00 REELS"
+		match_path:str        = "00 REELS",
+		ignore_path:str       = "00 REELS/zArchived Reels",
 	):
 
 		self.main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
@@ -52,6 +53,7 @@ class TRTMainWindowController:
 
 		self._match_pattern = re.compile(match_pattern, re.I)
 		self._match_path    = match_path
+		self._ignore_path   = ignore_path
 
 		# Setup main window controller
 		self.main_window_widget.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
@@ -162,7 +164,7 @@ class TRTMainWindowController:
 
 
 		try:
-			latest_reels = select_reels.get_latest_from_project(self._match_path, self._match_pattern)
+			latest_reels = select_reels.get_latest_from_project(self._match_path, self._match_pattern, ignore_path=self._ignore_path)
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Unable to find latest reels: %s", e, exc_info=True)

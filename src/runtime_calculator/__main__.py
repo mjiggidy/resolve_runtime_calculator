@@ -112,6 +112,7 @@ def write_user_config(app:TRTMainWindowController, base_config:dict|None=None):
 		"trim_from_tail" : str(trim_options.trim_from_tail),
 		"match_pattern"  : app._match_pattern.pattern,
 		"match_path"     : app._match_path,
+		"ignore_path"    : app._ignore_path,
 	})
 
 	try:
