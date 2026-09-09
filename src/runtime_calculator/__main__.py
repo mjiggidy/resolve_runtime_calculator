@@ -110,10 +110,12 @@ def write_user_config(app:TRTMainWindowController, base_config:dict|None=None):
 		"use_lfoa_marker": trim_options.use_lfoa_marker,
 		"trim_from_head" : str(trim_options.trim_from_head),
 		"trim_from_tail" : str(trim_options.trim_from_tail),
+		"match_pattern"  : app._match_pattern.pattern,
+		"match_path"     : app._match_path,
 	})
 
 	try:
-
+		
 		PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
 
 		with open(PATH_CFG_USER, "w") as json_file:
