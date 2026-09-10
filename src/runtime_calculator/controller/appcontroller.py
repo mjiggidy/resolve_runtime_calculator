@@ -20,6 +20,7 @@ class TRTMainWindowController:
 
 	def __init__(
 		self,
+		/,
 		trim_from_head:str    = DEFAULT_HEAD_TRIM,
 		trim_from_tail:str    = DEFAULT_TAIL_TRIM,
 		use_ffoa_marker:bool  = True,
@@ -30,7 +31,11 @@ class TRTMainWindowController:
 		match_pattern:str     = r"REEL (?P<ep>[0-9]+) v(?P<version>[0-9\.]+)",
 		match_path:str        = "00 REELS",
 		ignore_path:str       = "00 REELS/zArchived Reels",
+		**kwargs,
 	):
+
+		if kwargs:
+			logging.getLogger(__name__).debug("Got extra kwargs: %s", kwargs)
 
 		self.main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
 		"""Main window controller"""
