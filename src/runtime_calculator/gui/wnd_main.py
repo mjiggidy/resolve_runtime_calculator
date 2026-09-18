@@ -16,6 +16,8 @@ from ..utils.trim_info import TRTTrimInfo
 
 from .. import __version__
 
+DEFAULT_WINDOW_TITLE = "Runtime Calculator"
+
 URL_GITHUB     = "https://github.com/mjiggidy/resolve_runtime_calculator"
 URL_DONATE     = "https://ko-fi.com/lilbinboy"
 

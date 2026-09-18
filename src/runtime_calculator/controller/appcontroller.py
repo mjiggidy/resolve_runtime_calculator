@@ -7,28 +7,25 @@ Main app controller for the thing
 import logging, re
 import timecode
 
-from .eventhandler import TRTEventDispatcher
-
-from .. import dispatcher, ui, DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE
+from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE, DEFAULT_MATCH_STRING
 from ..utils import trim_info, select_reels, formatting
 from ..gui import wnd_main
 
-DEFAULT_WINDOW_TITLE = "Runtime Calculator"
+
 
 class TRTMainWindowController:
 	"""Main application controller"""
 
 	def __init__(
 		self,
+		main_window_widget:wnd_main.TRTMainWindow,
 		/,
 		trim_from_head:str    = DEFAULT_HEAD_TRIM,
 		trim_from_tail:str    = DEFAULT_TAIL_TRIM,
 		use_ffoa_marker:bool  = True,
 		use_lfoa_marker:bool  = True,
 		project_rate:int      = 24,
-		window_title:str      = DEFAULT_WINDOW_TITLE,
-		show_nag_link:bool    = True,
-		match_pattern:str     = r"REEL (?P<ep>[0-9]+) v(?P<version>[0-9\.]+)",
+		match_pattern:str     = DEFAULT_MATCH_STRING,
 		match_path:str        = "00 REELS",
 		ignore_path:str       = "00 REELS/zArchived Reels",
 		**kwargs,
@@ -37,13 +34,8 @@ class TRTMainWindowController:
 		if kwargs:
 			logging.getLogger(__name__).debug("Got extra kwargs: %s", kwargs)
 
-		self.main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
-		"""Main window controller"""
-
-		self.main_window_handle = self._setup_window(window_title=window_title)
-		"""Handle to the UIDispatcher window"""
-
-		self._event_dispatcher = TRTEventDispatcher(controller=self, window_handle=self.main_window_handle)
+		self.main_window_widget = main_window_widget
+		"""Main window widget"""
 
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
@@ -65,21 +57,6 @@ class TRTMainWindowController:
 		self.main_window_widget.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
 		self.main_window_widget.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
 		self.main_window_widget.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
-
-		# Add mainwindow to  UIDispatcher
-		self.main_window_handle.Show()
-		dispatcher.RunLoop()
-
-	def _setup_window(self, window_title:str) -> object:
-
-		# Use trim options if passsed, otherwise use the defaults
-		
-		return dispatcher.AddWindow({
-			"ID": wnd_main.ID_WINDOW_MAIN,
-			"WindowTitle": window_title,
-			"FixedSize": [360,500],
-			"Events": {"Close": True, "KeyRelease": True},
-		}, [self.main_window_widget.layout()])
 
 	def current_trim_options(self) -> trim_info.TRTTrimOptions:
 
@@ -132,8 +109,10 @@ class TRTMainWindowController:
 	def close_window(self):
 		"""Window is closing"""
 
+		from .. import dispatcher
+
 		# Update options for later writing to disk
-		self.update_trim_options_from_window()
+#		self.update_trim_options_from_window()
 
 		logging.getLogger(__name__).debug("Window is closing.  And hey -- thanks.")
 		dispatcher.ExitLoop(0)

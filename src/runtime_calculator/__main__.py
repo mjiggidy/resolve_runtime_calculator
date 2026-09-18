@@ -3,7 +3,10 @@ import pathlib, logging, json, sys
 from runtime_calculator.controller.appcontroller import TRTMainWindowController
 
 from resolvecommon.session import resolve
-from . import ui
+from . import ui, dispatcher
+
+from .gui import wnd_main
+from .controller import eventhandler
 
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 #PACKAGE_ID="com.glowingpixel.runtimecalculator"
@@ -132,10 +135,8 @@ def main():
 
 	# If an instance is already running (window is registered with UIDispatcher), 
 	# just raise the existing window and get the heck outta there buddy.
-	
-	from runtime_calculator.gui.wnd_main import ID_WINDOW_MAIN
 
-	if win:= ui.FindWindow(ID_WINDOW_MAIN):
+	if win:= ui.FindWindow(wnd_main.ID_WINDOW_MAIN):
 
 		win.Show()
 		win.Raise()
@@ -157,10 +158,26 @@ def main():
 	user_config = read_user_config()
 
 	# Actually do the thing
-	app = TRTMainWindowController(**user_config)
+
+	main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=user_config.get("show_nag_link",True))
+	"""Main window controller"""
+
+	main_window_handle = dispatcher.AddWindow({
+		"ID": wnd_main.ID_WINDOW_MAIN,
+		"WindowTitle": user_config.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
+		"FixedSize": [360,500],
+		"Events": {"Close": True, "KeyRelease": True},
+	}, [main_window_widget.layout()])
+
+	main_window_controller = TRTMainWindowController(main_window_widget, **user_config)
+
+	event_dispatcher = eventhandler.TRTEventDispatcher(controller=main_window_controller, window_handle=main_window_handle)
+
+	main_window_handle.Show()
+	dispatcher.RunLoop()
 
 	# Save config to disk
-	write_user_config(app, user_config)
+	write_user_config(main_window_controller, user_config)
 
 
 if __name__ == "__main__":

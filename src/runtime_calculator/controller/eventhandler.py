@@ -9,13 +9,10 @@ if typing.TYPE_CHECKING:
 class TRTEventDispatcher:
 	"""Dispatch events to the controller"""
 
-	def __init__(self, controller:TRTMainWindowController, window_handle:object|None=None):
+	def __init__(self, controller:TRTMainWindowController, window_handle:object):
 
 		self._controller = controller
-
-		if window_handle:
-
-			self._attach_handlers(window_handle)
+		self._attach_handlers(window_handle)
 
 	def _attach_handlers(self, win_handle:object):
 		"""Attach listeners"""
