@@ -1,4 +1,4 @@
-__version__ = "0.7-dev"
+__version__ = "0.7"
 """Runtime Calculator version"""
 # I'm gonna forget to change this I just know it
 
