@@ -1,8 +1,6 @@
 """
-Main app controller for the thing
+Main app controller for the main window widget
 """
-
-
 
 import logging, re
 import timecode
@@ -11,7 +9,7 @@ from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE, DEFAULT
 from ..utils import trim_info, select_reels, formatting
 from ..gui import wnd_main
 
-
+from . import eventdispatcher
 
 class TRTMainWindowController:
 	"""Main application controller"""
@@ -37,6 +35,8 @@ class TRTMainWindowController:
 		self.main_window_widget = main_window_widget
 		"""Main window widget"""
 
+		self._event_dispatcher = eventdispatcher.TRTEventDispatcher(controller=self)
+
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
 
@@ -57,6 +57,11 @@ class TRTMainWindowController:
 		self.main_window_widget.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
 		self.main_window_widget.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
 		self.main_window_widget.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
+
+	def event_dispatcher(self) -> eventdispatcher.TRTEventDispatcher:
+		"""Return the event dispatcher"""
+
+		return self._event_dispatcher
 
 	def current_trim_options(self) -> trim_info.TRTTrimOptions:
 

@@ -1,3 +1,8 @@
+"""
+Little manager thing for binding a given TRTMainWindow widget's window handle events to the controller...
+Is... is this the way...?  I don't know.  CONFUSING.
+"""
+
 from __future__ import annotations
 import logging, typing
 
@@ -9,13 +14,17 @@ if typing.TYPE_CHECKING:
 class TRTEventDispatcher:
 	"""Dispatch events to the controller"""
 
-	def __init__(self, controller:TRTMainWindowController, window_handle:object):
+	def __init__(self, controller:TRTMainWindowController, window_handle:object|None=None):
 
 		self._controller = controller
-		self._attach_handlers(window_handle)
 
-	def _attach_handlers(self, win_handle:object):
-		"""Attach listeners"""
+		if window_handle:
+			self.register_window_handle(window_handle)
+
+	def register_window_handle(self, win_handle:object):
+		"""Bind a window handle's events to the controller"""
+
+		# TODO Think about this because... like... the IDs and such
 
 		win_handle.On[wnd_main.ID_WINDOW_MAIN].Close                   = self.on_close
 

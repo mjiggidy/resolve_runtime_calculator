@@ -6,7 +6,6 @@ from resolvecommon.session import resolve
 from . import ui, dispatcher
 
 from .gui import wnd_main
-from .controller import eventhandler
 
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 #PACKAGE_ID="com.glowingpixel.runtimecalculator"
@@ -171,7 +170,7 @@ def main():
 
 	main_window_controller = TRTMainWindowController(main_window_widget, **user_config)
 
-	event_dispatcher = eventhandler.TRTEventDispatcher(controller=main_window_controller, window_handle=main_window_handle)
+	main_window_controller.event_dispatcher().register_window_handle(main_window_handle)
 
 	main_window_handle.Show()
 	dispatcher.RunLoop()
