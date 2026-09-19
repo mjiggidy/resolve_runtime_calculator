@@ -27,11 +27,11 @@ def get_user_base_path() -> pathlib.Path:
 	if platform_name == "darwin":
 		app_data = pathlib.Path.home() / "Library" / "Application Support"
 
-	elif platform_name == "windows":
-		app_data = os.environ.get("APPDATA") or pathlib.Path.home() / "AppData" / "Roaming"
+	elif platform_name.startswith("win"):
+		app_data = pathlib.Path(os.environ.get("APPDATA")) or pathlib.Path.home() / "AppData" / "Roaming"
 
 	else:
-		app_data = os.environ.get("XDG_CONFIG_HOME") or pathlib.Path.home() / ".config"
+		app_data = pathlib.Path(os.environ.get("XDG_CONFIG_HOME")) or pathlib.Path.home() / ".config"
 	
 	return app_data / "GlowingPixel" / "Resolve Runtime Calculator"
 
