@@ -1,33 +1,33 @@
-# NOTE: Run this from installers/macos
+#!/usr/bin/env bash
+# NOTE: Run this from installers/windows
+set -euo pipefail
 
 VERSION="${1#v}"
-INSTALLATION_DEST="/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 REVERSE_DOMAIN="com.glowingpixel.runtimecalculator"
 
 DIST_STAGING="pkg_staging"
 DIST_BASE="$DIST_STAGING/$REVERSE_DOMAIN"
 DIST_LIB="$DIST_BASE/lib"
-
 DIST_PKG="dist"
 
-PACKAGE_NAME="runtimecalculator_v${VERSION}_windows.exe"
+PACKAGE_BASENAME="runtimecalculator_v${VERSION}_windows"   # Inno appends .exe
 
-echo "Dir looks like:"
-ls -la
+rm -rf "$DIST_STAGING"
+mkdir -p "$DIST_PKG" "$DIST_LIB"
 
-mkdir -p "$DIST_PKG"
-mkdir -p "$DIST_LIB"
-
-echo "Staging python package to $DIST_STAGING"
+echo "Staging python package to $DIST_BASE"
 pip install . --target "$DIST_LIB"
-cp workflow_integration/Runtime\ Calculator.py "$DIST_STAGING/"
+cp "workflow_integration/Runtime Calculator.py" "$DIST_BASE/"
+# cp workflow_integration/manifest.xml "$DIST_BASE/"   # if applicable
 
 echo "Building installer"
-iscc /DMyAppVersion="$VERSION" -o"$DIST_PKG" -f"$PACKAGE_NAME" installer.iss
+MSYS2_ARG_CONV_EXCL="*" iscc \
+	"/DMyAppVersion=$VERSION" \
+	"/O$DIST_PKG" \
+	"/F$PACKAGE_BASENAME" \
+	installer.iss
 
-DIST_PKG_FULL="$(realpath "$DIST_PKG/$PACKAGE_NAME")"
+DIST_PKG_FULL="$DIST_PKG/$PACKAGE_BASENAME.exe"
+echo "Done! Written to $DIST_PKG_FULL"
 
-echo "Done!  Written to $DIST_PKG_FULL"
-
-# Write it to the env
 echo "PKG_PATH=$DIST_PKG_FULL" >> "$GITHUB_ENV"
