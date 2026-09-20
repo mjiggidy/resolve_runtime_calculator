@@ -157,18 +157,15 @@ def main():
 	user_config = read_user_config()
 
 	# Actually do the thing
-
-	main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=user_config.get("show_nag_link",True))
-	"""Main window controller"""
+	main_window_controller = TRTMainWindowController(ui, **user_config)
 
 	main_window_handle = dispatcher.AddWindow({
 		"ID": wnd_main.ID_WINDOW_MAIN,
 		"WindowTitle": user_config.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
 		"FixedSize": [360,500],
 		"Events": {"Close": True, "KeyRelease": True},
-	}, [main_window_widget.layout()])
+	}, [main_window_controller.main_window_widget().layout()])
 
-	main_window_controller = TRTMainWindowController(main_window_widget, **user_config)
 
 	main_window_controller.event_dispatcher().register_window_handle(main_window_handle)
 
