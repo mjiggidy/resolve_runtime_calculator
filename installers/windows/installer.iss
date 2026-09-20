@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Resolve Runtime Calculator"
-#define MyAppVersion "0.8"
+;#define MyAppVersion "0.8"
 #define MyAppPublisher "GlowingPixel"
 #define MyAppURL "https://github.com/mjiggidy/resolve_runtime_calculator/"
 
