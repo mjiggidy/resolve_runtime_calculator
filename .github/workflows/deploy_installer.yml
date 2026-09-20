@@ -72,3 +72,11 @@ jobs:
         shell: bash
         run: |
           installers/windows/action_build_installer.sh "$VERSION_TAG"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_TAG: ${{ github.event.release.tag_name || inputs.version_number }}
+        shell: bash
+        run: |
+          gh release upload "$VERSION_TAG" "${{ env.PKG_PATH }}" --clobber
