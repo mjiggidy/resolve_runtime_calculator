@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-# NOTE: Run this from installers/windows
-set -euo pipefail
-
 VERSION="${1#v}"
 REVERSE_DOMAIN="com.glowingpixel.runtimecalculator"
 
@@ -25,7 +21,7 @@ MSYS2_ARG_CONV_EXCL="*" iscc \
 	"/DMyAppVersion=$VERSION" \
 	"/O$DIST_PKG" \
 	"/F$PACKAGE_BASENAME" \
-	installer.iss
+	installers/windows/installer.iss
 
 DIST_PKG_FULL="$DIST_PKG/$PACKAGE_BASENAME.exe"
 echo "Done! Written to $DIST_PKG_FULL"
