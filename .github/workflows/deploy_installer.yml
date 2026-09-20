@@ -50,3 +50,25 @@ jobs:
           VERSION_TAG: ${{ github.event.release.tag_name || inputs.version_number }}
         run: |
           gh release upload "$VERSION_TAG" "${{ env.PKG_PATH }}" --clobber
+
+
+  build_windows_installer:
+    runs-on: windows-latest
+    environment: Deploy
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Build the installer
+        env:
+          VERSION_TAG: ${{ github.event.release.tag_name || inputs.version_number }}
+        shell: bash
+        run: |
+          installers/windows/action_build_installer.sh "$VERSION_TAG"
