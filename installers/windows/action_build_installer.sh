@@ -23,7 +23,7 @@ pip install . --target "$DIST_LIB"
 cp workflow_integration/Runtime\ Calculator.py "$DIST_STAGING/"
 
 echo "Building installer"
-iscc /DMyAppVersion="$VERSION" --output-dir="$DIST_PKG" --output-filename="$PACKAGE_NAME" installer.iss
+iscc /DMyAppVersion="$VERSION" /o"$DIST_PKG" /f"$PACKAGE_NAME" installer.iss
 
 DIST_PKG_FULL="$(realpath "$DIST_PKG/$PACKAGE_NAME")"
 
