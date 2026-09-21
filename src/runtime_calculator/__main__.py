@@ -1,11 +1,11 @@
 import pathlib, logging, json, sys
 
-from runtime_calculator.controller.appcontroller import TRTMainWindowController
+from runtime_calculator.app.appcontroller import TRTMainAppController
 
 from resolvecommon.session import resolve
 from . import ui, dispatcher
 
-from .gui import wnd_main
+from .mainwindow import mainlayout
 
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 #PACKAGE_ID="com.glowingpixel.runtimecalculator"
@@ -99,13 +99,13 @@ def read_user_config() -> dict:
 
 	return user_config
 
-def write_user_config(app:TRTMainWindowController, base_config:dict|None=None):
+def write_user_config(app:TRTMainAppController, base_config:dict|None=None):
 	"""Write user config to disk"""
 
 	user_config = base_config or {}
 
 	# Update trim info
-	trim_options = app.update_trim_options_from_window()
+	trim_options = app.current_trim_options()
 
 	user_config.update({
 		"use_ffoa_marker": trim_options.use_ffoa_marker,
@@ -135,7 +135,7 @@ def main():
 	# If an instance is already running (window is registered with UIDispatcher), 
 	# just raise the existing window and get the heck outta there buddy.
 
-	if win:= ui.FindWindow(wnd_main.ID_WINDOW_MAIN):
+	if win:= ui.FindWindow(mainlayout.ID_WINDOW_MAIN):
 
 		win.Show()
 		win.Raise()
@@ -157,14 +157,14 @@ def main():
 	user_config = read_user_config()
 
 	# Actually do the thing
-	main_window_controller = TRTMainWindowController(ui, **user_config)
+	main_window_controller = TRTMainAppController(ui, **user_config)
 
 	main_window_handle = dispatcher.AddWindow({
-		"ID": wnd_main.ID_WINDOW_MAIN,
-		"WindowTitle": user_config.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
+		"ID": mainlayout.ID_WINDOW_MAIN,
+		"WindowTitle": user_config.get("window_title", mainlayout.DEFAULT_WINDOW_TITLE),
 		"FixedSize": [360,500],
 		"Events": {"Close": True, "KeyRelease": True},
-	}, [main_window_controller.main_window_widget().layout()])
+	}, [main_window_controller.main_window_controller().layout()])
 
 
 	main_window_controller.event_dispatcher().register_window_handle(main_window_handle)

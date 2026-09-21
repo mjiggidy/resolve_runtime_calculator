@@ -34,6 +34,14 @@ class TRTTreeResults(TRTAbstractWidget):
 
 		return self._tree
 
+	def item_count(self) -> int:
+
+		return self._tree.TopLevelItemCount()
+
+	def is_empty(self) -> bool:
+
+		return not bool(self.item_count())
+
 	def selected_rows(self) -> list[tuple[int, object]]:
 		"""Return a tuple of selected (index, TreeItem)s"""
 
@@ -72,3 +80,7 @@ class TRTTreeResults(TRTAbstractWidget):
 	def clear(self):
 
 		self._tree.Clear()
+
+	def remove_index(self, index:int):
+
+		self.tree().TakeTopLevelItem(index)

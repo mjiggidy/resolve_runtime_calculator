@@ -7,11 +7,11 @@ import timecode
 
 from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE, DEFAULT_MATCH_STRING
 from ..utils import trim_info, select_reels, formatting
-from ..gui import wnd_main
+from ..mainwindow import maincontroller
 
 from . import eventdispatcher
 
-class TRTMainWindowController:
+class TRTMainAppController:
 	"""Main application controller"""
 
 	def __init__(
@@ -33,7 +33,7 @@ class TRTMainWindowController:
 		if kwargs:
 			logging.getLogger(__name__).debug("Got extra kwargs: %s", kwargs)
 
-		self._main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
+		self._main_window_controller = maincontroller.TRTMainWindowController(ui, show_nag_link=show_nag_link)
 		"""Main window widget"""
 
 		self._event_dispatcher = eventdispatcher.TRTEventDispatcher(controller=self)
@@ -41,80 +41,68 @@ class TRTMainWindowController:
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
 
-		self._current_trim_options = trim_info.TRTTrimOptions(
-			trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
-			trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
-			use_ffoa_marker = use_ffoa_marker,
-			use_lfoa_marker = use_lfoa_marker,
-		)
-		"""Currently-active trim options"""
-
 		self._match_pattern = re.compile(match_pattern, re.I)
 		self._match_path    = match_path
 		self._ignore_path   = ignore_path
 
 		# Setup main window controller
-		self._main_window_widget.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
-		self._main_window_widget.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
-		self._main_window_widget.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
-		self._main_window_widget.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
+		self._main_window_controller.set_trim_options(
+			trim_info.TRTTrimOptions(
+				trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
+				trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
+				use_ffoa_marker = use_ffoa_marker,
+				use_lfoa_marker = use_lfoa_marker,
+			)
+		)
 
 	def event_dispatcher(self) -> eventdispatcher.TRTEventDispatcher:
 		"""Return the event dispatcher"""
 
 		return self._event_dispatcher
 
-	def main_window_widget(self) -> wnd_main.TRTMainWindow:
+	def main_window_controller(self) -> maincontroller.TRTMainWindowController:
 
-		return self._main_window_widget
+		return self._main_window_controller
 
 	def current_trim_options(self) -> trim_info.TRTTrimOptions:
+		"""Collect the current user trim options"""
 
-		return self._current_trim_options
+		from resolvecommon.session import resolve
 
-	def update_trim_options_from_window(self) -> trim_info.TRTTrimOptions:
+		project_rate = round(resolve.GetProjectManager().GetCurrentProject().GetSetting("timelineFrameRate"))
 
-		self._current_trim_options = trim_info.TRTTrimOptions(
-			trim_from_head = timecode.Timecode(self._main_window_widget.trim_controls().ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			trim_from_tail = timecode.Timecode(self._main_window_widget.trim_controls().lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			use_ffoa_marker = self._main_window_widget.trim_controls().use_ffoa_marker(),
-			use_lfoa_marker = self._main_window_widget.trim_controls().use_lfoa_marker(),
-		)
-
-		return self._current_trim_options
+		return self._main_window_controller.trim_options(project_rate)
 
 	def add_trimmed_item_info(self, trimmed_item_info:trim_info.TRTTrimInfo):
 
 		logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.media_pool_name)
 
 		self._reel_info_list.append(trimmed_item_info)
-		self._main_window_widget.add_timeline_info(trimmed_item_info)
+		self._main_window_controller.add_trim_item(trimmed_item_info)
 
 		self.refresh_total_runtime()
 
 	def remove_trimmed_item_index(self, index:int):
 		"""Remove trimfo from list and tree"""
 
-		self._main_window_widget.set_busy("Removing...")
+		self._main_window_controller.set_busy("Removing...")
 
 		try:
-			self._main_window_widget.tree_results().tree().TakeTopLevelItem(index)
+			self._main_window_controller.remove_trim_item_index(index)
 			del self._reel_info_list[index]
 		except Exception as e:
 			logging.getLogger(__name__).error("Strange error removing reel: %s", e, exc_info=True)
 
 		self.refresh_total_runtime()
 
-		self._main_window_widget.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
+		self._main_window_controller.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
 
 	def refresh_total_runtime(self):
 		"""Refresh TRT calculation"""
 
-		trt = formatting.format_timecode_as_duration(
-			sum(r.runtime_range.duration for r in self._reel_info_list)
-		) if self._reel_info_list else None
+		trt = sum(r.runtime_range.duration for r in self._reel_info_list) if self._reel_info_list else None
 
-		self._main_window_widget.summary_display().set_total_runtime(trt)
+		self._main_window_controller.set_total_runtime(trt)
 
 	def close_window(self):
 		"""Window is closing"""
@@ -131,26 +119,26 @@ class TRTMainWindowController:
 
 		logging.getLogger(__name__).info("Clearing reel info")
 
-		self._main_window_widget.set_busy("Clearing...")
+		self._main_window_controller.set_busy("Clearing...")
 
 		self._reel_info_list.clear()
 
-		self._main_window_widget.clear_trim_info()
-		self._main_window_widget.summary_display().set_total_runtime()
+		self._main_window_controller.clear_trim_items()
+		self._main_window_controller.set_total_runtime()
 
-		self._main_window_widget.set_ready("Cleared")
+		self._main_window_controller.set_ready("Cleared")
 
 	def add_latest_reels(self):
 		
 		logging.getLogger(__name__).info("Latest reels requested")
 
 
-		self._main_window_widget.set_busy("Refreshing project...")
+		self._main_window_controller.set_busy("Refreshing project...")
 		select_reels.refresh_project()
 
-		self._main_window_widget.set_busy("Loading latest...")
+		self._main_window_controller.set_busy("Loading latest...")
 
-		trim_options = self.update_trim_options_from_window()
+		trim_options = self.current_trim_options()
 
 		status_messages = []
 
@@ -183,16 +171,16 @@ class TRTMainWindowController:
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
-		self._main_window_widget.set_ready(", ".join(status_messages))
+		self._main_window_controller.set_ready(", ".join(status_messages))
 
 	def add_selected_reels(self):
 		
 		logging.getLogger(__name__).info("Selected reels requested")
 
 
-		self._main_window_widget.set_busy("Loading selected...")
+		self._main_window_controller.set_busy("Loading selected...")
 
-		trim_options = self.update_trim_options_from_window()
+		trim_options = self.current_trim_options()
 
 		trimmed_reels:list[trim_info.TRTTrimInfo] = []
 		skipped_reels = []
@@ -215,12 +203,12 @@ class TRTMainWindowController:
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
-		self._main_window_widget.set_ready(", ".join(status_messages))
+		self._main_window_controller.set_ready(", ".join(status_messages))
 
 	def validate_ffoa_trim_amount(self):
 		"""Validate FFOA trim amount"""
 
-		tc_text = self._main_window_widget.trim_controls().ffoa_trim_text().strip().lstrip("-")
+		tc_text = self._main_window_controller.trim_controls().ffoa_trim_text().strip().lstrip("-")
 
 		try:
 			tc_formatted = formatting.format_timecode_as_duration(
@@ -229,12 +217,12 @@ class TRTMainWindowController:
 		except Exception as e:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
-			self._main_window_widget.trim_controls().set_ffoa_trim_text(tc_formatted)
+			self._main_window_controller.trim_controls().set_ffoa_trim_text(tc_formatted)
 
 	def validate_lfoa_trim_amount(self):
 		"""Validate LFOA trim amount"""
 
-		tc_text = self._main_window_widget.trim_controls().lfoa_trim_text().strip().lstrip("-")
+		tc_text = self._main_window_controller.trim_controls().lfoa_trim_text().strip().lstrip("-")
 
 		try:
 			tc_formatted = formatting.format_timecode_as_duration(
@@ -243,12 +231,12 @@ class TRTMainWindowController:
 		except Exception as e:
 			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
 		finally:
-			self._main_window_widget.trim_controls().set_lfoa_trim_text(tc_formatted)
+			self._main_window_controller.trim_controls().set_lfoa_trim_text(tc_formatted)
 
 	def remove_selected_trim_items(self):
 		"""Handle key release events"""
 
-		selected_rows = self._main_window_widget.tree_results().selected_rows()
+		selected_rows = self._main_window_controller.selected_trim_item_indexes()
 
 		if not selected_rows:
 			
@@ -264,7 +252,7 @@ class TRTMainWindowController:
 		"""Trim item was "activated," find it in MediaPool"""
 
 		try:
-			item_index = self._main_window_widget.tree_results().item_index(tree_item)
+			item_index = self._main_window_controller.trim_item_index(tree_item)
 			trim_info = self._reel_info_list[item_index]
 
 			select_reels.focus_reel(trim_info.media_pool_item)
@@ -309,7 +297,7 @@ class TRTMainWindowController:
 		
 		logging.getLogger(__name__).debug("Writing results to path: %s", chosen_path)
 
-		self._main_window_widget.set_busy()
+		self._main_window_controller.set_busy()
 
 		try:
 			trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
@@ -320,8 +308,8 @@ class TRTMainWindowController:
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Error writing results: %s", e, exc_info=True)
-			self._main_window_widget.set_ready("Error exporting!  See logs.")
+			self._main_window_controller.set_ready("Error exporting!  See logs.")
 
 		else:
 			logging.getLogger(__name__).info("Succesfully wrote results to: %s", chosen_path)
-			self._main_window_widget.set_ready("CSV exported successfully")
+			self._main_window_controller.set_ready("CSV exported successfully")

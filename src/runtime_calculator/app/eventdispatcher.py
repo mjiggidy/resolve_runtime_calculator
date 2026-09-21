@@ -6,15 +6,16 @@ Is... is this the way...?  I don't know.  CONFUSING.
 from __future__ import annotations
 import logging, typing
 
-from ..gui import btns_treecontrols, wnd_main, tree_results, trim_controls
+from ..mainwindow import mainlayout
+from ..gui import btns_treecontrols, tree_results, trim_controls
 
 if typing.TYPE_CHECKING:
-	from .appcontroller import TRTMainWindowController
+	from .appcontroller import TRTMainAppController
 
 class TRTEventDispatcher:
 	"""Dispatch events to the controller"""
 
-	def __init__(self, controller:TRTMainWindowController, window_handle:object|None=None):
+	def __init__(self, controller:TRTMainAppController, window_handle:object|None=None):
 
 		self._controller = controller
 
@@ -26,8 +27,8 @@ class TRTEventDispatcher:
 
 		# TODO Think about this because... like... the IDs and such
 
-		win_handle.On[wnd_main.ID_WINDOW_MAIN].Close                   = self.on_close
-		win_handle.On[wnd_main.ID_WINDOW_MAIN].KeyRelease              = self.on_key_released
+		win_handle.On[mainlayout.ID_WINDOW_MAIN].Close                 = self.on_close
+		win_handle.On[mainlayout.ID_WINDOW_MAIN].KeyRelease            = self.on_key_released
 
 		win_handle.On[btns_treecontrols.ID_BTN_ADD_LATEST].Clicked     = self.on_add_latest
 		win_handle.On[btns_treecontrols.ID_BTN_ADD_SELECTED].Clicked   = self.on_add_selected
@@ -37,7 +38,7 @@ class TRTEventDispatcher:
 		win_handle.On[trim_controls.ID_TXT_TRIM_LFOA].EditingFinished  = self.on_lfoa_edited
 
 
-		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                  = self.on_export_clicked
+		win_handle.On[mainlayout.ID_BTN_EXPORT].Clicked                = self.on_export_clicked
 
 		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated         = self.on_tree_item_activated
 
