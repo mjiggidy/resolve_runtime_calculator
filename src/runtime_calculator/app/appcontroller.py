@@ -60,6 +60,12 @@ class TRTMainAppController:
 
 		return self._event_dispatcher
 
+	def register_window_handle(self, win_handle:object):
+
+		self._event_dispatcher.register_window_handle(win_handle)
+
+		self._main_window_controller.register_window_handle(win_handle)
+
 	def main_window_controller(self) -> maincontroller.TRTMainWindowController:
 
 		return self._main_window_controller
@@ -204,34 +210,6 @@ class TRTMainAppController:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
 		self._main_window_controller.set_ready(", ".join(status_messages))
-
-	def validate_ffoa_trim_amount(self):
-		"""Validate FFOA trim amount"""
-
-		tc_text = self._main_window_controller.trim_controls().ffoa_trim_text().strip().lstrip("-")
-
-		try:
-			tc_formatted = formatting.format_timecode_as_duration(
-				formatting.format_string_as_timecode(tc_text, timecode_rate=PROJECT_FRAME_RATE)
-			)
-		except Exception as e:
-			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
-		finally:
-			self._main_window_controller.trim_controls().set_ffoa_trim_text(tc_formatted)
-
-	def validate_lfoa_trim_amount(self):
-		"""Validate LFOA trim amount"""
-
-		tc_text = self._main_window_controller.trim_controls().lfoa_trim_text().strip().lstrip("-")
-
-		try:
-			tc_formatted = formatting.format_timecode_as_duration(
-				formatting.format_string_as_timecode(tc_text, timecode_rate=PROJECT_FRAME_RATE)
-			)
-		except Exception as e:
-			tc_formatted = formatting.format_timecode_as_duration(timecode.Timecode("0", rate=PROJECT_FRAME_RATE))
-		finally:
-			self._main_window_controller.trim_controls().set_lfoa_trim_text(tc_formatted)
 
 	def remove_selected_trim_items(self):
 		"""Handle key release events"""

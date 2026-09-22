@@ -21,6 +21,12 @@ class TRTMainWindowController:
 		if trim_options:
 			self.set_trim_options(trim_options)
 
+	# Event handling
+
+	def register_window_handle(self, win_handle:object):
+
+		self._main_window_layout.trim_controls().register_window_handle(win_handle)
+
 	# Trim Options
 
 	def set_trim_options(self, trim_objects:trim_info.TRTTrimOptions):

@@ -167,7 +167,7 @@ def main():
 	}, [main_window_controller.main_window_controller().layout()])
 
 
-	main_window_controller.event_dispatcher().register_window_handle(main_window_handle)
+	main_window_controller.register_window_handle(main_window_handle)
 
 	main_window_handle.Show()
 	dispatcher.RunLoop()

@@ -5,14 +5,13 @@ Main window GUI
 
 from ..gui.btns_treecontrols import TRTTreeControls
 from ..gui.tree_results import TRTTreeResults
-from ..gui.trim_controls import TRTTrimControls
+from ..trim_controls import trimcontroller
 from ..gui.panel_summary import TRTSummaryPanel
 from ..gui.panel_about import TRTAboutPane
 
 from ..gui.abstract_widget import TRTAbstractWidget
 
 from ..utils.formatting import format_timecode_as_duration
-from ..utils.trim_info import TRTTrimInfo
 
 from .. import __version__
 
@@ -36,7 +35,7 @@ class TRTMainWindowLayoutManager(TRTAbstractWidget):
 		
 		self._ui = ui_manager
 
-		self._trim_controls = TRTTrimControls(self._ui, head_trim, tail_trim)
+		self._trim_controls = trimcontroller.TRTTrimSettingsController(self._ui)
 
 		self._btn_box = TRTTreeControls(self._ui)
 
@@ -85,8 +84,8 @@ class TRTMainWindowLayoutManager(TRTAbstractWidget):
 
 		return self._btn_box
 
-	def trim_controls(self) -> TRTTrimControls:
-		"""Add/Remove Tree Items Buttons"""
+	def trim_controls(self) -> trimcontroller.TRTTrimSettingsController:
+		"""FFOA/LFOA trim control options"""
 
 		return self._trim_controls
 
