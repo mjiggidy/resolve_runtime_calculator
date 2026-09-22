@@ -6,7 +6,7 @@ Is... is this the way...?  I don't know.  CONFUSING.
 from __future__ import annotations
 import logging, typing
 
-from ..gui import btns_treecontrols, wnd_main, tree_results, trim_controls
+from ..gui import btns_treecontrols, wnd_main, tree_results
 
 if typing.TYPE_CHECKING:
 	from .appcontroller import TRTMainWindowController
@@ -70,11 +70,11 @@ class TRTEventDispatcher:
 
 		logging.getLogger(__name__).debug("Got key-up event.")
 
-		KEY_DELETE = 16777223
-		"""`Delete` key ID"""
+		KEY_DELETE = [16777223, 16777219]
+		"""`Delete` and `Backspace` key IDs"""
 
 		# Currently only for "Delete" key in Tree widget
-		if event.get("Key") == KEY_DELETE and not event.get("IsAutoRepeat",False) and event.get("sender").FocusWidget().ID == tree_results.ID_TREE_VIEW:
+		if event.get("Key") in KEY_DELETE and not event.get("IsAutoRepeat",False) and event.get("sender").FocusWidget().ID == tree_results.ID_TREE_VIEW:
 
 			logging.getLogger(__name__).debug("Key up indicates remove tree item")
 			self._controller.remove_selected_trim_items()
