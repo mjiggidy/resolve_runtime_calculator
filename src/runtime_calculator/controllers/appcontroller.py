@@ -41,23 +41,17 @@ class TRTMainWindowController:
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
 
-		self._current_trim_options = trim_info.TRTTrimOptions(
-			trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
-			trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
-			use_ffoa_marker = use_ffoa_marker,
-			use_lfoa_marker = use_lfoa_marker,
-		)
-		"""Currently-active trim options"""
-
 		self._match_pattern = re.compile(match_pattern, re.I)
 		self._match_path    = match_path
 		self._ignore_path   = ignore_path
 
 		# Setup main window controller
-		self._main_window_widget.trim_controls().set_ffoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_head))
-		self._main_window_widget.trim_controls().set_lfoa_trim_text(formatting.format_timecode_as_duration(self._current_trim_options.trim_from_tail))
-		self._main_window_widget.trim_controls().set_use_ffoa_marker(self._current_trim_options.use_ffoa_marker)
-		self._main_window_widget.trim_controls().set_use_lfoa_marker(self._current_trim_options.use_lfoa_marker)
+		self._main_window_widget.trim_controls().set_trim_options(trim_info.TRTTrimOptions(
+			trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
+			trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
+			use_ffoa_marker = use_ffoa_marker,
+			use_lfoa_marker = use_lfoa_marker,
+		))
 
 	def event_dispatcher(self) -> eventdispatcher.TRTEventDispatcher:
 		"""Return the event dispatcher"""
@@ -74,21 +68,6 @@ class TRTMainWindowController:
 	def main_window_widget(self) -> wnd_main.TRTMainWindow:
 
 		return self._main_window_widget
-
-	def current_trim_options(self) -> trim_info.TRTTrimOptions:
-
-		return self._current_trim_options
-
-	def update_trim_options_from_window(self) -> trim_info.TRTTrimOptions:
-
-		self._current_trim_options = trim_info.TRTTrimOptions(
-			trim_from_head = timecode.Timecode(self._main_window_widget.trim_controls().ffoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			trim_from_tail = timecode.Timecode(self._main_window_widget.trim_controls().lfoa_trim_text(), rate=PROJECT_FRAME_RATE),
-			use_ffoa_marker = self._main_window_widget.trim_controls().use_ffoa_marker(),
-			use_lfoa_marker = self._main_window_widget.trim_controls().use_lfoa_marker(),
-		)
-
-		return self._current_trim_options
 
 	def add_trimmed_item_info(self, trimmed_item_info:trim_info.TRTTrimInfo):
 
@@ -128,9 +107,6 @@ class TRTMainWindowController:
 
 		from .. import dispatcher
 
-		# Update options for later writing to disk
-#		self.update_trim_options_from_window()
-
 		logging.getLogger(__name__).debug("Window is closing.  And hey -- thanks.")
 		dispatcher.ExitLoop(0)
 
@@ -157,8 +133,7 @@ class TRTMainWindowController:
 
 		self._main_window_widget.set_busy("Loading latest...")
 
-		trim_options = self.update_trim_options_from_window()
-
+		trim_options = self.main_window_widget().trim_controls().trim_options()
 		status_messages = []
 
 		latest_reels  = []
@@ -199,7 +174,7 @@ class TRTMainWindowController:
 
 		self._main_window_widget.set_busy("Loading selected...")
 
-		trim_options = self.update_trim_options_from_window()
+		trim_options = self.main_window_widget().trim_controls().trim_options()
 
 		trimmed_reels:list[trim_info.TRTTrimInfo] = []
 		skipped_reels = []

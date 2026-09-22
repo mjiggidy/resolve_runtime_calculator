@@ -5,7 +5,7 @@ Main window GUI
 
 from .btns_treecontrols import TRTTreeControls
 from .tree_results import TRTTreeResults
-from .trim_controls import TRTTrimControls
+from .panel_trimoptions import TRTTrimOptionsEditor
 from .panel_summary import TRTSummaryPanel
 from .panel_about import TRTAboutPane
 
@@ -36,7 +36,7 @@ class TRTMainWindow(TRTAbstractWidget):
 		
 		self._ui = ui_manager
 
-		self._trim_controls = TRTTrimControls(self._ui, head_trim, tail_trim)
+		self._trim_controls = TRTTrimOptionsEditor(self._ui, head_trim, tail_trim)
 
 		self._btn_box = TRTTreeControls(self._ui)
 
@@ -80,7 +80,7 @@ class TRTMainWindow(TRTAbstractWidget):
 		
 		return self._trt_tree
 
-	def trim_controls(self) -> TRTTrimControls:
+	def trim_controls(self) -> TRTTrimOptionsEditor:
 
 		return self._trim_controls
 

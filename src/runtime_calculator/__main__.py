@@ -105,7 +105,7 @@ def write_user_config(app:TRTMainWindowController, base_config:dict|None=None):
 	user_config = base_config or {}
 
 	# Update trim info
-	trim_options = app.update_trim_options_from_window()
+	trim_options = app.main_window_widget().trim_controls().trim_options()
 
 	user_config.update({
 		"use_ffoa_marker": trim_options.use_ffoa_marker,

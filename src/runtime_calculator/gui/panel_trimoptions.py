@@ -1,10 +1,16 @@
+import timecode
+from resolvecommon.session import resolve
+
 from .abstract_widget import TRTAbstractWidget
 from ..controllers import timecodeinput
+
+from ..utils import trim_info
 
 ID_TXT_TRIM_FFOA    = "txt_ffoa"
 ID_TXT_TRIM_LFOA    = "txt_lfoa"
 
-class TRTTrimControls(TRTAbstractWidget):
+class TRTTrimOptionsEditor(TRTAbstractWidget):
+	"""View and edit the trim options"""
 
 	def __init__(self, ui_manager:object, head_trim:str|None=None, tail_trim:str|None=None):
 
@@ -100,6 +106,29 @@ class TRTTrimControls(TRTAbstractWidget):
 
 		self._txt_trim_head.SetEnabled(is_enabled)
 		self._txt_trim_tail.SetEnabled(is_enabled)
+
+	def trim_options(self) -> trim_info.TRTTrimOptions:
+		"""Collect the currently-set trim options"""
+
+		project_rate = round(resolve.GetProjectManager().GetCurrentProject().GetSetting("timelineFrameRate"))
+
+		print(project_rate)
+
+		return trim_info.TRTTrimOptions(
+			trim_from_head = timecode.Timecode(self.ffoa_trim_text(), rate=project_rate),
+			trim_from_tail = timecode.Timecode(self.lfoa_trim_text(), rate=project_rate),
+			use_ffoa_marker = self.use_ffoa_marker(),
+			use_lfoa_marker = self.use_lfoa_marker(),
+		)
+
+	def set_trim_options(self, trim_options:trim_info.TRTTrimOptions):
+		"""Set the trim options"""
+
+		self.ffoa_input_controller().set_from_timecode(trim_options.trim_from_head)
+		self.lfoa_input_controller().set_from_timecode(trim_options.trim_from_tail)
+
+		self.set_use_ffoa_marker(trim_options.use_ffoa_marker)
+		self.set_use_lfoa_marker(trim_options.use_lfoa_marker)
 
 	def ffoa_trim_text(self) -> str:
 		"""Return the FFOA trim amount"""
