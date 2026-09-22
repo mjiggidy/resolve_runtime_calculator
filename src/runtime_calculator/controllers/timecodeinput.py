@@ -4,7 +4,7 @@ from resolvecommon.session import resolve
 from ..utils import formatting
 
 class TRTTimecodeInputController:
-	"""Make a LineEdit be a little duration input thingy"""
+	"""Make a LineEdit be a little timecode/duration input thingy"""
 
 	def __init__(self, line_edit:object, /, as_duration:bool=False, allow_negative:bool=True, placeholder_tc:timecode.Timecode|None=None):
 
@@ -48,7 +48,6 @@ class TRTTimecodeInputController:
 
 		self._line_edit.Text = tc_formatted
 		
-
 	def register_window_handle(self, window_handle:object):
 		"""Register `EditingFinished` event with dispatcher window handle"""
 		
