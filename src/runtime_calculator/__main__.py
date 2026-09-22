@@ -1,6 +1,6 @@
 import pathlib, logging, json, sys
 
-from runtime_calculator.controller.appcontroller import TRTMainWindowController
+from runtime_calculator.controllers.appcontroller import TRTMainWindowController
 
 from resolvecommon.session import resolve
 from . import ui, dispatcher
@@ -167,7 +167,7 @@ def main():
 	}, [main_window_controller.main_window_widget().layout()])
 
 
-	main_window_controller.event_dispatcher().register_window_handle(main_window_handle)
+	main_window_controller.register_window_handle(main_window_handle)
 
 	main_window_handle.Show()
 	dispatcher.RunLoop()

@@ -33,10 +33,6 @@ class TRTEventDispatcher:
 		win_handle.On[btns_treecontrols.ID_BTN_ADD_SELECTED].Clicked   = self.on_add_selected
 		win_handle.On[btns_treecontrols.ID_BTN_CLEAR].Clicked          = self.on_clear
 
-		win_handle.On[trim_controls.ID_TXT_TRIM_FFOA].EditingFinished  = self.on_ffoa_edited
-		win_handle.On[trim_controls.ID_TXT_TRIM_LFOA].EditingFinished  = self.on_lfoa_edited
-
-
 		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                  = self.on_export_clicked
 
 		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated         = self.on_tree_item_activated
@@ -68,20 +64,6 @@ class TRTEventDispatcher:
 		logging.getLogger(__name__).debug("Got add-selected event.")
 
 		self._controller.add_selected_reels()
-
-	def on_ffoa_edited(self, event:dict):
-		"""Validate FFOA trim amount"""
-
-		logging.getLogger(__name__).debug("Got validate-ffoa event.")
-
-		self._controller.validate_ffoa_trim_amount()
-
-	def on_lfoa_edited(self, event:dict):
-		"""Validate LFOA trim amount"""
-
-		logging.getLogger(__name__).debug("Got validate-lfoa event.")
-
-		self._controller.validate_lfoa_trim_amount()
 
 	def on_key_released(self, event:dict):
 		"""Handle key release events"""
