@@ -68,7 +68,7 @@ class TRTEventDispatcher:
 	def on_key_released(self, event:dict):
 		"""Handle key release events"""
 
-		logging.getLogger(__name__).debug("Got key-up event.")
+#		logging.getLogger(__name__).debug("Got key-up event.")
 
 		KEY_DELETE = [16777223, 16777219]
 		"""`Delete` and `Backspace` key IDs"""
