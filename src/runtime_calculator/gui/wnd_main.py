@@ -24,7 +24,7 @@ URL_DONATE     = "https://ko-fi.com/lilbinboy"
 ID_WINDOW_MAIN = "com.glowingpixel.runtimecalculator.mainwindow"
 ID_BTN_EXPORT  = "export_trt"
 
-class TRTMainWindow(TRTAbstractWidget):
+class TRTMainWindowWidget(TRTAbstractWidget):
 	"""Main window widget"""
 	
 	def __init__(self,

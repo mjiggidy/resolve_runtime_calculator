@@ -16,7 +16,7 @@ class TRTMainWindowController:
 
 	def __init__(
 		self,
-		main_window_widget:wnd_main.TRTMainWindow,
+		main_window_widget:wnd_main.TRTMainWindowWidget,
 		/,
 		trim_from_head:str    = DEFAULT_HEAD_TRIM,
 		trim_from_tail:str    = DEFAULT_TAIL_TRIM,
@@ -64,7 +64,7 @@ class TRTMainWindowController:
 		self._main_window_widget.trim_controls().ffoa_input_controller().register_window_handle(window_handle)
 		self._main_window_widget.trim_controls().lfoa_input_controller().register_window_handle(window_handle)
 
-	def main_window_widget(self) -> wnd_main.TRTMainWindow:
+	def main_window_widget(self) -> wnd_main.TRTMainWindowWidget:
 
 		return self._main_window_widget
 

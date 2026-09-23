@@ -1,11 +1,11 @@
 import pathlib, logging, json, sys
 
-from runtime_calculator.controllers.appcontroller import TRTMainWindowController
+from .controllers import appcontroller
+from .gui import wnd_main
 
 from resolvecommon.session import resolve
 from . import ui, dispatcher
 
-from .gui import wnd_main
 
 #PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
 #PACKAGE_ID="com.glowingpixel.runtimecalculator"
@@ -99,7 +99,7 @@ def read_user_config() -> dict:
 
 	return user_config
 
-def write_user_config(app:TRTMainWindowController, base_config:dict|None=None):
+def write_user_config(app:appcontroller.TRTMainWindowController, base_config:dict|None=None):
 	"""Write user config to disk"""
 
 	user_config = base_config or {}
@@ -157,8 +157,8 @@ def main():
 	user_config = read_user_config()
 
 	# Actually do the thing
-	main_window_widget     = wnd_main.TRTMainWindow(ui, show_nag_link=user_config.get("show_nag_link",True))
-	main_window_controller = TRTMainWindowController(main_window_widget, **user_config)
+	main_window_widget     = wnd_main.TRTMainWindowWidget(ui, show_nag_link=user_config.get("show_nag_link",True))
+	main_window_controller = appcontroller.TRTMainWindowController(main_window_widget, **user_config)
 
 	main_window_handle = dispatcher.AddWindow({
 		"ID": wnd_main.ID_WINDOW_MAIN,
