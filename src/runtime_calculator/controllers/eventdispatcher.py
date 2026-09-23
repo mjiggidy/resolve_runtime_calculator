@@ -47,9 +47,13 @@ class TRTEventDispatcher:
 	def on_clear(self, event:dict):
 		"""User requests clear all results"""
 
-		logging.getLogger(__name__).debug("Got clear reels event.")
+		logging.getLogger(__name__).debug("Got clear reels event.  Modifiers: %s", str(event.get("modifiers",{})))
 
-		self._controller.clear_all()
+		if event.get("modifiers",{}).get("ControlModifier",False):
+			self._controller.remove_selected_trim_items()
+
+		else:
+			self._controller.clear_all()
 
 	def on_add_latest(self, event:dict):
 		"""User requests add latest reels"""
