@@ -38,18 +38,18 @@ class TRTMainWindow(TRTAbstractWidget):
 
 		self._trim_controls = TRTTrimOptionsEditor(self._ui, head_trim, tail_trim)
 
-		self._btn_box = TRTTreeControls(self._ui)
+		self._list_controls = TRTTreeControls(self._ui)
 
-		self._trt_tree = TRTTreeResults(self._ui)
-		self._trt_tree.tree().ColumnWidth[0] = 150
-		self._trt_tree.tree().ColumnWidth[1] = 75
-		self._trt_tree.tree().ColumnWidth[2] = 75
-		self._trt_tree.tree().ColumnWidth[3] = 50
-		self._trt_tree.tree().ColumnWidth[4] = 50
+		self._tree_trims = TRTTreeResults(self._ui)
+		self._tree_trims.tree().ColumnWidth[0] = 150
+		self._tree_trims.tree().ColumnWidth[1] = 75
+		self._tree_trims.tree().ColumnWidth[2] = 75
+		self._tree_trims.tree().ColumnWidth[3] = 50
+		self._tree_trims.tree().ColumnWidth[4] = 50
 
 		self._summary_display = TRTSummaryPanel(self._ui)
 
-		self._btn_save = self._ui.Button({
+		self._btn_export = self._ui.Button({
 			"ID": ID_BTN_EXPORT,
 			"Text": "Export Results...",
 			"Enabled": False,
@@ -70,10 +70,10 @@ class TRTMainWindow(TRTAbstractWidget):
 
 			self._ui.Label({"FrameStyle": 4}),
 
-			self._btn_box.layout(),
-			self._trt_tree.layout(),
+			self._list_controls.layout(),
+			self._tree_trims.layout(),
 			self._summary_display.layout(),
-			self._btn_save,
+			self._btn_export,
 
 			self._ui.Label({"FrameStyle": 4}),
 
@@ -83,22 +83,24 @@ class TRTMainWindow(TRTAbstractWidget):
 	def tree_results(self) -> TRTTreeResults:
 		"""A reference to the trim results tree"""
 		
-		return self._trt_tree
+		return self._tree_trims
 
 	def trim_controls(self) -> TRTTrimOptionsEditor:
+		"""The Trim Options editor"""
 
 		return self._trim_controls
 
 	def summary_display(self) -> TRTSummaryPanel:
+		"""The Summary display panel"""
 
 		return self._summary_display
 
 	def set_busy(self, status_message:str|None=None):
 		"""Set window state to busy"""
 
-		self._btn_box.set_enabled(False)
+		self._list_controls.set_enabled(False)
 		self._trim_controls.set_enabled(False)
-		self._btn_save.Enabled = False
+		self._btn_export.Enabled = False
 
 		if status_message is not None:
 			self._summary_display.set_status_message(status_message)
@@ -109,9 +111,9 @@ class TRTMainWindow(TRTAbstractWidget):
 		self._trim_controls.set_enabled(True)
 
 		# Enable export/clear buttons if the tree is populated
-		tree_is_populated = bool(self._trt_tree.tree().TopLevelItemCount())
-		self._btn_box.set_enabled(True, tree_is_populated)
-		self._btn_save.Enabled = tree_is_populated
+		tree_is_populated = not self._tree_trims.is_empty()
+		self._list_controls.set_enabled(True, tree_is_populated)
+		self._btn_export.Enabled = tree_is_populated
 
 		if status_message is not None:
 			self._summary_display.set_status_message(status_message)
@@ -119,7 +121,7 @@ class TRTMainWindow(TRTAbstractWidget):
 	def add_timeline_info(self, info:TRTTrimInfo):
 		"""Add reel info to the tree"""
 		
-		self._trt_tree.add_text_row([
+		self._tree_trims.add_text_row([
 			info.media_pool_name,
 			format_timecode_as_duration(info.runtime_range.duration),
 			info.formatted_lfoa(),
@@ -130,5 +132,5 @@ class TRTMainWindow(TRTAbstractWidget):
 	def clear_trim_info(self):
 		"""Clear all trim info"""
 		
-		self._trt_tree.clear()
+		self._tree_trims.clear()
 
