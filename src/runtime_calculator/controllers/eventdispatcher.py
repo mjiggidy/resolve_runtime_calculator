@@ -54,14 +54,20 @@ class TRTEventDispatcher:
 	def on_add_latest(self, event:dict):
 		"""User requests add latest reels"""
 		
-		logging.getLogger(__name__).debug("Got add-latest event.")
+		logging.getLogger(__name__).debug("Got add-latest event.  Modifiers: %s", str(event.get("modifiers",{})))
 
+		if event.get("modifiers",{}).get("ControlModifier",False):
+			self._controller.clear_all()
+			
 		self._controller.add_latest_reels()
 
 	def on_add_selected(self, event:dict):
 		"""User requests add selected clips"""
 		
-		logging.getLogger(__name__).debug("Got add-selected event.")
+		logging.getLogger(__name__).debug("Got add-selected event.   Modifiers: %s", str(event.get("modifiers",{})))
+
+		if event.get("modifiers",{}).get("ControlModifier",False):
+			self._controller.clear_all()
 
 		self._controller.add_selected_reels()
 
