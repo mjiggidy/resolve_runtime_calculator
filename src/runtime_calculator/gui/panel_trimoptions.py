@@ -112,8 +112,6 @@ class TRTTrimOptionsEditor(TRTAbstractWidget):
 
 		project_rate = round(resolve.GetProjectManager().GetCurrentProject().GetSetting("timelineFrameRate"))
 
-		print(project_rate)
-
 		return trim_info.TRTTrimOptions(
 			trim_from_head = timecode.Timecode(self.ffoa_trim_text(), rate=project_rate),
 			trim_from_tail = timecode.Timecode(self.lfoa_trim_text(), rate=project_rate),
