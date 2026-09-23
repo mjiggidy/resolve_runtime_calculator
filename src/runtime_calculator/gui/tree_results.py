@@ -31,8 +31,14 @@ class TRTTreeResults(TRTAbstractWidget):
 		])
 
 	def tree(self) -> object:
+		"""UIManager `Tree` object"""
 
 		return self._tree
+
+	def is_empty(self) -> bool:
+		"""Does the tree have anythang"""
+
+		return not bool(self._tree.TopLevelItemCount())
 
 	def selected_rows(self) -> list[tuple[int, object]]:
 		"""Return a tuple of selected (index, TreeItem)s"""
@@ -66,8 +72,6 @@ class TRTTreeResults(TRTAbstractWidget):
 		item.TextAlignment[4] = 130
 
 		self._tree.AddTopLevelItem(item)
-
-#		print(dir(item.GetData))
 
 	def clear(self):
 
