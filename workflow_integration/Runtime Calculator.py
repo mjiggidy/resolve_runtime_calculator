@@ -28,10 +28,10 @@ if not pathlib.Path(PATH_LIB).is_dir():
 if str(PATH_LIB) not in sys.path:
 	sys.path.insert(0, str(PATH_LIB))
 
-from runtime_calculator import __main__
+from runtime_calculator.__main__ import main
 
 try:
-	__main__.main()
+	main()
+
 except Exception as e:
 	print(f"Quit unexpectedly: {str(e)}", file=sys.stderr)
-	sys.exit(1)

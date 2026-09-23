@@ -1,134 +1,18 @@
-import pathlib, logging, json, sys
+import logging, sys
 
+from .utils import paths, logs, user_config
 from .controllers import appcontroller
 from .gui import wnd_main
 
 from resolvecommon.session import resolve
 from . import ui, dispatcher
 
-
-#PATH_WORKFLOW_INTEGRATION_PLUGINS = "/Library/Application Support/Blackmagic Design/DaVinci Resolve/Workflow Integration Plugins"
-#PACKAGE_ID="com.glowingpixel.runtimecalculator"
-
-#PATH_RES = pathlib.Path(PATH_WORKFLOW_INTEGRATION_PLUGINS, PACKAGE_ID)
-#PATH_LIB = PATH_RES / "lib"
-
-## Global locations, not yet used
-#PATH_CFG_GLOBAL = PATH_RES / "config" / "global_config.json"
-#PATH_LOG_GLOBAL = PATH_RES / "logs" / "global_log.log"
-
-def get_user_base_path() -> pathlib.Path:
-	"""Get the proper user location depending on OS and such"""
-
-	import os
-
-	platform_name = sys.platform.lower()
-
-	if platform_name == "darwin":
-		app_data = pathlib.Path.home() / "Library" / "Application Support"
-
-	elif platform_name.startswith("win"):
-		app_data = pathlib.Path(os.environ.get("APPDATA")) or pathlib.Path.home() / "AppData" / "Roaming"
-
-	else:
-		app_data = pathlib.Path(os.environ.get("XDG_CONFIG_HOME")) or pathlib.Path.home() / ".config"
-	
-	return app_data / "GlowingPixel" / "Resolve Runtime Calculator"
-
 # User locations, macOS only
-PATH_USER_BASE = get_user_base_path()
+PATH_USER_BASE = paths.get_user_base_path()
 PATH_CFG_USER  = PATH_USER_BASE / "config" / "user_config.json"
 PATH_LOG_USER  = PATH_USER_BASE / "logs" / "user_logs.log"
 
 RESOLVE_MINIMUM_VERSION = [21,0,4]
-
-def setup_logging():
-	"""Establish logging handlers"""
-
-	from logging.handlers import RotatingFileHandler
-	
-	logging.basicConfig(level=logging.DEBUG)
-
-	try:
-		PATH_LOG_USER.parent.mkdir(parents=True, exist_ok=True)
-
-	except Exception as e:
-		logging.getLogger(__name__).error("Could not create log path: %s", e, exc_info=True)
-
-	else:
-		file_handler = RotatingFileHandler(str(PATH_LOG_USER), maxBytes=128 * 1024, backupCount=5)
-		file_handler.setLevel(logging.DEBUG)
-		file_handler.setFormatter(logging.Formatter("[%(asctime)s]\t%(levelname)s\t%(name)s\t%(message)s"))
-		logging.getLogger().addHandler(file_handler)
-
-	logging.getLogger(__name__).info("Hello from %s", __name__)
-
-def read_user_config() -> dict:
-	"""Read user config from `.json` on disk"""
-
-	user_config = {}
-
-	try:
-
-		PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
-
-		with open(PATH_CFG_USER) as json_config:
-
-			user_config = json.load(json_config)
-			logging.getLogger(__name__).debug("Loaded saved config from %s: %s", PATH_CFG_USER, user_config)
-
-	except PermissionError as e:
-
-		logging.getLogger(__name__).error("Error accessing config file path %s: %s", PATH_CFG_USER, e, exc_info=True)
-		pass
-
-	except json.JSONDecodeError as e:
-
-		logging.getLogger(__name__).error("Error decoding %s: %s", PATH_CFG_USER, e, exc_info=True)
-		pass
-
-	except FileNotFoundError:
-
-		logging.getLogger(__name__).debug("No config file found at %s. To The Defaults!", PATH_CFG_USER)
-		pass
-
-	except Exception as e:
-
-		logging.getLogger(__name__).error("Strange error accessing %s: %s", PATH_CFG_USER, e, exc_info=True)
-		pass
-
-	return user_config
-
-def write_user_config(app:appcontroller.TRTMainWindowController, base_config:dict|None=None):
-	"""Write user config to disk"""
-
-	user_config = base_config or {}
-
-	# Update trim info
-	trim_options = app.main_window_widget().trim_controls().trim_options()
-
-	user_config.update({
-		"use_ffoa_marker": trim_options.use_ffoa_marker,
-		"use_lfoa_marker": trim_options.use_lfoa_marker,
-		"trim_from_head" : str(trim_options.trim_from_head),
-		"trim_from_tail" : str(trim_options.trim_from_tail),
-		"match_pattern"  : app._match_pattern.pattern,
-		"match_path"     : app._match_path,
-		"ignore_path"    : app._ignore_path,
-	})
-
-	try:
-		
-		PATH_CFG_USER.parent.mkdir(parents=True, exist_ok=True)
-
-		with open(PATH_CFG_USER, "w") as json_file:
-
-			json.dump(user_config, json_file, indent="\t")
-			logging.getLogger(__name__).debug("Wrote config to %s: %s", PATH_CFG_USER, trim_options)
-
-	except Exception as e:
-		logging.getLogger(__name__).error("Strange error writing %s: %s", PATH_CFG_USER, e, exc_info=True)
-		pass
 
 def main():
 
@@ -141,32 +25,37 @@ def main():
 		win.Raise()
 
 		print("Window instance already running.  There can only be one.", file=sys.stderr)
-		sys.exit(0)
+		return
 
-	setup_logging()
+	logs.setup_logging(PATH_LOG_USER)
 
 	try:
+
 		resolve_version = resolve.GetVersion()
 		logging.getLogger(__name__).debug("Resolve reports version=%s", resolve_version)
+
 		if RESOLVE_MINIMUM_VERSION > resolve_version:
 			raise RuntimeError(f"This plugin requires Resolve version {'.'.join(str(v) for v in RESOLVE_MINIMUM_VERSION)} or newer (got: {'.'.join(str(v) for v in resolve_version)})")
-	except Exception as e:
-		print("Cannot run: ", str(e), file=sys.stderr)
-		sys.exit(1)
 
-	user_config = read_user_config()
+	except Exception as e:
+
+		print("Cannot run: ", str(e), file=sys.stderr)
+		return
+
+	# Load in user user config
+	user_config_manager = user_config.ConfigFileManager(PATH_CFG_USER)
+	launch_settings     = user_config_manager.read_user_config()
 
 	# Actually do the thing
-	main_window_widget     = wnd_main.TRTMainWindowWidget(ui, show_nag_link=user_config.get("show_nag_link",True))
-	main_window_controller = appcontroller.TRTMainWindowController(main_window_widget, **user_config)
+	main_window_widget     = wnd_main.TRTMainWindowWidget(ui, show_nag_link=launch_settings.get("show_nag_link",True))
+	main_window_controller = appcontroller.TRTMainWindowController(main_window_widget, **launch_settings)
 
 	main_window_handle = dispatcher.AddWindow({
 		"ID": wnd_main.ID_WINDOW_MAIN,
-		"WindowTitle": user_config.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
+		"WindowTitle": launch_settings.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
 		"FixedSize": [360,500],
 		"Events": {"Close": True, "KeyRelease": True},
 	}, [main_window_controller.main_window_widget().layout()])
-
 
 	main_window_controller.register_window_handle(main_window_handle)
 
@@ -174,8 +63,7 @@ def main():
 	dispatcher.RunLoop()
 
 	# Save config to disk
-	write_user_config(main_window_controller, user_config)
-
+	user_config_manager.write_user_config(main_window_widget.trim_controls().trim_options(), launch_settings)
 
 if __name__ == "__main__":
 	main()
