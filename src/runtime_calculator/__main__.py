@@ -157,7 +157,8 @@ def main():
 	user_config = read_user_config()
 
 	# Actually do the thing
-	main_window_controller = TRTMainWindowController(ui, **user_config)
+	main_window_widget     = wnd_main.TRTMainWindow(ui, show_nag_link=user_config.get("show_nag_link",True))
+	main_window_controller = TRTMainWindowController(main_window_widget, **user_config)
 
 	main_window_handle = dispatcher.AddWindow({
 		"ID": wnd_main.ID_WINDOW_MAIN,

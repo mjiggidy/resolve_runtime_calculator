@@ -12,11 +12,11 @@ from ..gui import wnd_main
 from . import eventdispatcher
 
 class TRTMainWindowController:
-	"""Main application controller"""
+	"""Main application window controller"""
 
 	def __init__(
 		self,
-		ui:object,
+		main_window_widget:wnd_main.TRTMainWindow,
 		/,
 		trim_from_head:str    = DEFAULT_HEAD_TRIM,
 		trim_from_tail:str    = DEFAULT_TAIL_TRIM,
@@ -26,14 +26,13 @@ class TRTMainWindowController:
 		match_pattern:str     = DEFAULT_MATCH_STRING,
 		match_path:str        = "00 REELS",
 		ignore_path:str       = "00 REELS/zArchived Reels",
-		show_nag_link:bool    = True,
 		**kwargs,
 	):
 
 		if kwargs:
 			logging.getLogger(__name__).debug("Got extra kwargs: %s", kwargs)
 
-		self._main_window_widget = wnd_main.TRTMainWindow(ui, show_nag_link=show_nag_link)
+		self._main_window_widget = main_window_widget
 		"""Main window widget"""
 
 		self._event_dispatcher = eventdispatcher.TRTEventDispatcher(controller=self)
@@ -144,6 +143,7 @@ class TRTMainWindowController:
 			latest_reels = select_reels.get_latest_from_project(self._match_path, self._match_pattern, ignore_path=self._ignore_path)
 
 		except Exception as e:
+			
 			logging.getLogger(__name__).error("Unable to find latest reels: %s", e, exc_info=True)
 			status_messages.append(str(e))
 
