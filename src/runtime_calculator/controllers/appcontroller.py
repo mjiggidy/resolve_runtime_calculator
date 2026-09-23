@@ -5,7 +5,7 @@ Main app controller for the main window widget
 import logging, re
 import timecode
 
-from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, PROJECT_FRAME_RATE, DEFAULT_MATCH_STRING
+from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, DEFAULT_MATCH_STRING
 from ..utils import trim_info, select_reels, formatting
 from ..gui import wnd_main
 

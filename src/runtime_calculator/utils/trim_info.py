@@ -34,9 +34,13 @@ class TRTTrimInfo:
 
 		self._trim_options = trim_options
 
+		clip_rate = round(self._media_pool_item.GetClipProperty("FPS"))
+
+#		print("Clip rate:", clip_rate)
+
 		self._timecode_range = timecode.TimecodeRange(
-			start = timecode.Timecode(self._media_pool_item.GetClipProperty("Start TC"), rate=PROJECT_FRAME_RATE),
-			duration = timecode.Timecode(self._media_pool_item.GetClipProperty("Duration"), rate=PROJECT_FRAME_RATE)
+			start = timecode.Timecode(self._media_pool_item.GetClipProperty("Start TC"), rate=clip_rate),
+			duration = timecode.Timecode(self._media_pool_item.GetClipProperty("Duration"), rate=clip_rate)
 		)
 
 		self._active_ffoa_offset = self._get_ffoa_offset()
