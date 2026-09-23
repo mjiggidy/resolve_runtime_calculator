@@ -3,11 +3,11 @@ Main window GUI
 """
 
 
-from .btns_treecontrols import TRTTreeControls
 from .tree_results import TRTTreeResults
+from .panel_treecontrols import TRTTreeControls
 from .panel_trimoptions import TRTTrimOptionsEditor
 from .panel_summary import TRTSummaryPanel
-from .panel_about import TRTAboutPane
+from .panel_about import TRTAboutPanel
 
 from .abstract_widget import TRTAbstractWidget
 
@@ -56,7 +56,12 @@ class TRTMainWindow(TRTAbstractWidget):
 			"Events": {"Clicked",True},
 		})
 
-		self._about_display = TRTAboutPane(self._ui, __version__, URL_GITHUB, URL_DONATE if show_nag_link else None)
+		self._about_panel = TRTAboutPanel(
+			self._ui,
+			app_version = __version__,
+			url_github  = URL_GITHUB,
+			url_donate  = URL_DONATE if show_nag_link else None
+		)
 	
 	def layout(self):
 		
@@ -72,7 +77,7 @@ class TRTMainWindow(TRTAbstractWidget):
 
 			self._ui.Label({"FrameStyle": 4}),
 
-			self._about_display.layout(),
+			self._about_panel.layout(),
 		])
 	
 	def tree_results(self) -> TRTTreeResults:

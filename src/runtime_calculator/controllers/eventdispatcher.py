@@ -1,12 +1,16 @@
 """
-Little manager thing for binding a given TRTMainWindow widget's window handle events to the controller...
-Is... is this the way...?  I don't know.  CONFUSING.
+Binds window events to the application controller.
+
+My thinking is that the controller knows HOW to do stuff,
+and the event dispatcher here knows WHEN to do stuff?
+
+Is... is this the way...?  I don't know.  OVERTHINKING.
 """
 
 from __future__ import annotations
 import logging, typing
 
-from ..gui import btns_treecontrols, wnd_main, tree_results
+from ..gui import panel_treecontrols, wnd_main, tree_results
 
 if typing.TYPE_CHECKING:
 	from .appcontroller import TRTMainWindowController
@@ -29,9 +33,9 @@ class TRTEventDispatcher:
 		win_handle.On[wnd_main.ID_WINDOW_MAIN].Close                   = self.on_close
 		win_handle.On[wnd_main.ID_WINDOW_MAIN].KeyRelease              = self.on_key_released
 
-		win_handle.On[btns_treecontrols.ID_BTN_ADD_LATEST].Clicked     = self.on_add_latest
-		win_handle.On[btns_treecontrols.ID_BTN_ADD_SELECTED].Clicked   = self.on_add_selected
-		win_handle.On[btns_treecontrols.ID_BTN_CLEAR].Clicked          = self.on_clear
+		win_handle.On[panel_treecontrols.ID_BTN_ADD_LATEST].Clicked     = self.on_add_latest
+		win_handle.On[panel_treecontrols.ID_BTN_ADD_SELECTED].Clicked   = self.on_add_selected
+		win_handle.On[panel_treecontrols.ID_BTN_CLEAR].Clicked          = self.on_clear
 
 		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                  = self.on_export_clicked
 

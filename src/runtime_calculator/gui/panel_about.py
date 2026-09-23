@@ -1,6 +1,6 @@
 from .abstract_widget import TRTAbstractWidget
 
-class TRTAboutPane(TRTAbstractWidget):
+class TRTAboutPanel(TRTAbstractWidget):
 	"""About!"""
 
 	def __init__(self, ui_manager:object, app_version:str, url_github:str, url_donate:str|None):
