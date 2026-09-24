@@ -7,9 +7,9 @@ import timecode
 
 from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, DEFAULT_MATCH_STRING
 from ..utils import trim_info, select_reels, formatting
-from ..gui import wnd_main
+from ..gui import wnd_main, wnd_settings
 
-from . import eventdispatcher
+from . import eventdispatcher, settingscontroller
 
 class TRTMainWindowController:
 	"""Main application window controller"""
@@ -67,6 +67,24 @@ class TRTMainWindowController:
 	def main_window_widget(self) -> wnd_main.TRTMainWindowWidget:
 
 		return self._main_window_widget
+
+	def show_settings_window(self):
+
+		from .. import dispatcher, ui
+
+		settings_widget = wnd_settings.TRTSettingsWindow(ui)
+		settings_controller = settingscontroller.TRTSettingsController(settings_widget)
+
+		settings_handle = dispatcher.AddWindow({
+			"ID": wnd_settings.ID_WINDOW_SETTINGS,
+			"WindowTitle": "Settings",
+			"FixedSize": [400,200],
+			"Events": {"Close": True},
+		}, [settings_widget.layout()])
+
+		settings_controller.register_window_handle(settings_handle)
+
+		settings_handle.Show()
 
 	def add_trimmed_item_info(self, trimmed_item_info:trim_info.TRTTrimInfo):
 

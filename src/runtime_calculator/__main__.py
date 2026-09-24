@@ -55,11 +55,15 @@ def main():
 		"WindowTitle": launch_settings.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
 		"FixedSize": [360,500],
 		"Events": {"Close": True, "KeyRelease": True},
-	}, [main_window_controller.main_window_widget().layout()])
+	}, [main_window_widget.layout()])
 
 	main_window_controller.register_window_handle(main_window_handle)
 
 	main_window_handle.Show()
+
+	# TEMP
+	main_window_controller.show_settings_window()
+
 	dispatcher.RunLoop()
 
 	# Save config to disk
