@@ -179,7 +179,7 @@ class TRTMainWindowController:
 		trimmed_reels:list[trim_info.TRTTrimInfo] = []
 		skipped_reels = []
 
-		for clip in select_reels.get_selected_reels():
+		for clip in select_reels.get_selected_media_pool_items():
 
 			try:
 				trimmed_reels.append(trim_info.TRTTrimInfo(clip, trim_options))
@@ -221,7 +221,7 @@ class TRTMainWindowController:
 			item_index = self._main_window_widget.tree_results().item_index(tree_item)
 			trim_info = self._reel_info_list[item_index]
 
-			select_reels.focus_reel(trim_info.media_pool_item)
+			select_reels.focus_media_pool_item(trim_info.media_pool_item)
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Error focusing media pool item: %s", e, exc_info=True)

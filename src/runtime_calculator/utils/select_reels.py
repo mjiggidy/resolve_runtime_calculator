@@ -8,8 +8,6 @@ import re, logging, typing
 from .folders import get_folder_from_path, get_clips_from_folder_by_type
 
 from resolvecommon.session import resolve
-#from resolvecommon.versioning import PAT_REEL_NAME, get_latest_reel_version
-#from resolvecommon.itemtypes import ItemTypes
 
 if typing.TYPE_CHECKING:
 	import DaVinciResolveScript as bmd
@@ -33,15 +31,19 @@ def get_latest_from_project(from_folder_path:str, match_pattern:re.Pattern, igno
 
 	if from_folder_path:
 		logging.getLogger(__name__).debug("Search for user-specified folder %s", from_folder_path)
+
 	else:
 		logging.getLogger(__name__).debug("Using root folder by default")
 
 	base_folder:bmd.Folder = get_folder_from_path(from_folder_path, mp.GetRootFolder()) if from_folder_path else mp.GetRootFolder()
 	ignore_folder = None
+
 	try:
 		ignore_folder = get_folder_from_path(ignore_path, mp.GetRootFolder()) if ignore_path else None
+
 	except Exception as e:
 		logging.getLogger(__name__).error("Not ignoring folder at path %s: %s", ignore_path, e, exc_info=True)
+
 	else:
 		logging.getLogger(__name__).debug("Using ignored folder %s", ignore_folder.GetName())
 
@@ -50,7 +52,7 @@ def get_latest_from_project(from_folder_path:str, match_pattern:re.Pattern, igno
 		match = match_pattern.search(item.GetName())
 
 		if not match:
-
+			
 			logging.getLogger(__name__).debug("Not matched: %s", item.GetName())
 			continue
 
@@ -61,12 +63,12 @@ def get_latest_from_project(from_folder_path:str, match_pattern:re.Pattern, igno
 
 	return [item[1] for item in latest_per_ep.values()]
 
-def get_selected_reels() -> list[object]:
+def get_selected_media_pool_items() -> list[bmd.MediaPoolItem]:
 	"""Return selected media pool clips"""
 	
 	return mp.GetSelectedClips() or []
 
-def focus_reel(media_pool_item:object):
+def focus_media_pool_item(media_pool_item:object):
 	"""Select a given media pool item"""
 
 	if not mp.SetSelectedClip(media_pool_item):

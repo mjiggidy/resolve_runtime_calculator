@@ -1,4 +1,6 @@
-"""Folder utilities (temporarily pulled from `resolve-common`)"""
+"""
+Folder utilities (temporarily pulled from `resolve-common`)
+"""
 
 from __future__ import annotations
 from os import PathLike
@@ -27,14 +29,19 @@ def get_folder_from_path(path:PathLike[str], root_folder):
 	
 	return current_folder
 
-def get_clips_from_folder_by_type(folder:bmd.Folder, clip_types:list[ItemTypes]|None=None, recursive:bool=False, ignore_folder:bmd.Folder|None=None):
+def get_clips_from_folder_by_type(
+	folder:bmd.Folder,
+	clip_types:list[ItemTypes]|None=None,
+	recursive:bool=False,
+	ignore_folder:bmd.Folder|None=None
+) -> typing.Iterator[bmd.MediaPoolItem]:
 	
 	if ignore_folder and folder.GetUniqueId() == ignore_folder.GetUniqueId():
 		
 		logging.getLogger(__name__).debug("Hit an ignored folder: %s", folder.GetName())
 		return
 
-	clip_types = clip_types or ItemTypes
+	clip_types = clip_types if clip_types is not None else list(ItemTypes)
 	
 	yield from filter(lambda c: ItemTypes.from_media_pool_item(c) in clip_types, folder.GetClipList())
 
