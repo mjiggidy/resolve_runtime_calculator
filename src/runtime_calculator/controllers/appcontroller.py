@@ -6,7 +6,7 @@ import logging, re
 import timecode
 
 from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, DEFAULT_MATCH_STRING
-from ..utils import trim_info, select_reels, formatting
+from ..utils import trim_info, match_info, select_reels, formatting
 from ..gui import wnd_main, wnd_settings
 
 from . import eventdispatcher, settingscontroller
@@ -18,14 +18,14 @@ class TRTMainWindowController:
 		self,
 		main_window_widget:wnd_main.TRTMainWindowWidget,
 		/,
-		trim_from_head:str    = DEFAULT_HEAD_TRIM,
-		trim_from_tail:str    = DEFAULT_TAIL_TRIM,
-		use_ffoa_marker:bool  = True,
-		use_lfoa_marker:bool  = True,
-		project_rate:int      = 24,
-		match_pattern:str     = DEFAULT_MATCH_STRING,
-		match_path:str        = "00 REELS",
-		ignore_path:str       = "00 REELS/zArchived Reels",
+		trim_from_head:str   = DEFAULT_HEAD_TRIM,
+		trim_from_tail:str   = DEFAULT_TAIL_TRIM,
+		use_ffoa_marker:bool = True,
+		use_lfoa_marker:bool = True,
+		project_rate:int     = 24,
+		match_string:str     = DEFAULT_MATCH_STRING,
+		match_path:str       = "00 REELS",
+		ignore_path:str      = "00 REELS/zArchived Reels",
 		**kwargs,
 	):
 
@@ -40,9 +40,12 @@ class TRTMainWindowController:
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
 
-		self._match_pattern = re.compile(match_pattern, re.I)
-		self._match_path    = match_path
-		self._ignore_path   = ignore_path
+		self._match_options = match_info.TRTLatestMatchOptions(
+			refresh_project = True,
+			match_string    = match_string,
+			match_path      = match_path,
+			ignore_path     = ignore_path,
+		)
 
 		# Setup main window controller
 		self._main_window_widget.trim_controls().set_trim_options(trim_info.TRTTrimOptions(
@@ -158,7 +161,7 @@ class TRTMainWindowController:
 		skipped_reels = []
 
 		try:
-			latest_reels = select_reels.get_latest_from_project(self._match_path, self._match_pattern, ignore_path=self._ignore_path)
+			latest_reels = select_reels.get_latest_from_project(self._match_options)
 
 		except Exception as e:
 			

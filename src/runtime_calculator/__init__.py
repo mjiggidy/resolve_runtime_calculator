@@ -13,6 +13,6 @@ import timecode
 
 DEFAULT_HEAD_TRIM:str = "8:00"
 DEFAULT_TAIL_TRIM:str = "4:00"
-DEFAULT_MATCH_STRING:str = r"REEL (?P<ep>[0-9]+) v(?P<version>[0-9\.]+)"
+DEFAULT_MATCH_STRING:str = "{part} v{version}"
 
 del timecode
