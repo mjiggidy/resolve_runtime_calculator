@@ -11,7 +11,7 @@ from resolvecommon.itemtypes import ItemTypes
 if typing.TYPE_CHECKING:
 	import DaVinciResolveScript as bmd
 
-def get_folder_from_path(path:PathLike[str], root_folder):
+def get_folder_from_path(path:PathLike[str], root_folder:bmd.Folder) -> bmd.Folder:
 	
 	current_folder = root_folder
 	
