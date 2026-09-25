@@ -123,14 +123,6 @@ class TRTMainWindowController:
 
 		self._main_window_widget.summary_display().set_total_runtime(trt)
 
-	def close_window(self):
-		"""Window is closing"""
-
-		from .. import dispatcher
-
-		logging.getLogger(__name__).debug("Window is closing.  And hey -- thanks.")
-		dispatcher.ExitLoop(0)
-
 	def clear_all(self):
 
 		logging.getLogger(__name__).info("Clearing reel info")

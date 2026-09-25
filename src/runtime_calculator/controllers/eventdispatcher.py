@@ -30,23 +30,15 @@ class TRTEventDispatcher:
 
 		# TODO Think about this because... like... the IDs and such
 
-		win_handle.On[wnd_main.ID_WINDOW_MAIN].Close                   = self.on_close
-		win_handle.On[wnd_main.ID_WINDOW_MAIN].KeyRelease              = self.on_key_released
+		win_handle.On[wnd_main.ID_WINDOW_MAIN].KeyRelease             = self.on_key_released
 
-		win_handle.On[panel_treecontrols.ID_BTN_ADD_LATEST].Clicked     = self.on_add_latest
-		win_handle.On[panel_treecontrols.ID_BTN_ADD_SELECTED].Clicked   = self.on_add_selected
-		win_handle.On[panel_treecontrols.ID_BTN_CLEAR].Clicked          = self.on_clear
+		win_handle.On[panel_treecontrols.ID_BTN_ADD_LATEST].Clicked   = self.on_add_latest
+		win_handle.On[panel_treecontrols.ID_BTN_ADD_SELECTED].Clicked = self.on_add_selected
+		win_handle.On[panel_treecontrols.ID_BTN_CLEAR].Clicked        = self.on_clear
 
-		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                  = self.on_export_clicked
+		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                 = self.on_export_clicked
 
-		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated         = self.on_tree_item_activated
-
-	def on_close(self, event:dict):
-		"""Window is closing"""
-
-		logging.getLogger(__name__).debug("Got window close event.")
-
-		self._controller.close_window()
+		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated        = self.on_tree_item_activated
 
 	def on_clear(self, event:dict):
 		"""User requests clear all results"""
