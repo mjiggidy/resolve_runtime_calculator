@@ -52,6 +52,7 @@ class TRTSettingsController:
 		event.get("sender").Hide()
 
 	def set_match_options(self, match_options:match_info.TRTLatestMatchOptions):
+		"""Set the Latest match options in the editor"""
 
 		self._window_widget.chk_refresh_project().Checked          = match_options.refresh_project
 		self._window_widget.match_mediapool_name_editor().Text     = match_options.match_string
@@ -59,6 +60,7 @@ class TRTSettingsController:
 		self._window_widget.exclude_mediapool_folder_editor().Text = match_options.ignore_path
 
 	def match_options(self) -> match_info.TRTLatestMatchOptions:
+		"""Get the current Latest match options set by the editor"""
 
 		return match_info.TRTLatestMatchOptions(
 			refresh_project = self._window_widget.chk_refresh_project().Checked,
@@ -68,11 +70,13 @@ class TRTSettingsController:
 		)
 
 	def set_marker_options(self, marker_options:marker_info.TRTMarkerOptions):
+		"""Set the Marker Options in the editor"""
 
 		self._window_widget.ffoa_marker_editor().Text = marker_options.ffoa_marker_name
 		self._window_widget.lfoa_marker_editor().Text = marker_options.lfoa_marker_name
 
 	def marker_options(self) -> marker_info.TRTMarkerOptions:
+		"""Get the current Marker Options set by the editor"""
 
 		return marker_info.TRTMarkerOptions(
 			ffoa_marker_name = self._window_widget.ffoa_marker_editor().Text or DEFAULT_FFOA_MARKER_NAME,
