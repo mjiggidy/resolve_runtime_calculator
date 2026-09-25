@@ -1,15 +1,16 @@
 from .abstract_widget import TRTAbstractWidget
 
-ID_WINDOW_SETTINGS    = "win_settings"
-ID_CHECK_REFRESH      = "chk_refresh"
-ID_CHECK_MATCH_NAME   = "chk_match_name"
-ID_TXT_MATCH_NAME     = "txt_match_name"
-ID_CHK_MATCH_FOLDER   = "chk_match_folder"
-ID_TXT_MATCH_FOLDER   = "txt_match_folder"
-ID_CHK_EXCLUDE_FOLDER = "chk_exclude_folder"
-ID_TXT_EXCLUDE_FOLDER = "txt_exclude_folder"
+ID_WINDOW_SETTINGS      = "win_settings"
+ID_CHECK_REFRESH        = "chk_refresh"
+ID_CHECK_MATCH_NAME     = "chk_match_name"
+ID_TXT_MATCH_NAME       = "txt_match_name"
+ID_CHK_MATCH_FOLDER     = "chk_match_folder"
+ID_TXT_MATCH_FOLDER     = "txt_match_folder"
+ID_CHK_EXCLUDE_FOLDER   = "chk_exclude_folder"
+ID_TXT_EXCLUDE_FOLDER   = "txt_exclude_folder"
 
-ID_BTN_SAVE = "btn_settings_save"
+ID_BTN_SAVE             = "btn_settings_save"
+ID_BTN_CANCEL           = "btn_settings_cancel"
 
 TXT_TIP_FONT_POINT_SIZE = 10
 
@@ -90,12 +91,6 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"Events": {"TextEdited": True, "TextChanged": True},
 		})
 
-		self._btn_save = self._ui.Button({
-			"ID": ID_BTN_SAVE,
-			"Weight": 0,
-			"Text": "Save",
-		})
-
 		# FFOA Marker Name
 
 		self._lbl_ffoa_name = self._ui.Label({
@@ -114,6 +109,19 @@ class TRTSettingsWindow(TRTAbstractWidget):
 
 		self._txt_lfoa_name = self._ui.LineEdit({
 			"PlaceholderText": "LFOA"
+		})
+
+		# Save and cancel
+		self._btn_save = self._ui.Button({
+			"ID": ID_BTN_SAVE,
+			"Weight": 0,
+			"Text": "Save",
+		})
+
+		self._btn_cancel = self._ui.Button({
+			"ID": ID_BTN_CANCEL,
+			"Weight": 0,
+			"Text": "Cancel",
 		})
 
 	def match_mediapool_name_editor(self) -> object:
@@ -162,6 +170,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		return self._txt_lfoa_name
 
 	def layout(self):
+
 		return self._ui.VGroup([
 
 			self._chk_refresh,
@@ -238,5 +247,6 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			},[
 				self._ui.HGap(),
 				self._btn_save,
+				self._btn_cancel,
 			]),
 		])
