@@ -1,12 +1,19 @@
 from ..gui import wnd_settings
 from ..controllers  import mediapoolinput
-from ..utils import match_info
+from ..utils import match_info, marker_info
+
+DEFAULT_FFOA_MARKER_NAME = "FFOA"
+DEFAULT_LFOA_MARKER_NAME = "LFOA"
 
 class TRTSettingsController:
 
 	def __init__(self, settings_widget:wnd_settings.TRTSettingsWindow):
 
 		self._window_widget = settings_widget
+
+		# Set defaults
+		self._window_widget.ffoa_marker_editor().PlaceholderText = DEFAULT_FFOA_MARKER_NAME
+		self._window_widget.lfoa_marker_editor().PlaceholderText = DEFAULT_LFOA_MARKER_NAME
 
 		self._match_mediapool_input_controller   = mediapoolinput.TRTMediaPoolInputController(self._window_widget.match_mediapool_folder_editor())
 		self._exclude_mediapool_input_controller = mediapoolinput.TRTMediaPoolInputController(self._window_widget.exclude_mediapool_folder_editor())
@@ -58,4 +65,16 @@ class TRTSettingsController:
 			match_string    = self._window_widget.match_mediapool_name_editor().Text     if self._window_widget.match_mediapool_name_enabler().Checked     else "",
 			match_path      = self._window_widget.match_mediapool_folder_editor().Text   if self._window_widget.match_mediapool_folder_enabler().Checked   else "",
 			ignore_path     = self._window_widget.exclude_mediapool_folder_editor().Text if self._window_widget.exclude_mediapool_folder_enabler().Checked else "",
+		)
+
+	def set_marker_options(self, marker_options:marker_info.TRTMarkerOptions):
+
+		self._window_widget.ffoa_marker_editor().Text = marker_options.ffoa_marker_name
+		self._window_widget.lfoa_marker_editor().Text = marker_options.lfoa_marker_name
+
+	def marker_options(self) -> marker_info.TRTMarkerOptions:
+
+		return marker_info.TRTMarkerOptions(
+			ffoa_marker_name = self._window_widget.ffoa_marker_editor().Text or DEFAULT_FFOA_MARKER_NAME,
+			lfoa_marker_name = self._window_widget.lfoa_marker_editor().Text or DEFAULT_LFOA_MARKER_NAME
 		)

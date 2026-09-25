@@ -96,6 +96,26 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"Text": "Save",
 		})
 
+		# FFOA Marker Name
+
+		self._lbl_ffoa_name = self._ui.Label({
+			"Weight": 0,
+			"Text": "FFOA Marker Name Contains:"
+		})
+
+		self._txt_ffoa_name = self._ui.LineEdit({
+			"PlaceholderText": "FFOA"
+		})
+
+		self._lbl_lfoa_name = self._ui.Label({
+			"Weight": 0,
+			"Text": "LFOA Marker Name Contains:"
+		})
+
+		self._txt_lfoa_name = self._ui.LineEdit({
+			"PlaceholderText": "LFOA"
+		})
+
 	def match_mediapool_name_editor(self) -> object:
 		"""Return the name pattern LineEdit"""
 
@@ -130,6 +150,16 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		"""Return the Refresh check"""
 
 		return self._chk_refresh
+
+	def ffoa_marker_editor(self) -> object:
+		"""Return the `LineEdit` for the FFOA marker name"""
+
+		return self._txt_ffoa_name
+
+	def lfoa_marker_editor(self) -> object:
+		"""Return the `LineEdit` for the LFOA marker name"""
+
+		return self._txt_lfoa_name
 
 	def layout(self):
 		return self._ui.VGroup([
@@ -170,6 +200,30 @@ class TRTSettingsWindow(TRTAbstractWidget):
 				self._chk_exclude_folder,
 				self._lbl_exclude_folder_master,
 				self._txt_exclude_folder,
+			]),
+
+			self._ui.Label({
+				"Weight": 0,
+				"FrameStyle": 4
+			}),
+
+
+			self._ui.HGroup({
+				"Weight": 0,
+			},[
+				self._ui.VGroup({
+					"Weight": 0,
+				},[
+					self._lbl_ffoa_name,
+					self._txt_ffoa_name
+				]),
+				self._ui.HGap(),
+				self._ui.VGroup({
+					"Weight": 0,
+				},[
+					self._lbl_lfoa_name,
+					self._txt_lfoa_name
+				]),
 			]),
 
 			self._ui.Label({
