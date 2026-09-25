@@ -86,6 +86,7 @@ class TRTMainWindowController:
 		}, [settings_widget.layout()])
 
 		settings_controller.register_window_handle(settings_handle)
+		settings_controller.set_match_options(self._match_options)
 
 		settings_handle.Show()
 

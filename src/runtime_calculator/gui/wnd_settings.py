@@ -9,6 +9,8 @@ ID_TXT_MATCH_FOLDER   = "txt_match_folder"
 ID_CHK_EXCLUDE_FOLDER = "chk_exclude_folder"
 ID_TXT_EXCLUDE_FOLDER = "txt_exclude_folder"
 
+ID_BTN_SAVE = "btn_settings_save"
+
 TXT_TIP_FONT_POINT_SIZE = 10
 
 class TRTSettingsWindow(TRTAbstractWidget):
@@ -21,6 +23,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 
 		self._chk_refresh = self._ui.CheckBox({
 			"ID": ID_CHECK_REFRESH,
+			"Weight": 0,
 			"Text": "Refresh project before adding latest (shared projects only)",
 			"Events": {}
 		})
@@ -34,6 +37,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		})
 
 		self._lbl_match_name_explained = self._ui.Label({
+			"Weight": 0,
 			"Text": "Specify a naming pattern to match clip names.  Include <code>{part}</code> and <code>{version}</code> tokens as wildcards.  They will be used to determine the latest <code>{version}</code> of each <code>{part}</code>.",
 			"WordWrap": True,
 			"Font": self._ui.Font({"PointSize": TXT_TIP_FONT_POINT_SIZE}),
@@ -86,44 +90,99 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"Events": {"TextEdited": True, "TextChanged": True},
 		})
 
+		self._btn_save = self._ui.Button({
+			"ID": ID_BTN_SAVE,
+			"Weight": 0,
+			"Text": "Save",
+		})
+
+	def match_mediapool_name_editor(self) -> object:
+		"""Return the name pattern LineEdit"""
+
+		return self._txt_match_name
+
+	def match_mediapool_name_enabler(self) -> object:
+		"""Return the name pattern `CheckBox`"""
+
+		return self._chk_match_name
+	
 	def match_mediapool_folder_editor(self) -> object:
 		"""Return the In Media Pool Folder `LineEdit`"""
 
 		return self._txt_match_folder
+
+	def match_mediapool_folder_enabler(self) -> object:
+		"""Return the In Media Pool Folder `CheckBox`"""
+
+		return self._chk_match_folder
 
 	def exclude_mediapool_folder_editor(self) -> object:
 		"""Return the In Media Pool Folder `LineEdit`"""
 
 		return self._txt_exclude_folder
 
+	def exclude_mediapool_folder_enabler(self) -> object:
+		"""Return the In Media Pool Folder `CheckBox`"""
+
+		return self._chk_exclude_folder
+
+	def chk_refresh_project(self) -> object:
+		"""Return the Refresh check"""
+
+		return self._chk_refresh
+
 	def layout(self):
 		return self._ui.VGroup([
+
 			self._chk_refresh,
 			
-			self._ui.Label({"FrameStyle": 4}),
+			self._ui.Label({
+				"Weight": 0,
+				"FrameStyle": 4
+			}),
 
-			self._ui.HGroup([
+			self._ui.HGroup({
+				"Weight":0,
+			},[
 				self._chk_match_name,
 				self._txt_match_name
 			]),
 			self._lbl_match_name_explained,
 
-			self._ui.Label({"FrameStyle": 4}),
+			self._ui.Label({
+				"Weight": 0,
+				"FrameStyle": 4
+			}),
 
-			self._ui.HGroup([
+
+			self._ui.HGroup({
+				"Weight":0,
+			},[
 				self._chk_match_folder,
 				self._lbl_match_folder_master,
 				self._txt_match_folder,
 			]),
 
 
-			self._ui.HGroup([
+			self._ui.HGroup({
+				"Weight": 0,
+			},[
 				self._chk_exclude_folder,
 				self._lbl_exclude_folder_master,
 				self._txt_exclude_folder,
 			]),
 
-			self._ui.Label({"FrameStyle": 4}),
+			self._ui.Label({
+				"Weight": 0,
+				"FrameStyle": 4
+			}),
 
-			self._ui.VGap(100),
+			self._ui.VGap(),
+
+			self._ui.HGroup({
+				"Weight": 0,
+			},[
+				self._ui.HGap(),
+				self._btn_save,
+			]),
 		])
