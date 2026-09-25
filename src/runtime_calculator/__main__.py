@@ -1,7 +1,7 @@
 import logging, sys
 
 from .utils import paths, logs, user_config
-from .controllers import appcontroller
+from .controllers import mainwindowcontroller
 from .gui import wnd_main
 
 from resolvecommon.session import resolve
@@ -48,7 +48,7 @@ def main():
 
 	# Actually do the thing
 	main_window_widget     = wnd_main.TRTMainWindowWidget(ui, show_nag_link=launch_settings.get("show_nag_link",True))
-	main_window_controller = appcontroller.TRTMainWindowController(main_window_widget, **launch_settings)
+	main_window_controller = mainwindowcontroller.TRTMainWindowController(main_window_widget, **launch_settings)
 
 	main_window_handle = dispatcher.AddWindow({
 		"ID": wnd_main.ID_WINDOW_MAIN,

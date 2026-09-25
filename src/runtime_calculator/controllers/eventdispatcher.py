@@ -13,17 +13,14 @@ import logging, typing
 from ..gui import panel_treecontrols, wnd_main, tree_results
 
 if typing.TYPE_CHECKING:
-	from .appcontroller import TRTMainWindowController
+	from .mainwindowcontroller import TRTMainWindowController
 
 class TRTEventDispatcher:
 	"""Dispatch events to the controller"""
 
-	def __init__(self, controller:TRTMainWindowController, window_handle:object|None=None):
+	def __init__(self, controller:TRTMainWindowController):
 
 		self._controller = controller
-
-		if window_handle:
-			self.register_window_handle(window_handle)
 
 	def register_window_handle(self, win_handle:object):
 		"""Bind a window handle's events to the controller"""
