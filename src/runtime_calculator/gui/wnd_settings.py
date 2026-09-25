@@ -29,6 +29,8 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"Events": {}
 		})
 
+		# Match naming pattern
+
 		self._chk_match_name = self._ui.CheckBox({
 			"ID": ID_CHECK_MATCH_NAME,
 			"Weight": 0,
@@ -45,22 +47,20 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"MinimumSize": [200,50],
 		})
 
-		# Match naming pattern
-
 		self._txt_match_name = self._ui.LineEdit({
 			"ID": ID_TXT_MATCH_NAME,
 			"PlaceholderText": "Match name pattern",
 			"Events": {"TextChanged": True},
 		})
 
+		# Match media pool folder
+		
 		self._chk_match_folder = self._ui.CheckBox({
 			"ID": ID_CHK_MATCH_FOLDER,
 			"Weight": 0,
 			"MinimumSize": [180,20],
 			"Text": "Start In Media Pool Folder:",
 		})
-
-		# Match media pool folder
 
 		self._lbl_match_folder_master = self._ui.Label({
 			"Weight": 0,
@@ -112,6 +112,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		})
 
 		# Save and cancel
+
 		self._btn_save = self._ui.Button({
 			"ID": ID_BTN_SAVE,
 			"Weight": 0,
