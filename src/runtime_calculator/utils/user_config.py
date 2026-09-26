@@ -1,7 +1,10 @@
 import json, logging, pathlib, typing
+import timecode
 
 from os import PathLike
-from . import trim_info, match_info, marker_info
+from . import trim_info, match_info, marker_info, window_info
+
+from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, DEFAULT_MATCH_STRING, DEFAULT_FFOA_MARKER_NAME, DEFAULT_LFOA_MARKER_NAME, DEFAULT_WINDOW_TITLE
 
 class ConfigFileManager:
 	"""Read and write the config files"""
@@ -9,8 +12,48 @@ class ConfigFileManager:
 	def __init__(self, path_user_config:str|PathLike[str]):
 
 		self._path_user_config = pathlib.Path(path_user_config)
+		self._user_config      = self.read_user_config()
 
 		logging.getLogger(__name__).debug("Config file manager initiated with path %s", self._path_user_config)
+
+	def user_config(self) -> dict[str, typing.Any]:
+		"""Raw user config dict"""
+
+		return self._user_config
+
+	def trim_options(self) -> trim_info.TRTTrimOptions:
+
+		last_tc_rate = self._user_config.get("tc_rate", 24)
+
+		return trim_info.TRTTrimOptions(
+			trim_from_head  = timecode.Timecode(self._user_config.get("trim_from_head", DEFAULT_HEAD_TRIM), rate=last_tc_rate),
+			trim_from_tail  = timecode.Timecode(self._user_config.get("trim_from_tail", DEFAULT_TAIL_TRIM), rate=last_tc_rate),
+			use_ffoa_marker = self._user_config.get("use_ffoa_marker", True),
+			use_lfoa_marker = self._user_config.get("use_lfoa_marker", True),
+		)
+
+	def match_options(self) -> match_info.TRTLatestMatchOptions:
+
+		return match_info.TRTLatestMatchOptions(
+			refresh_project = self._user_config.get("refresh_project", True),
+			match_string    = self._user_config.get("match_string", DEFAULT_MATCH_STRING),
+			match_path      = self._user_config.get("match_path",""),
+			ignore_path     = self._user_config.get("ignore_path",""),
+		)
+
+	def marker_options(self) -> marker_info.TRTMarkerOptions:
+
+		return marker_info.TRTMarkerOptions(
+			ffoa_marker_name = self._user_config.get("ffoa_marker_name", DEFAULT_FFOA_MARKER_NAME),
+			lfoa_marker_name = self._user_config.get("lfoa_marker_name", DEFAULT_LFOA_MARKER_NAME)
+		)
+
+	def main_window_options(self) -> window_info.TRTMainWindowOptions:
+
+		return window_info.TRTMainWindowOptions(
+			show_nag_link     = self._user_config.get("show_nag_link", True),
+			main_window_title = self._user_config.get("window_title", DEFAULT_WINDOW_TITLE)
+		)
 		
 	def read_user_config(self) -> dict[str, typing.Any]:
 		"""Read user config from `.json` on disk"""
@@ -49,12 +92,11 @@ class ConfigFileManager:
 		return user_config
 
 
-	def write_user_config(self, trim_options:trim_info.TRTTrimOptions, match_options:match_info.TRTLatestMatchOptions, marker_options:marker_info.TRTMarkerOptions, base_config:dict|None=None):
+	def write_user_config(self, trim_options:trim_info.TRTTrimOptions, match_options:match_info.TRTLatestMatchOptions, marker_options:marker_info.TRTMarkerOptions):
 		"""Write user config to disk"""
 
-		user_config = base_config or {}
-
-		user_config.update({
+		self._user_config.update({
+			"tc_rate"        : trim_options.trim_from_head.rate,
 			"use_ffoa_marker": trim_options.use_ffoa_marker,
 			"use_lfoa_marker": trim_options.use_lfoa_marker,
 			"trim_from_head" : str(trim_options.trim_from_head),
@@ -75,7 +117,7 @@ class ConfigFileManager:
 
 			with open(self._path_user_config, "w") as json_file:
 
-				json.dump(user_config, json_file, indent="\t")
+				json.dump(self._user_config, json_file, indent="\t")
 				logging.getLogger(__name__).debug("Wrote config to %s: %s", self._path_user_config, trim_options)
 
 		except Exception as e:
