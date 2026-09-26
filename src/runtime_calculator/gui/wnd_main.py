@@ -23,6 +23,7 @@ URL_DONATE     = "https://ko-fi.com/lilbinboy"
 
 ID_WINDOW_MAIN = "com.glowingpixel.runtimecalculator.mainwindow"
 ID_BTN_EXPORT  = "export_trt"
+ID_BTN_SETTINGS= "btn_main_settings"
 
 class TRTMainWindowWidget(TRTAbstractWidget):
 	"""Main window widget"""
@@ -62,6 +63,13 @@ class TRTMainWindowWidget(TRTAbstractWidget):
 			url_github  = URL_GITHUB,
 			url_donate  = URL_DONATE if show_nag_link else None
 		)
+
+		self._btn_settings = self._ui.Button({
+			"ID": ID_BTN_SETTINGS,
+			"Weight": 0,
+			"FixedSize": [16,16],
+			"Text": "⚙︎"
+		})
 	
 	def layout(self):
 		
@@ -77,7 +85,10 @@ class TRTMainWindowWidget(TRTAbstractWidget):
 
 			self._ui.Label({"FrameStyle": 4}),
 
-			self._about_panel.layout(),
+			self._ui.HGroup([
+				self._about_panel.layout(),
+				self._btn_settings
+			]),
 		])
 	
 	def tree_results(self) -> TRTTreeResults:

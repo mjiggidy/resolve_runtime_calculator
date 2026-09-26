@@ -34,6 +34,7 @@ class TRTEventDispatcher:
 		win_handle.On[panel_treecontrols.ID_BTN_CLEAR].Clicked        = self.on_clear
 
 		win_handle.On[wnd_main.ID_BTN_EXPORT].Clicked                 = self.on_export_clicked
+		win_handle.On[wnd_main.ID_BTN_SETTINGS].Clicked               = self.on_settings_clicked
 
 		win_handle.On[tree_results.ID_TREE_VIEW].ItemActivated        = self.on_tree_item_activated
 
@@ -95,3 +96,7 @@ class TRTEventDispatcher:
 		logging.getLogger(__name__).debug("Got export button click event.")
 
 		self._controller.export_results()
+
+	def on_settings_clicked(self, event:dict):
+
+		self._controller.show_settings_window()
