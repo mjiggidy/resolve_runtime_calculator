@@ -59,9 +59,9 @@ class TRTSettingsController:
 
 		return match_info.TRTLatestMatchOptions(
 			refresh_project = self._window_widget.chk_refresh_project().Checked,
-			match_string    = self._window_widget.match_mediapool_name_editor().Text     if self._window_widget.match_mediapool_name_enabler().Checked     else "",
-			match_path      = self._window_widget.match_mediapool_folder_editor().Text   if self._window_widget.match_mediapool_folder_enabler().Checked   else "",
-			ignore_path     = self._window_widget.exclude_mediapool_folder_editor().Text if self._window_widget.exclude_mediapool_folder_enabler().Checked else "",
+			match_string    = self._window_widget.match_mediapool_name_editor().Text                if self._window_widget.match_mediapool_name_enabler().Checked     else "",
+			match_path      = self._window_widget.match_mediapool_folder_editor().Text.strip("/")   if self._window_widget.match_mediapool_folder_enabler().Checked   else "",
+			ignore_path     = self._window_widget.exclude_mediapool_folder_editor().Text.strip("/") if self._window_widget.exclude_mediapool_folder_enabler().Checked else "",
 		)
 
 	def set_marker_options(self, marker_options:marker_info.TRTMarkerOptions):
