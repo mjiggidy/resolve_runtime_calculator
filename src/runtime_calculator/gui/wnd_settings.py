@@ -8,6 +8,8 @@ ID_CHK_MATCH_FOLDER     = "chk_match_folder"
 ID_TXT_MATCH_FOLDER     = "txt_match_folder"
 ID_CHK_EXCLUDE_FOLDER   = "chk_exclude_folder"
 ID_TXT_EXCLUDE_FOLDER   = "txt_exclude_folder"
+ID_TXT_FFOA_MARKER_NAME = "txt_ffoa_marker_name"
+ID_TXT_LFOA_MARKER_NAME = "txt_lfoa_marker_name"
 
 ID_BTN_SAVE             = "btn_settings_save"
 ID_BTN_CANCEL           = "btn_settings_cancel"
@@ -99,7 +101,9 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		})
 
 		self._txt_ffoa_name = self._ui.LineEdit({
-			"PlaceholderText": "FFOA"
+			"ID": ID_TXT_FFOA_MARKER_NAME,
+			"PlaceholderText": "FFOA",
+			"Events": {},
 		})
 
 		self._lbl_lfoa_name = self._ui.Label({
@@ -108,7 +112,9 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		})
 
 		self._txt_lfoa_name = self._ui.LineEdit({
-			"PlaceholderText": "LFOA"
+			"ID": ID_TXT_LFOA_MARKER_NAME,
+			"PlaceholderText": "LFOA",
+			"Events": {},
 		})
 
 		# Save and cancel

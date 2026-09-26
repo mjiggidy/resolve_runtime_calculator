@@ -1,7 +1,7 @@
 import json, logging, pathlib, typing
 
 from os import PathLike
-from . import trim_info
+from . import trim_info, match_info, marker_info
 
 class ConfigFileManager:
 	"""Read and write the config files"""
@@ -49,7 +49,7 @@ class ConfigFileManager:
 		return user_config
 
 
-	def write_user_config(self, trim_options:trim_info.TRTTrimOptions, base_config:dict|None=None):
+	def write_user_config(self, trim_options:trim_info.TRTTrimOptions, match_options:match_info.TRTLatestMatchOptions, marker_options:marker_info.TRTMarkerOptions, base_config:dict|None=None):
 		"""Write user config to disk"""
 
 		user_config = base_config or {}
@@ -59,9 +59,14 @@ class ConfigFileManager:
 			"use_lfoa_marker": trim_options.use_lfoa_marker,
 			"trim_from_head" : str(trim_options.trim_from_head),
 			"trim_from_tail" : str(trim_options.trim_from_tail),
-	#		"match_pattern"  : app._match_pattern.pattern,
-	#		"match_path"     : app._match_path,
-	#		"ignore_path"    : app._ignore_path,
+
+			"match_string"   : match_options.match_string,
+			"match_path"     : match_options.match_path,
+			"ignore_path"    : match_options.ignore_path,
+			"refresh_project": match_options.refresh_project,
+
+			"ffoa_marker_name": marker_options.ffoa_marker_name,
+			"lfoa_marker_name": marker_options.lfoa_marker_name,
 		})
 
 		try:

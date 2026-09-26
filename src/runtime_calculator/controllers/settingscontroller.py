@@ -24,16 +24,11 @@ class TRTSettingsController:
 		window_handle.On[wnd_settings.ID_TXT_MATCH_NAME].TextChanged     = self._on_match_name_changed
 		window_handle.On[wnd_settings.ID_TXT_MATCH_FOLDER].TextChanged   = self._on_match_folder_changed
 		window_handle.On[wnd_settings.ID_TXT_EXCLUDE_FOLDER].TextChanged = self._on_exclude_folder_changed
-		window_handle.On[wnd_settings.ID_BTN_SAVE].Clicked               = self._on_save_clicked
 
 		self._match_mediapool_input_controller.register_window_handle(window_handle)
 		self._exclude_mediapool_input_controller.register_window_handle(window_handle)
 
 	# Event handling
-
-	def _on_save_clicked(self, event:dict):
-
-		print(self.match_options())
 
 	def _on_match_name_changed(self, event:dict):
 

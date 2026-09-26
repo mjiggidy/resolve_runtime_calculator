@@ -25,7 +25,7 @@ ID_WINDOW_MAIN = "com.glowingpixel.runtimecalculator.mainwindow"
 ID_BTN_EXPORT  = "export_trt"
 ID_BTN_SETTINGS= "btn_main_settings"
 
-class TRTMainWindowWidget(TRTAbstractWidget):
+class TRTMainWidget(TRTAbstractWidget):
 	"""Main window widget"""
 	
 	def __init__(self,

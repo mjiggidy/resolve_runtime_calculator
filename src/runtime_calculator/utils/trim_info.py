@@ -21,6 +21,9 @@ class TRTTrimOptions:
 	use_ffoa_marker:bool
 	use_lfoa_marker:bool
 
+	ffoa_marker_name:str = FFOA_MARKER_NAME
+	lfoa_marker_name:str = LFOA_MARKER_NAME
+
 class TRTTrimInfo:
 	"""Trim info (trimfo?) about a clip"""
 	
@@ -33,9 +36,7 @@ class TRTTrimInfo:
 		self._trim_options = trim_options
 
 		self._clip_rate = round(self._media_pool_item.GetClipProperty("FPS"))
-
-#		print("Clip rate:", clip_rate)
-
+		
 		self._timecode_range = timecode.TimecodeRange(
 			start = timecode.Timecode(self._media_pool_item.GetClipProperty("Start TC"), rate=self._clip_rate),
 			duration = timecode.Timecode(self._media_pool_item.GetClipProperty("Duration"), rate=self._clip_rate)

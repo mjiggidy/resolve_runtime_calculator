@@ -6,17 +6,17 @@ import logging, re
 import timecode
 
 from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, DEFAULT_MATCH_STRING
-from ..utils import trim_info, match_info, select_reels, formatting
-from ..gui import wnd_main, wnd_settings
+from ..utils import trim_info, match_info, marker_info, select_reels, formatting
+from ..gui import wnd_main
 
-from . import eventdispatcher, settingscontroller
+from . import eventdispatcher
 
 class TRTMainWindowController:
 	"""Main application window controller"""
 
 	def __init__(
 		self,
-		main_window_widget:wnd_main.TRTMainWindowWidget,
+		main_widget:wnd_main.TRTMainWidget,
 		/,
 		trim_from_head:str   = DEFAULT_HEAD_TRIM,
 		trim_from_tail:str   = DEFAULT_TAIL_TRIM,
@@ -26,13 +26,16 @@ class TRTMainWindowController:
 		match_string:str     = DEFAULT_MATCH_STRING,
 		match_path:str       = "00 REELS",
 		ignore_path:str      = "00 REELS/zArchived Reels",
+		refresh_project:bool = True,
+		ffoa_marker_name:str = trim_info.FFOA_MARKER_NAME,
+		lfoa_marker_name:str = trim_info.LFOA_MARKER_NAME,
 		**kwargs,
 	):
 
 		if kwargs:
 			logging.getLogger(__name__).debug("Got extra kwargs: %s", kwargs)
 
-		self._main_window_widget = main_window_widget
+		self._main_widget = main_widget
 		"""Main window widget"""
 
 		self._event_dispatcher = eventdispatcher.TRTEventDispatcher(controller=self)
@@ -41,19 +44,24 @@ class TRTMainWindowController:
 		"""Data model list of individual clip trim info"""
 
 		self._match_options = match_info.TRTLatestMatchOptions(
-			refresh_project = True,
+			refresh_project = refresh_project,
 			match_string    = match_string,
 			match_path      = match_path,
 			ignore_path     = ignore_path,
 		)
 
 		# Setup main window controller
-		self._main_window_widget.trim_controls().set_trim_options(trim_info.TRTTrimOptions(
+		self._main_widget.trim_controls().set_trim_options(trim_info.TRTTrimOptions(
 			trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
 			trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
 			use_ffoa_marker = use_ffoa_marker,
 			use_lfoa_marker = use_lfoa_marker,
 		))
+
+		self._marker_options = marker_info.TRTMarkerOptions(
+			ffoa_marker_name=ffoa_marker_name,
+			lfoa_marker_name=lfoa_marker_name
+		)
 
 	def event_dispatcher(self) -> eventdispatcher.TRTEventDispatcher:
 		"""Return the event dispatcher"""
@@ -64,55 +72,68 @@ class TRTMainWindowController:
 
 		self._event_dispatcher.register_window_handle(window_handle)
 
-		self._main_window_widget.trim_controls().ffoa_input_controller().register_window_handle(window_handle)
-		self._main_window_widget.trim_controls().lfoa_input_controller().register_window_handle(window_handle)
+		self._main_widget.trim_controls().ffoa_input_controller().register_window_handle(window_handle)
+		self._main_widget.trim_controls().lfoa_input_controller().register_window_handle(window_handle)
 
-	def main_window_widget(self) -> wnd_main.TRTMainWindowWidget:
+	def set_match_options(self, match_options:match_info.TRTLatestMatchOptions):
+		"""Set the options for matching Latest Items"""
 
-		return self._main_window_widget
+		logging.getLogger(__name__).debug("Setting match options to %s", match_options)
 
-	def show_settings_window(self):
+		self._match_options = match_options
 
-		from .. import dispatcher, ui
+	def match_options(self) -> match_info.TRTLatestMatchOptions:
+		"""Get the Latest Item match options currently in use"""
 
-		settings_widget = wnd_settings.TRTSettingsWindow(ui)
-		settings_controller = settingscontroller.TRTSettingsController(settings_widget)
+		return self._match_options
 
-		settings_handle = dispatcher.AddWindow({
-			"ID": wnd_settings.ID_WINDOW_SETTINGS,
-			"WindowTitle": "Settings",
-			"FixedSize": [420,350],
-			"Events": {"Close": True},
-		}, [settings_widget.layout()])
+	def set_trim_options(self, trim_options:trim_info.TRTTrimOptions):
+		"""Set the trim options to be used"""
 
-		settings_controller.register_window_handle(settings_handle)
-		settings_controller.set_match_options(self._match_options)
+		self._main_widget.trim_controls().set_trim_options(trim_options)
 
-		settings_handle.Show()
+	def marker_options(self) -> marker_info.TRTMarkerOptions:
+		"""Get the currently used marker options"""
+
+		return self._marker_options
+
+	def set_marker_options(self, marker_options:marker_info.TRTMarkerOptions):
+		"""Set the marker options to use"""
+
+		self._marker_options = marker_options
+
+	def trim_options(self) -> trim_info.TRTTrimOptions:
+		"""The trim options currently in use"""
+
+		return self._main_widget.trim_controls().trim_options()
+
+	def main_window_widget(self) -> wnd_main.TRTMainWidget:
+
+		return self._main_widget
 
 	def add_trimmed_item_info(self, trimmed_item_info:trim_info.TRTTrimInfo):
 
 		logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.media_pool_name)
 
 		self._reel_info_list.append(trimmed_item_info)
-		self._main_window_widget.add_timeline_info(trimmed_item_info)
+		self._main_widget.add_timeline_info(trimmed_item_info)
 
 		self.refresh_total_runtime()
 
 	def remove_trimmed_item_index(self, index:int):
 		"""Remove trimfo from list and tree"""
 
-		self._main_window_widget.set_busy("Removing...")
+		self._main_widget.set_busy("Removing...")
 
 		try:
-			self._main_window_widget.tree_results().tree().TakeTopLevelItem(index)
+			self._main_widget.tree_results().tree().TakeTopLevelItem(index)
 			del self._reel_info_list[index]
 		except Exception as e:
 			logging.getLogger(__name__).error("Strange error removing reel: %s", e, exc_info=True)
 
 		self.refresh_total_runtime()
 
-		self._main_window_widget.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
+		self._main_widget.set_ready(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
 
 	def refresh_total_runtime(self):
 		"""Refresh TRT calculation"""
@@ -121,30 +142,31 @@ class TRTMainWindowController:
 			sum(r.runtime_range.duration for r in self._reel_info_list)
 		) if self._reel_info_list else None
 
-		self._main_window_widget.summary_display().set_total_runtime(trt)
+		self._main_widget.summary_display().set_total_runtime(trt)
 
 	def clear_all(self):
 
 		logging.getLogger(__name__).info("Clearing reel info")
 
-		self._main_window_widget.set_busy("Clearing...")
+		self._main_widget.set_busy("Clearing...")
 
 		self._reel_info_list.clear()
 
-		self._main_window_widget.clear_trim_info()
-		self._main_window_widget.summary_display().set_total_runtime()
+		self._main_widget.clear_trim_info()
+		self._main_widget.summary_display().set_total_runtime()
 
-		self._main_window_widget.set_ready("Cleared")
+		self._main_widget.set_ready("Cleared")
 
 	def add_latest_reels(self):
 		
 		logging.getLogger(__name__).info("Latest reels requested")
 
+		if self._match_options.refresh_project:
 
-		self._main_window_widget.set_busy("Refreshing project...")
-		select_reels.refresh_project()
+			self._main_widget.set_busy("Refreshing project...")
+			select_reels.refresh_project()
 
-		self._main_window_widget.set_busy("Loading latest...")
+		self._main_widget.set_busy("Loading latest...")
 
 		trim_options = self.main_window_widget().trim_controls().trim_options()
 		status_messages = []
@@ -179,14 +201,14 @@ class TRTMainWindowController:
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
-		self._main_window_widget.set_ready(", ".join(status_messages))
+		self._main_widget.set_ready(", ".join(status_messages))
 
 	def add_selected_reels(self):
 		
 		logging.getLogger(__name__).info("Selected reels requested")
 
 
-		self._main_window_widget.set_busy("Loading selected...")
+		self._main_widget.set_busy("Loading selected...")
 
 		trim_options = self.main_window_widget().trim_controls().trim_options()
 
@@ -211,12 +233,12 @@ class TRTMainWindowController:
 		if skipped_reels:
 			status_messages.append(f"Skipped {len(skipped_reels)}")
 
-		self._main_window_widget.set_ready(", ".join(status_messages))
+		self._main_widget.set_ready(", ".join(status_messages))
 
 	def remove_selected_trim_items(self):
 		"""Handle key release events"""
 
-		selected_rows = self._main_window_widget.tree_results().selected_rows()
+		selected_rows = self._main_widget.tree_results().selected_rows()
 
 		if not selected_rows:
 			
@@ -232,7 +254,7 @@ class TRTMainWindowController:
 		"""Trim item was "activated," find it in MediaPool"""
 
 		try:
-			item_index = self._main_window_widget.tree_results().item_index(tree_item)
+			item_index = self._main_widget.tree_results().item_index(tree_item)
 			trim_info = self._reel_info_list[item_index]
 
 			select_reels.focus_media_pool_item(trim_info.media_pool_item)
@@ -277,7 +299,7 @@ class TRTMainWindowController:
 		
 		logging.getLogger(__name__).debug("Writing results to path: %s", chosen_path)
 
-		self._main_window_widget.set_busy()
+		self._main_widget.set_busy()
 
 		try:
 			trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
@@ -288,8 +310,8 @@ class TRTMainWindowController:
 
 		except Exception as e:
 			logging.getLogger(__name__).error("Error writing results: %s", e, exc_info=True)
-			self._main_window_widget.set_ready("Error exporting!  See logs.")
+			self._main_widget.set_ready("Error exporting!  See logs.")
 
 		else:
 			logging.getLogger(__name__).info("Succesfully wrote results to: %s", chosen_path)
-			self._main_window_widget.set_ready("CSV exported successfully")
+			self._main_widget.set_ready("CSV exported successfully")

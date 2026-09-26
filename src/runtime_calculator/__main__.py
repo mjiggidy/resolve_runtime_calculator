@@ -1,7 +1,7 @@
 import logging, sys
 
 from .utils import paths, logs, user_config
-from .controllers import mainwindowcontroller
+from .controllers import appcontroller
 from .gui import wnd_main
 
 from resolvecommon.session import resolve
@@ -46,32 +46,10 @@ def main():
 	user_config_manager = user_config.ConfigFileManager(PATH_CFG_USER)
 	launch_settings     = user_config_manager.read_user_config()
 
-	# Actually do the thing
-	main_window_widget     = wnd_main.TRTMainWindowWidget(ui, show_nag_link=launch_settings.get("show_nag_link",True))
-	main_window_controller = mainwindowcontroller.TRTMainWindowController(main_window_widget, **launch_settings)
-
-	main_window_handle = dispatcher.AddWindow({
-		"ID": wnd_main.ID_WINDOW_MAIN,
-		"WindowTitle": launch_settings.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
-		"FixedSize": [360,500],
-		"Events": {"Close": True, "KeyRelease": True},
-	}, [main_window_widget.layout()])
-
-	main_window_handle.On[wnd_main.ID_WINDOW_MAIN].Close = _on_mainwindow_close
-	main_window_controller.register_window_handle(main_window_handle)
-
-	main_window_handle.Show()
-
-	dispatcher.RunLoop()
+	app = appcontroller.TRTApplicationController(launch_settings)
 
 	# Save config to disk
-	user_config_manager.write_user_config(main_window_widget.trim_controls().trim_options(), launch_settings)
-
-def _on_mainwindow_close(event:dict):
-
-	logging.getLogger(__name__).debug("Window is closing.  And hey -- thanks.")
-	dispatcher.ExitLoop(0)
-
+	user_config_manager.write_user_config(app.trim_options(), app.match_options(),app.marker_options(), launch_settings)
 
 if __name__ == "__main__":
 	main()
