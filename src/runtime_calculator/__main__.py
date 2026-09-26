@@ -62,9 +62,6 @@ def main():
 
 	main_window_handle.Show()
 
-	# TEMP
-	main_window_controller.show_settings_window()
-
 	dispatcher.RunLoop()
 
 	# Save config to disk
