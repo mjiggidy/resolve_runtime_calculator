@@ -34,7 +34,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 		self._chk_match_name = self._ui.CheckBox({
 			"ID": ID_CHECK_MATCH_NAME,
 			"Weight": 0,
-			"Text": "Match Naming Pattern:",
+			"Text": "Match naming pattern:",
 			"MinimumSize": [180,20],
 			"Events": {},
 		})
@@ -59,7 +59,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"ID": ID_CHK_MATCH_FOLDER,
 			"Weight": 0,
 			"MinimumSize": [180,20],
-			"Text": "Start In Media Pool Folder:",
+			"Text": "Start in Media Pool folder:",
 		})
 
 		self._lbl_match_folder_master = self._ui.Label({
@@ -78,7 +78,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 			"ID": ID_CHK_EXCLUDE_FOLDER,
 			"Weight": 0,
 			"MinimumSize": [180,20],
-			"Text": "Exclude Media Pool Folder:",
+			"Text": "Exclude Media Pool folder:",
 		})
 
 		self._lbl_exclude_folder_master = self._ui.Label({
@@ -95,7 +95,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 
 		self._lbl_ffoa_name = self._ui.Label({
 			"Weight": 0,
-			"Text": "FFOA Marker Name Contains:"
+			"Text": "FFOA marker name contains:"
 		})
 
 		self._txt_ffoa_name = self._ui.LineEdit({
@@ -104,7 +104,7 @@ class TRTSettingsWindow(TRTAbstractWidget):
 
 		self._lbl_lfoa_name = self._ui.Label({
 			"Weight": 0,
-			"Text": "LFOA Marker Name Contains:"
+			"Text": "LFOA marker name contains:"
 		})
 
 		self._txt_lfoa_name = self._ui.LineEdit({

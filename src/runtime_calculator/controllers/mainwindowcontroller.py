@@ -81,7 +81,7 @@ class TRTMainWindowController:
 		settings_handle = dispatcher.AddWindow({
 			"ID": wnd_settings.ID_WINDOW_SETTINGS,
 			"WindowTitle": "Settings",
-			"FixedSize": [400,200],
+			"FixedSize": [420,350],
 			"Events": {"Close": True},
 		}, [settings_widget.layout()])
 
