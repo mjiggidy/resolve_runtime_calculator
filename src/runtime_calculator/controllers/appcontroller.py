@@ -4,33 +4,49 @@ from .. import dispatcher, ui
 
 from ..gui import wnd_main, wnd_settings
 from ..controllers import mainwindowcontroller, settingscontroller
-from ..utils import trim_info, marker_info, match_info
+from ..utils import trim_info, marker_info, match_info, window_info
 
 class TRTApplicationController:
 
-	def __init__(self, launch_settings:dict):
+	def __init__(
+		self,
+		/,
+		match_options :match_info.TRTLatestMatchOptions,
+		trim_options  :trim_info.TRTTrimOptions,
+		marker_options:marker_info.TRTMarkerOptions,
+		window_options:window_info.TRTMainWindowOptions,
+	):
 
-		# Main window
+		# Main Window
+
 		self._main_widget     = wnd_main.TRTMainWidget(
 			ui,
-			show_nag_link=launch_settings.get("show_nag_link",True)
+			show_nag_link=window_options.show_nag_link
 		)
 
 		self._main_controller = mainwindowcontroller.TRTMainWindowController(
 			self._main_widget,
-			**launch_settings
+			match_options=match_options,
+			trim_options=trim_options,
+			marker_options=marker_options,
 		)
-
-		self._settings_widget        = wnd_settings.TRTSettingsWindow(ui)
-		self._settings_controller    = settingscontroller.TRTSettingsController(self._settings_widget)
-
+		
 		self._main_window = dispatcher.AddWindow({
 			"ID": wnd_main.ID_WINDOW_MAIN,
-			"WindowTitle": launch_settings.get("window_title", wnd_main.DEFAULT_WINDOW_TITLE),
+			"WindowTitle": window_options.main_window_title,
 			"FixedSize": [360,500],
 			"Events": {"Close": True, "KeyRelease": True},
 		}, [self._main_widget.layout()])
 
+		self._main_window.On[wnd_main.ID_WINDOW_MAIN].Close    = self._on_mainwindow_close
+		self._main_window.On[wnd_main.ID_BTN_SETTINGS].Clicked = self._on_settings_requested
+
+		self._main_controller.register_window_handle(self._main_window)
+
+		# Settings Window
+
+		self._settings_widget        = wnd_settings.TRTSettingsWindow(ui)
+		self._settings_controller    = settingscontroller.TRTSettingsController(self._settings_widget)
 		self._settings_window = dispatcher.AddWindow({
 			"ID": wnd_settings.ID_WINDOW_SETTINGS,
 			"WindowTitle": "Settings",
@@ -38,17 +54,13 @@ class TRTApplicationController:
 			"Events": {"Close": True},
 		}, [self._settings_widget.layout()])
 
-
-		self._main_window.On[wnd_main.ID_WINDOW_MAIN].Close    = self._on_mainwindow_close
-		self._main_window.On[wnd_main.ID_BTN_SETTINGS].Clicked = self._on_settings_requested
-
-		self._main_controller.register_window_handle(self._main_window)
-
 		self._settings_window.On[wnd_settings.ID_BTN_SAVE].Clicked   = self._on_settings_saved
 		self._settings_window.On[wnd_settings.ID_BTN_CANCEL].Clicked = self._on_settings_cancel
 
 		self._settings_controller.register_window_handle(self._settings_window)
 
+		# Launch dat winder
+		
 		self._main_window.Show()
 
 		dispatcher.RunLoop()

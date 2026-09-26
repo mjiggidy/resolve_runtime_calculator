@@ -2,38 +2,24 @@
 Main app controller for the main window widget
 """
 
-import logging, re
-import timecode
+import logging
 
-from .. import DEFAULT_HEAD_TRIM, DEFAULT_TAIL_TRIM, DEFAULT_MATCH_STRING
+from . import eventdispatcher
+
 from ..utils import trim_info, match_info, marker_info, select_reels, formatting
 from ..gui import wnd_main
 
-from . import eventdispatcher
 
 class TRTMainWindowController:
 	"""Main application window controller"""
 
-	def __init__(
-		self,
-		main_widget:wnd_main.TRTMainWidget,
+	def __init__(self,
+		main_widget   :wnd_main.TRTMainWidget,
 		/,
-		trim_from_head:str   = DEFAULT_HEAD_TRIM,
-		trim_from_tail:str   = DEFAULT_TAIL_TRIM,
-		use_ffoa_marker:bool = True,
-		use_lfoa_marker:bool = True,
-		project_rate:int     = 24,
-		match_string:str     = DEFAULT_MATCH_STRING,
-		match_path:str       = "00 REELS",
-		ignore_path:str      = "00 REELS/zArchived Reels",
-		refresh_project:bool = True,
-		ffoa_marker_name:str = trim_info.FFOA_MARKER_NAME,
-		lfoa_marker_name:str = trim_info.LFOA_MARKER_NAME,
-		**kwargs,
+		match_options :match_info.TRTLatestMatchOptions,
+		trim_options  :trim_info.TRTTrimOptions,
+		marker_options:marker_info.TRTMarkerOptions
 	):
-
-		if kwargs:
-			logging.getLogger(__name__).debug("Got extra kwargs: %s", kwargs)
 
 		self._main_widget = main_widget
 		"""Main window widget"""
@@ -43,25 +29,12 @@ class TRTMainWindowController:
 		self._reel_info_list:list[trim_info.TRTTrimInfo] = []
 		"""Data model list of individual clip trim info"""
 
-		self._match_options = match_info.TRTLatestMatchOptions(
-			refresh_project = refresh_project,
-			match_string    = match_string,
-			match_path      = match_path,
-			ignore_path     = ignore_path,
-		)
+		self._match_options  = match_options
+		self._marker_options = marker_options
 
 		# Setup main window controller
-		self._main_widget.trim_controls().set_trim_options(trim_info.TRTTrimOptions(
-			trim_from_head  = timecode.Timecode(trim_from_head, rate=project_rate),
-			trim_from_tail  = timecode.Timecode(trim_from_tail, rate=project_rate),
-			use_ffoa_marker = use_ffoa_marker,
-			use_lfoa_marker = use_lfoa_marker,
-		))
+		self.set_trim_options(trim_options)
 
-		self._marker_options = marker_info.TRTMarkerOptions(
-			ffoa_marker_name=ffoa_marker_name,
-			lfoa_marker_name=lfoa_marker_name
-		)
 
 	def event_dispatcher(self) -> eventdispatcher.TRTEventDispatcher:
 		"""Return the event dispatcher"""

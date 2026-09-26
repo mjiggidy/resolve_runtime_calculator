@@ -44,12 +44,16 @@ def main():
 
 	# Load in user user config
 	user_config_manager = user_config.ConfigFileManager(PATH_CFG_USER)
-	launch_settings     = user_config_manager.read_user_config()
 
-	app = appcontroller.TRTApplicationController(launch_settings)
+	app = appcontroller.TRTApplicationController(
+		match_options  = user_config_manager.match_options(),
+		trim_options   = user_config_manager.trim_options(),
+		marker_options = user_config_manager.marker_options(),
+		window_options = user_config_manager.main_window_options(),
+	)
 
-	# Save config to disk
-	user_config_manager.write_user_config(app.trim_options(), app.match_options(),app.marker_options(), launch_settings)
+	# Save config to disk once the event loop dun loopt
+	user_config_manager.write_user_config(app.trim_options(), app.match_options(),app.marker_options())
 
 if __name__ == "__main__":
 	main()
