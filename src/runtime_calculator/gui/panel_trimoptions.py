@@ -12,7 +12,7 @@ ID_TXT_TRIM_LFOA    = "txt_lfoa"
 class TRTTrimOptionsEditor(TRTAbstractWidget):
 	"""View and edit the trim options"""
 
-	def __init__(self, ui_manager:object, head_trim:str|None=None, tail_trim:str|None=None):
+	def __init__(self, ui_manager:object):
 
 		super().__init__(ui_manager)
 
@@ -26,7 +26,6 @@ class TRTTrimOptionsEditor(TRTAbstractWidget):
 			"Weight": 100,
 			"ID": ID_TXT_TRIM_FFOA,
 			"MinimumSize": [45, 20],
-			"Text": head_trim if head_trim else "",
 			"Events": {"EditingFinished": True},
 		})
 
@@ -54,7 +53,6 @@ class TRTTrimOptionsEditor(TRTAbstractWidget):
 			"Weight": 100,
 			"ID": ID_TXT_TRIM_LFOA,
 			"MinimumSize": [45, 20],
-			"Text": tail_trim if tail_trim else "",
 			"Events": {"EditingFinished": True},
 		})
 

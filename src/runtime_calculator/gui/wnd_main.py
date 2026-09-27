@@ -29,15 +29,11 @@ class TRTMainWidget(TRTAbstractWidget):
 	"""Main window widget"""
 	
 	def __init__(self,
-		ui_manager:object,
-		head_trim:str|None = None,
-		tail_trim:str|None = None,
-		show_nag_link:bool = True
-	):
+		ui_manager:object, /, show_nag_link:bool = True):
 		
 		self._ui = ui_manager
 
-		self._trim_controls = TRTTrimOptionsEditor(self._ui, head_trim, tail_trim)
+		self._trim_controls = TRTTrimOptionsEditor(self._ui)
 
 		self._list_controls = TRTTreeControls(self._ui)
 
