@@ -45,7 +45,7 @@ def get_latest_from_project(match_options:match_info.TRTLatestMatchOptions) -> l
 	except Exception as e:
 		logging.getLogger(__name__).error("Not ignoring folder at path %s: %s", match_options.ignore_path, e, exc_info=True)
 
-	else:
+	if ignore_folder is not None:
 		logging.getLogger(__name__).debug("Using ignored folder %s", ignore_folder.GetName())
 
 	for item in get_clips_from_folder_by_type(base_folder, recursive=True, ignore_folder=ignore_folder):
