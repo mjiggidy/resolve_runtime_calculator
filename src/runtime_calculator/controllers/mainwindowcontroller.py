@@ -156,6 +156,8 @@ class TRTMainWindowController:
 			logging.getLogger(__name__).error("Unable to find latest reels: %s", e, exc_info=True)
 			status_messages.append(str(e))
 
+		#print("Got latest reels", latest_reels)
+
 		for clip in latest_reels:
 
 			try:
