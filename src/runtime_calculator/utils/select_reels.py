@@ -5,7 +5,7 @@ Deals with selecting reels.  Only gonna work for meeeee for now!
 from __future__ import annotations
 import logging, typing
 
-from .folders import get_folder_from_path, get_clips_from_folder_by_type
+from .folders import get_folder_from_path, get_clips_from_folder
 from ..utils import match_info, formatting
 
 from resolvecommon.session import resolve
@@ -36,7 +36,7 @@ def get_latest_from_project(match_options:match_info.TRTLatestMatchOptions) -> l
 	base_folder   = get_folder_from_path(match_options.match_path, mp.GetRootFolder())  if match_options.match_path else mp.GetRootFolder()
 	ignore_folder = get_folder_from_path(match_options.ignore_path, mp.GetRootFolder()) if match_options.ignore_path else None
 
-	for item in get_clips_from_folder_by_type(base_folder, recursive=True, ignore_folder=ignore_folder):
+	for item in get_clips_from_folder(base_folder, recursive=True, ignore_folder=ignore_folder):
 
 		match = match_options.match_pattern.search(item.GetName())
 
@@ -58,7 +58,7 @@ def get_latest_from_project(match_options:match_info.TRTLatestMatchOptions) -> l
 				latest_per_part[parsed_part] = [(parsed_version, item)]
 
 		else:
-			
+
 			# No grouping needed as long as it matches
 			if EMPTY_PART not in latest_per_part:
 				latest_per_part[EMPTY_PART] = []

@@ -6,7 +6,6 @@ import dataclasses
 import timecode
 
 from .formatting import format_frame_count_as_footage
-from resolvecommon.itemtypes import ItemTypes
 
 FFOA_MARKER_NAME:str = "ffoa"
 LFOA_MARKER_NAME:str = "lfoa"
@@ -67,8 +66,9 @@ class TRTTrimInfo:
 	def _find_marker(self, marker_name_text:str) -> timecode.Timecode|None:
 		"""Find a marker containing given text in the media pool item"""
 
-		if ItemTypes.from_media_pool_item(self._media_pool_item) is ItemTypes.TIMELINE:
+		if self._media_pool_item.GetClipProperty("Type") == "Timeline":
 			markers = self._media_pool_item.GetTimeline().GetMarkers()
+
 		else:
 			markers = self._media_pool_item.GetMarkers()
 
