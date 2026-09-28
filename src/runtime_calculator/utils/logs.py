@@ -28,7 +28,7 @@ def setup_logging(log_file_path:str|PathLike[str]|None=None):
 
 	else:
 		
-		file_handler = RotatingFileHandler(str(log_file_path), maxBytes=128 * 1024, backupCount=5)
+		file_handler = RotatingFileHandler(str(log_file_path), maxBytes=1024 * 1024, backupCount=5)
 		file_handler.setLevel(logging.DEBUG)
 		file_handler.setFormatter(logging.Formatter("[%(asctime)s]\t%(levelname)s\t%(name)s\t%(message)s"))
 
