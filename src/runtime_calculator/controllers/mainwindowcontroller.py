@@ -89,9 +89,16 @@ class TRTMainWindowController:
 		logging.getLogger(__name__).debug("Adding info for %s", trimmed_item_info.media_pool_name)
 
 		self._reel_info_list.append(trimmed_item_info)
+		
+		try:
+			self.refresh_total_runtime()
+		
+		except Exception as e:
+		
+			self._reel_info_list.pop()
+			raise e
+		
 		self._main_widget.add_timeline_info(trimmed_item_info)
-
-		self.refresh_total_runtime()
 
 	def remove_trimmed_item_index(self, index:int):
 		"""Remove trimfo from list and tree"""
@@ -139,13 +146,12 @@ class TRTMainWindowController:
 			self._main_widget.set_busy("Refreshing project...")
 			select_reels.refresh_project()
 
-		self._main_widget.set_busy("Loading latest...")
+		self._main_widget.set_busy("Finding latest...")
 
 		trim_options = self.main_window_widget().trim_controls().trim_options()
 		status_messages = []
 
 		latest_reels  = []
-		trimmed_reels = []
 		skipped_reels = []
 
 		try:
@@ -158,18 +164,23 @@ class TRTMainWindowController:
 
 		#print("Got latest reels", latest_reels)
 
-		for clip in latest_reels:
+		item_total = len(latest_reels)
+		item_current = 0
+
+		for clip in sorted(latest_reels, key=lambda n: formatting.format_string_for_natural_sort(n.GetName())):
+
+			item_current += 1
+			
+			self._main_widget.set_busy(f"Calculating trims ({item_current}/{item_total})...")
 
 			try:
-				trimmed_reels.append(trim_info.TRTTrimInfo(clip, trim_options))
+				self.add_trimmed_item_info(trim_info.TRTTrimInfo(clip, trim_options))
 
 			except Exception as e:
 				
 				logging.getLogger(__name__).error("Error adding %s: %s", clip.GetName(), e, exc_info=True)
 				skipped_reels.append((clip, str(e)))
-
-		for trimmed_reel_info in sorted(trimmed_reels, key=lambda r: formatting.format_string_for_natural_sort(r.media_pool_name)):
-			self.add_trimmed_item_info(trimmed_reel_info)
+				
 
 		status_messages.append(f"{len(self._reel_info_list)} Item{'' if len(self._reel_info_list) == 1 else 's'}")
 
@@ -278,7 +289,7 @@ class TRTMainWindowController:
 
 		try:
 			trt = formatting.format_timecode_as_duration(sum(r.runtime_range.duration for r in self._reel_info_list)) if self._reel_info_list else "0:00"
-			with open(chosen_path, "w") as handle_export:
+			with open(chosen_path, "w", encoding="utf-8") as handle_export:
 
 				print(formatting.format_trim_list_to_csv(self._reel_info_list), file=handle_export)
 				print("Total Runtime: " + trt, file=handle_export)
