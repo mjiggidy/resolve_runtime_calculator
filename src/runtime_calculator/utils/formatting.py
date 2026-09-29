@@ -86,7 +86,7 @@ def format_trim_list_to_csv(trim_list:list[TRTTrimInfo]) -> str:
 
 	str_buffer = StringIO()
 
-	csv_writer = csv.DictWriter(str_buffer, headers)
+	csv_writer = csv.DictWriter(str_buffer, headers, lineterminator="\n")
 	csv_writer.writeheader()
 
 	for trim_info in trim_list:
