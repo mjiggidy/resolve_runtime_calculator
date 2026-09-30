@@ -54,6 +54,9 @@ class TRTSettingsController:
 		self._window_widget.match_mediapool_folder_editor().Text   = match_options.match_path
 		self._window_widget.exclude_mediapool_folder_editor().Text = match_options.ignore_path
 
+		self._match_mediapool_input_controller  .validate_path()
+		self._exclude_mediapool_input_controller.validate_path()
+
 	def match_options(self) -> match_info.TRTLatestMatchOptions:
 		"""Get the current Latest match options set by the editor"""
 
