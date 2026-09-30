@@ -13,14 +13,18 @@ class TRTMediaPoolInputController:
 		
 		# TODO: Figure out how to set TextEdited event on the line edit in the constructor?
 
-		window_handle.On[self._line_edit.ID].TextEdited = self._test_text_changed
+		window_handle.On[self._line_edit.ID].TextEdited      = self._test_text_changed
+		window_handle.On[self._line_edit.ID].EditingFinished = self._test_text_editing_finished
+
+	def _test_text_editing_finished(self, event:dict):
+		"""Reformat/standardize user input"""
+
+		self._line_edit.Text = self._line_edit.Text.strip("/")
 
 	def _test_text_changed(self, event:dict):
 		"""Test event for media pool browser thing"""
 
 		user_text:str = event.get("Text","")
-
-
 
 		root = resolve.GetProjectManager().GetCurrentProject().GetMediaPool().GetRootFolder()
 

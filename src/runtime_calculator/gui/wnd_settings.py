@@ -71,7 +71,11 @@ class TRTSettingsWindow(TRTAbstractWidget):
 
 		self._txt_match_folder = self._ui.LineEdit({
 			"ID": ID_TXT_MATCH_FOLDER,
-			"Events": {"TextEdited": True, "TextChanged": True},
+			"Events": {
+				"TextEdited": True,
+				"EditingFinished": True,
+				"TextChanged": True,
+			},
 		})
 
 		# Exclude media pool folder
@@ -90,7 +94,11 @@ class TRTSettingsWindow(TRTAbstractWidget):
 
 		self._txt_exclude_folder = self._ui.LineEdit({
 			"ID": ID_TXT_EXCLUDE_FOLDER,
-			"Events": {"TextEdited": True, "TextChanged": True},
+			"Events": {
+				"TextEdited": True,
+				"EditingFinished": True,
+				"TextChanged": True,
+			},
 		})
 
 		# FFOA Marker Name
