@@ -1,4 +1,4 @@
-from .abstract_widget import TRTAbstractWidget
+from ..gui.abstract_widget import TRTAbstractWidget
 
 class TRTSummaryPanel(TRTAbstractWidget):
 

@@ -1,8 +1,8 @@
 import logging, sys
 
+from .app import appcontroller
 from .utils import paths, logs, user_config
-from .controllers import appcontroller
-from .gui import wnd_main
+from .mainwindow import wnd_main
 
 from resolvecommon.session import resolve
 from . import ui, dispatcher

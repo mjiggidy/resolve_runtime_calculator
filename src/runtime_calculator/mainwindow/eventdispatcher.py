@@ -10,7 +10,8 @@ Is... is this the way...?  I don't know.  OVERTHINKING.
 from __future__ import annotations
 import logging, typing
 
-from ..gui import panel_treecontrols, wnd_main, tree_results
+from . import tree_results, wnd_main
+from . import panel_treecontrols
 
 if typing.TYPE_CHECKING:
 	from .mainwindowcontroller import TRTMainWindowController

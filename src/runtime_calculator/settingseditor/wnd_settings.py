@@ -1,4 +1,4 @@
-from .abstract_widget import TRTAbstractWidget
+from ..gui.abstract_widget import TRTAbstractWidget
 
 ID_WINDOW_SETTINGS      = "win_settings"
 ID_CHECK_REFRESH        = "chk_refresh"

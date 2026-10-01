@@ -1,5 +1,5 @@
-from ..gui import wnd_settings
-from ..controllers  import mediapoolinput
+from . import wnd_settings
+from ..mediapoolinput  import mediapoolinput
 from ..utils import match_info, marker_info
 
 DEFAULT_FFOA_MARKER_NAME = "FFOA"

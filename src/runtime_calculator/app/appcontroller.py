@@ -2,8 +2,8 @@ import logging
 
 from .. import dispatcher, ui
 
-from ..gui import wnd_main, wnd_settings
-from ..controllers import mainwindowcontroller, settingscontroller
+from ..mainwindow import wnd_main, mainwindowcontroller
+from ..settingseditor import settingscontroller, wnd_settings
 from ..utils import trim_info, marker_info, match_info, window_info
 
 class TRTApplicationController:

@@ -1,4 +1,4 @@
-from .abstract_widget import TRTAbstractWidget
+from ..gui.abstract_widget import TRTAbstractWidget
 
 ID_BTN_ADD_LATEST   = "btn_add_latest"
 ID_BTN_ADD_SELECTED = "btn_add_selected"

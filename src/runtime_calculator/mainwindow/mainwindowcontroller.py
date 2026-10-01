@@ -7,7 +7,7 @@ import logging
 from . import eventdispatcher
 
 from ..utils import trim_info, match_info, marker_info, select_reels, formatting
-from ..gui import wnd_main
+from . import wnd_main
 
 
 class TRTMainWindowController:

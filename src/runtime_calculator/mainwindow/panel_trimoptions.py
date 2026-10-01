@@ -1,9 +1,9 @@
 import timecode
 from resolvecommon.session import resolve
 
-from .abstract_widget import TRTAbstractWidget
-from ..controllers import timecodeinput
+from ..gui.abstract_widget import TRTAbstractWidget
 
+from ..timecodeinput import timecodeinput
 from ..utils import trim_info
 
 ID_TXT_TRIM_FFOA    = "txt_ffoa"

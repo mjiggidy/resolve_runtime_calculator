@@ -9,7 +9,7 @@ from .panel_trimoptions import TRTTrimOptionsEditor
 from .panel_summary import TRTSummaryPanel
 from .panel_about import TRTAboutPanel
 
-from .abstract_widget import TRTAbstractWidget
+from ..gui.abstract_widget import TRTAbstractWidget
 
 from ..utils.formatting import format_timecode_as_duration
 from ..utils.trim_info import TRTTrimInfo
