@@ -13,29 +13,27 @@ class TRTMediaPoolInputController:
 		
 		# TODO: Figure out how to set TextEdited event on the line edit in the constructor?
 
-		window_handle.On[self._line_edit.ID].TextEdited      = self._test_text_changed
-		window_handle.On[self._line_edit.ID].EditingFinished = self._test_text_editing_finished
+		window_handle.On[self._line_edit.ID].TextEdited      = self._on_user_modified_path
+		window_handle.On[self._line_edit.ID].EditingFinished = self._on_user_finished_path
 
-	def _test_text_editing_finished(self, event:dict):
+	def _on_user_finished_path(self, event:dict):
 		"""Reformat/standardize user input"""
 
 		self._line_edit.Text = self._line_edit.Text.strip("/")
 
-	def _test_text_changed(self, event:dict):
+	def _on_user_modified_path(self, event:dict):
 		"""Test event for media pool browser thing"""
 
-		user_text:str = event.get("Text","")
+		user_text:str   = event["Text"]
+		path_normalized = user_text.lstrip("/")
+
+		if not user_text:
+			
+			self._last_edit_length = 0
+			return
 
 		root = resolve.GetProjectManager().GetCurrentProject().GetMediaPool().GetRootFolder()
 
-		path_normalized = user_text.lstrip("/")
-
-		#print(event)
-
-		if not user_text:
-			self._last_edit_length = 0
-			return
-		
 		if "/" in path_normalized:
 
 			last_sep_index = path_normalized.rfind("/")
